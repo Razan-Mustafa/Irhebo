@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use App\Enums\RequestStatusEnum;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class RequestDetailsResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'created_at' => Carbon::parse($this->created_at)->toDayDateTimeString(),
+            'created_since' => Carbon::parse($this->created_at)->diffForHumans(),
+            'status_key'=>$this->status,
+            'status_label' => RequestStatusEnum::tryFrom($this->status)?->label(),
+            'is_reviewed' => $this->service->reviews()->where('user_id', $this->user_id)->exists(),
+            'user' => new UserResource($this->user),
+            'service' => new ServiceResource($this->service),
+            'plan' => new PlanResource($this->plan),
+            'logs' => RequestLogResource::collection($this->logs),
+        ];
+    }
+}
