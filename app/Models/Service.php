@@ -76,4 +76,5 @@ class Service extends Model
     {
         return $this->belongsToMany(Portfolio::class, 'portfolio_service');
     }
+
 }

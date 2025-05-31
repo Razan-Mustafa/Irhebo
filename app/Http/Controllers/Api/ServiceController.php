@@ -42,6 +42,7 @@ class ServiceController extends Controller
         $subCategoryId = $request->query('sub_category_id');
         $perPage = $request->query('per_page', 15);
         $services = $this->serviceService->getBySubCategory($subCategoryId, $perPage);
+        // dd($services);
         $tags = $this->tagService->getTagsBySubcategoryId($subCategoryId);
         return $this->successResponse(__('success'), [
             'services' => ServiceResource::collection($services['data']),

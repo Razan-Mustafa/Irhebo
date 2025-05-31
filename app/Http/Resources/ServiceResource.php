@@ -9,6 +9,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use App\Utilities\CurrencyConverter;
 use App\Models\Currency;
+use App\Models\PlanFeature;
 
 class ServiceResource extends JsonResource
 {
@@ -17,7 +18,9 @@ class ServiceResource extends JsonResource
         $userId = Auth::guard('api')->id();
         $coverMedia = $this->media->where('is_cover', true)->first();
         $isWishlist = $userId ? Wishlist::where('user_id', $userId)->where('service_id', $this->id)->exists() : false;
-        $minPrice = 100;
+        $minPrice = PlanFeature::where('service_id', $this->id)
+            ->where('type', 'price')
+            ->min('value');
         $currencyCode = $request->header('currency', 'USD');
         $currencyModel = Currency::where('code', strtoupper($currencyCode))->first();
         $symbol = $currencyModel ? $currencyModel->symbol : '$';
@@ -35,7 +38,7 @@ class ServiceResource extends JsonResource
             'user' => $this->user ? [
                 'id' => $this->user->id,
                 'username' => $this->user->username,
-                'profession'=>$this->user->profession->translation->title,
+                'profession' => $this->user->profession->translation->title,
                 'avatar' => $this->user->avatar ? url($this->user->avatar) : null,
             ] : null,
         ];
