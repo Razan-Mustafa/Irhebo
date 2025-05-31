@@ -50,10 +50,21 @@
                                         class="mt-1 block w-full rounded-lg  border-gray-300">
                                 </div>
 
-                                <div class="col-span-12 md:col-span-6">
+                                {{-- <div class="col-span-12 md:col-span-6">
                                     <label for="prefix" class="block text-sm font-medium">{{ __('prefix') }}</label>
                                     <input type="text" name="prefix" id="prefix"
                                         class="mt-1 block w-full rounded-lg  border-gray-300">
+                                </div> --}}
+
+                                <div class="col-span-12 md:col-span-6">
+                                    <label for="prefix"
+                                        class="block text-sm font-medium mb-2">{{ __('prefix') }}</label>
+                                    <select name="prefix" id="prefix"
+                                        class="mt-1 block w-full rounded-lg  border-gray-300">
+                                        @foreach ($countries as $country)
+                                            <option value="{{ $country['phone_code'] }}">{{ $country['phone_code'] }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                                 <div class="col-span-12 md:col-span-6">
@@ -122,8 +133,7 @@
                                 </div>
 
                                 <div class="col-span-12 md:col-span-6">
-                                    <label for="avatar"
-                                        class="block text-sm font-medium">{{ __('avatar') }}</label>
+                                    <label for="avatar" class="block text-sm font-medium">{{ __('avatar') }}</label>
                                     <input type="file" name="avatar" id="avatar"
                                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
                                 </div>

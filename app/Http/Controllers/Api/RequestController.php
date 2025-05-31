@@ -12,7 +12,8 @@ use App\Http\Resources\RequestCommentResource;
 use App\Http\Resources\RequestDetailsResource;
 use App\Http\Requests\Api\RequestCreateRequest;
 use App\Http\Requests\Api\AddRequestCommentRequest;
-
+use App\Models\PlanFeature;
+  
 class RequestController extends Controller
 {
     protected $requestService;
@@ -20,13 +21,15 @@ class RequestController extends Controller
     {
         $this->requestService = $requestService;
     }
-    public function getByUser(Request $request){
+    public function getByUser(Request $request)
+    {
         try {
             $perPage = $request->query('per_page');
             $requests = $this->requestService->getByUser($perPage);
-            return $this->successResponse(__('success'),[
-            'requests'=> RequestResource::collection($requests['data']),
-            'meta'=>$requests['meta']]);
+            return $this->successResponse(__('success'), [
+                'requests' => RequestResource::collection($requests['data']),
+                'meta' => $requests['meta']
+            ]);
         } catch (\Exception $e) {
             return $this->exceptionResponse($e);
         }
@@ -51,16 +54,18 @@ class RequestController extends Controller
     {
         try {
             $request = $this->requestService->createRequest($request->validated());
-            return $this->successResponse(__('success'), new RequestResource($request));
+
+           return $this->successResponse(__('success'), new RequestResource($request));
         } catch (\Exception $e) {
             return $this->exceptionResponse($e);
         }
     }
-    public function requestDetails($id){
-        try{
+    public function requestDetails($id)
+    {
+        try {
             $request = $this->requestService->getRequestDetails($id);
             return $this->successResponse(__('success'), new RequestDetailsResource($request));
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return $this->exceptionResponse($e);
         }
     }
@@ -77,9 +82,9 @@ class RequestController extends Controller
             return $this->exceptionResponse($e);
         }
     }
-    public function confirmRequest($id){
+    public function confirmRequest($id)
+    {
         $this->requestService->confirmRequest($id);
         return $this->successResponse(__('success'));
     }
 }
-

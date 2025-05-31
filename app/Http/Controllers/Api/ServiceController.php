@@ -20,6 +20,9 @@ use App\Services\PortfolioService;
 use App\Services\ReviewService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use App\Utilities\CurrencyConverter;
+use App\Models\Currency;
+use App\Models\Service;
 
 class ServiceController extends Controller
 {
@@ -79,7 +82,8 @@ class ServiceController extends Controller
     public function getServicesByUserId(Request $request)
     {
         $perPage = $request->query('per_page', 15);
-        $userId = $request->query('user_id') ?? Auth::id();
+        $userId =  Auth::id() ?? $request->query('user_id');
+        // dd($userId);
         $services = $this->serviceService->getServicesByUserId($userId, $perPage);
         return $this->successResponse(
             __('success'),
@@ -118,7 +122,7 @@ class ServiceController extends Controller
             'plans' => $plans,
         ]);
     }
-    
+
     public function search(Request $request)
     {
         $query = trim($request->query('query', ''));
@@ -140,28 +144,138 @@ class ServiceController extends Controller
             'meta' => $services['meta']
         ]);
     }
+    // public function create(ServiceRequest $request)
+    // {
+    //     try {
+    //         $data = $request->validated();
+    //         $data = array_merge($data, ['user_id' => Auth::id()]);
+    //         dd($data);
+    //         $service = $this->serviceService->create($data);
+    //         return $this->successResponse(__('success'), new ServiceDetailsResource($service));
+    //     } catch (Exception $e) {
+    //         return $this->exceptionResponse($e);
+    //     }
+    // }
     public function create(ServiceRequest $request)
     {
         try {
+
+            $currencyCode = $request->header('currency', 'USD');
+            $currencyModel = Currency::where('code', strtoupper($currencyCode))->first();
+            $symbol = $currencyModel ? $currencyModel->symbol : '$';
+
             $data = $request->validated();
-            $data = array_merge($data, ['user_id' => Auth::id()]);
+
+            // Get currency code from header (default 'USD')
+            $currencyCode = $request->header('currency', 'USD');
+
+            // Loop on each plan and convert price to USD
+            foreach ($data['plans'] as &$plan) {
+                foreach ($plan['features'] as &$feature) {
+                    if ($feature['type'] === 'price') {
+                        // Convert price to USD
+                        $feature['value'] = CurrencyConverter::convert($feature['value'], $currencyCode, 'USD');
+                    }
+                }
+            }
+
+            // Add user id
+            $data['user_id'] = Auth::id();
+
+            // Continue with saving
             $service = $this->serviceService->create($data);
+
             return $this->successResponse(__('success'), new ServiceDetailsResource($service));
         } catch (Exception $e) {
             return $this->exceptionResponse($e);
         }
     }
+
+    // public function update(UpdateServiceRequest $request, $id)
+    // {
+    //     try {
+    //         $data = $request->validated();
+    //         $data = array_merge($data, ['user_id' => Auth::id()]);
+    //         $service = $this->serviceService->update($data, $id);
+    //         return $this->successResponse(__('success'), new ServiceDetailsResource($service));
+    //     } catch (Exception $e) {
+    //         return $this->exceptionResponse($e);
+    //     }
+    // }
+
     public function update(UpdateServiceRequest $request, $id)
     {
         try {
+            // Get currency code from header (default 'USD')
+            $currencyCode = $request->header('currency', 'USD');
+            $currencyModel = Currency::where('code', strtoupper($currencyCode))->first();
+            $symbol = $currencyModel ? $currencyModel->symbol : '$';
+
             $data = $request->validated();
-            $data = array_merge($data, ['user_id' => Auth::id()]);
-            $service = $this->serviceService->update($data, $id);
+
+            // Add user id
+            $data['user_id'] = Auth::id();
+
+            // Fetch service
+            $service = Service::findOrFail($id);
+
+            // Loop on each plan and handle update
+            foreach ($data['plans'] as $planData) {
+
+                $plan = $service->plans()->where('plan_id', $planData['plan_id'])->first();
+
+                if ($plan) {
+                    // plan exists -> update its features
+                    foreach ($planData['features'] as $featureData) {
+                        $feature = $plan->features()->where('type', $featureData['type'])->first();
+
+                        if ($feature) {
+                            // Convert price if it's price type
+                            if ($featureData['type'] === 'price') {
+                                $featureData['value'] = CurrencyConverter::convert($featureData['value'], $currencyCode, 'USD');
+                            }
+
+                            // Update feature value
+                            $feature->update([
+                                'title' => $featureData['title'],
+                                'value' => $featureData['value'],
+                            ]);
+                        } else {
+                            // if feature not exists, create it
+                            $plan->features()->create([
+                                'title' => $featureData['title'],
+                                'type'  => $featureData['type'],
+                                'value' => $featureData['type'] === 'price'
+                                    ? CurrencyConverter::convert($featureData['value'], $currencyCode, 'USD')
+                                    : $featureData['value'],
+                            ]);
+                        }
+                    }
+                } else {
+                    // if plan not exists, create it with its features
+                    $newPlan = $service->servicePlans()->create([
+                        'plan_id' => $planData['plan_id'],
+                    ]);
+
+                    foreach ($planData['features'] as $featureData) {
+                        $newPlan->features()->create([
+                            'title' => $featureData['title'],
+                            'type'  => $featureData['type'],
+                            'value' => $featureData['type'] === 'price'
+                                ? CurrencyConverter::convert($featureData['value'], $currencyCode, 'USD')
+                                : $featureData['value'],
+                        ]);
+                    }
+                }
+            }
+
             return $this->successResponse(__('success'), new ServiceDetailsResource($service));
         } catch (Exception $e) {
             return $this->exceptionResponse($e);
         }
     }
+
+
     public function delete($id)
     {
         try {
@@ -171,12 +285,13 @@ class ServiceController extends Controller
             return $this->exceptionResponse($e);
         }
     }
-public function deleteMedia($id){
-    try {
-        $this->serviceService->deleteMedia($id);
-        return $this->successResponse(__('success'));
-    } catch (Exception $e) {
-        return $this->exceptionResponse($e);
-    }     
-}
+    public function deleteMedia($id)
+    {
+        try {
+            $this->serviceService->deleteMedia($id);
+            return $this->successResponse(__('success'));
+        } catch (Exception $e) {
+            return $this->exceptionResponse($e);
+        }
+    }
 }

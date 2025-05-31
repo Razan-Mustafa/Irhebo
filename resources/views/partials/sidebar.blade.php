@@ -123,7 +123,7 @@
                         <span class="side-menu__label">{{ __('quotations') }}</span>
                     </a>
                 </li>
-                 <li class="slide">
+                <li class="slide">
                     <a href="{{ route('finances.index') }}" class="side-menu__item">
                         <i class="bx bx-coin side-menu__icon"></i>
                         <span class="side-menu__label">{{ __('finances') }}</span>
@@ -207,6 +207,12 @@
                             <a href="{{ route('general.terms') }}" class="side-menu__item">
                                 <i class="bx bx-lock side-menu__icon"></i>
                                 <span class="side-menu__label">{{ __('terms') }}</span>
+                            </a>
+                        </li>
+                        <li class="slide">
+                            <a href="{{ route('currencies.index') }}" class="side-menu__item">
+                                <i class="bx bx-dollar-circle side-menu__icon"></i>
+                                <span class="side-menu__label">{{ __('currencies') }}</span>
                             </a>
                         </li>
                         <li class="slide">

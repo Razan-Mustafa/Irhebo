@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\CountryController;
 use App\Http\Controllers\Admin\GeneralController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\FeatureController;
 use App\Http\Controllers\Admin\FinanceController;
 use App\Http\Controllers\Admin\PortfolioController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Admin\ProfessionController;
 use App\Http\Controllers\Admin\QuotationController;
 use App\Http\Controllers\Admin\RequestController;
 use App\Http\Controllers\Admin\SubCategoryController;
+use App\Models\Currency;
 
 Route::get('language/{locale}', [HomeController::class, 'changeLocale'])
     ->name('locale.change')
@@ -77,6 +79,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
         $route->get('show/{id}', 'show')->name('show');
         $route->delete('destroy/{id}', 'destroy')->name('destroy');
         $route->post('update-activation', 'updateActivation')->name('updateActivation');
+        $route->post('update-verification', 'updateVerification')->name('updateVerification');
         $route->get('archived', 'archived')->name('archived');
         $route->post('/{id}/restore', 'restore')->name('restore');
     });
@@ -127,10 +130,11 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
         $route->get('show/{id}', 'show')->name('show');
         $route->delete('destroy/{id}', 'destroy')->name('destroy');
         $route->post('update-activation', 'updateActivation')->name('updateActivation');
+        $route->post('update-popular-status', 'updatePopularStatus')->name('updatePopularStatus');
     });
     $route->controller(SubCategoryController::class)->name('subCategories.')->prefix('sub-categories')->group(function ($route) {
         $route->get('', 'index')->name('index');
-        $route->get('sub-categories-by-category-ids','subCategoriesByCategoryIds');
+        $route->get('sub-categories-by-category-ids', 'subCategoriesByCategoryIds');
         $route->get('create', 'create')->name('create');
         $route->post('store', 'store')->name('store');
         $route->get('edit/{id}', 'edit')->name('edit');
@@ -184,7 +188,6 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
     $route->controller(FinanceController::class)->name('finances.')->prefix('finances')->group(function ($route) {
         $route->get('', 'index')->name('index');
         $route->post('bulk-update', 'bulkUpdate')->name('bulkUpdate');
-
     });
     $route->controller(ReviewController::class)->name('reviews.')->prefix('reviews')->group(function ($route) {
         $route->get('', 'index')->name('index');
@@ -197,7 +200,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
     $route->controller(TicketController::class)->name('tickets.')->prefix('tickets')->group(function ($route) {
         $route->get('', 'index')->name('index');
         $route->get('show/{id}', 'show')->name('show');
-        $route->post('reply/{id}','reply')->name('reply');
+        $route->post('reply/{id}', 'reply')->name('reply');
     });
     $route->controller(FilterController::class)->name('filters.')->prefix('filters')->group(function ($route) {
         $route->get('', 'index')->name('index');
@@ -214,7 +217,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
         $route->get('edit/{id}', 'edit')->name('edit');
         $route->put('update/{id}', 'update')->name('update');
         $route->delete('destroy/{id}', 'destroy')->name('destroy');
-        $route->get('features/{id}','getFeaturesByPlan')->name('features');
+        $route->get('features/{id}', 'getFeaturesByPlan')->name('features');
     });
     $route->controller(FeatureController::class)->name('features.')->prefix('features')->group(function ($route) {
         $route->get('', 'index')->name('index');
@@ -223,7 +226,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
         $route->get('edit/{id}', 'edit')->name('edit');
         $route->put('update/{id}', 'update')->name('update');
         $route->delete('destroy/{id}', 'destroy')->name('destroy');
-        $route->get('features/{id}','getFeaturesByPlan')->name('features');
+        $route->get('features/{id}', 'getFeaturesByPlan')->name('features');
     });
     $route->controller(FaqController::class)->name('faqs.')->prefix('faqs')->group(function ($route) {
         $route->get('', 'index')->name('index');
@@ -242,6 +245,8 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
         $route->put('update-privacy-policy', 'updatePrivacyPolicy')->name('updatePrivacyPolicy');
         $route->get('terms', 'terms')->name('terms');
         $route->put('update-terms', 'updateTerms')->name('updateTerms');
-
     });
+
+    Route::resource('currencies', CurrencyController::class);
+    Route::post('categories/update-popular-status', [CategoryController::class, 'updatePopularStatus'])->name('categories.updatePopularStatus');
 });

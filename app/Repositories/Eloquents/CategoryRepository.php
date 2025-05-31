@@ -86,4 +86,12 @@ class CategoryRepository implements CategoryRepositoryInterface
         $category->update(['is_active' => !$category->is_active]);
         return $category->fresh();
     }
+    public function updatePopularStatus(int $id)
+    {
+        $category = Category::findOrFail($id);
+        $category->is_popular = !$category->is_popular;
+        $category->save();
+
+        return $category;
+    }
 }

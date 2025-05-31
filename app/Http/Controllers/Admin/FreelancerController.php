@@ -10,6 +10,7 @@ use App\Services\FreelancerService;
 use App\Services\ProfessionService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\FreelancerRequest;
+use App\Models\Freelancer;
 use App\Services\CategoryService;
 
 class FreelancerController extends Controller
@@ -20,7 +21,7 @@ class FreelancerController extends Controller
     protected $languageService;
     protected $categoryService;
 
-    public function __construct(FreelancerService $freelancerService, ProfessionService $professionService, CountryService $countryService, LanguageService $languageService,CategoryService $categoryService)
+    public function __construct(FreelancerService $freelancerService, ProfessionService $professionService, CountryService $countryService, LanguageService $languageService, CategoryService $categoryService)
     {
         $this->freelancerService = $freelancerService;
         $this->professionService = $professionService;
@@ -35,7 +36,7 @@ class FreelancerController extends Controller
         $freelancers = $this->freelancerService->index($params);
         $professions = $this->professionService->getAllActive();
         $countries = $this->countryService->getAllActive();
-        return view('pages.freelancers.index', compact('freelancers','professions', 'countries'));
+        return view('pages.freelancers.index', compact('freelancers', 'professions', 'countries'));
     }
     public function create()
     {
@@ -43,7 +44,7 @@ class FreelancerController extends Controller
         $countries = $this->countryService->getAllActive();
         $languages = $this->languageService->getAllActive();
         $categories = $this->categoryService->getAllActive();
-        return view('pages.freelancers.create', compact('professions', 'countries', 'languages','categories'));
+        return view('pages.freelancers.create', compact('professions', 'countries', 'languages', 'categories'));
     }
     public function store(FreelancerRequest $request)
     {
@@ -71,7 +72,15 @@ class FreelancerController extends Controller
             return $this->ErrorResponse($e->getMessage());
         }
     }
-
+    public function updateVerification(Request $request)
+    {
+        try {
+            $freelancer = $this->freelancerService->updateVerification($request->id);
+            return $this->successResponse('success');
+        } catch (Exception $e) {
+            return $this->ErrorResponse($e->getMessage());
+        }
+    }
     public function show($id)
     {
         $freelancer = $this->freelancerService->find($id);

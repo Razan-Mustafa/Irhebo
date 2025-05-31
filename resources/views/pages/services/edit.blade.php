@@ -39,7 +39,8 @@
                             <h5 class="box-title">{{ __('edit_service') }}</h5>
                         </div>
                         <div class="box-body">
-                            <form action="{{ route('services.update',$service->id) }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('services.update', $service->id) }}" method="POST"
+                                enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 @php
@@ -97,6 +98,18 @@
                                         <textarea name="description" rows="3"
                                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">{{ $service->translation->description }}</textarea>
                                     </div>
+                                    <div class="col-span-12">
+                                        <select name="currency_id" id="currency-filter" class="form-control" required>
+                                            <option value="">{{ __('select_currency') }}</option>
+                                            @foreach ($currencies as $currency)
+                                                <option value="{{ $currency->id }}"
+                                                    {{ $service->currency_id == $currency->id ? 'selected' : '' }}>
+                                                    {{ $currency->name }} ({{ $currency->symbol }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
                                 </div>
                                 <div class="old-plans plans-wrapper">
                                     @foreach ($servicePlans as $index => $servicePlan)
@@ -164,7 +177,7 @@
                                     @endforeach
                                 </div>
 
-                             
+
 
                                 <div class="mt-3 text-end">
                                     <button type="button" class="add-plan bg-primary px-4 py-2 rounded-md text-white">
@@ -242,7 +255,7 @@
                     },
                     success: function(response) {
                         let options = '<option value="">{{ __('select_subcategory') }}</option>';
-                        let selectedSubcategoryId = "{{ $service->id }}";
+                        let selectedSubcategoryId = "{{ $service->sub_category_id }}";
                         response.data.forEach(sub => {
                             let selected = sub.id == selectedSubcategoryId ? 'selected' : '';
                             options +=
@@ -256,29 +269,31 @@
                     }
                 });
             }
+
             // Add New Feature
             $(document).on('click', '.add-feature', function() {
                 const planItem = $(this).closest('.plan-item');
                 const planIndex = $('.plan-item').index(planItem);
                 const featureCount = planItem.find('.feature-item').length;
+
                 const featureHTML = `
-                <div class="feature-item grid grid-cols-12 gap-4 mt-3">
-                    <div class="col-span-3">
-                        <input type="text" name="plans[${planIndex}][features][${featureCount}][title]" placeholder="{{ __('Title') }}" class="form-control w-full" />
-                    </div>
-                    <div class="col-span-3">
-                        <input type="text" name="plans[${planIndex}][features][${featureCount}][value]" placeholder="{{ __('Value') }}" class="form-control w-full" />
-                    </div>
-                  <input type="hidden" name="plans[${planIndex}][features][${featureCount}][type]" value="additional"/>
-                    <div class="col-span-3 flex items-center">
-                        <button type="button" class="remove-feature bg-red-500 text-white px-3 py-2 rounded-md">
-                            <i class="ti ti-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
+    <div class="feature-item grid grid-cols-12 gap-4 mt-3">
+        <div class="col-span-5">
+            <input type="text" name="plans[${planIndex}][features][${featureCount}][title]" placeholder="{{ __('Title') }}" class="form-control w-full" />
+        </div>
+        <div class="col-span-5">
+            <input type="text" name="plans[${planIndex}][features][${featureCount}][value]" placeholder="{{ __('Value') }}" class="form-control w-full" />
+        </div>
+        <input type="hidden" name="plans[${planIndex}][features][${featureCount}][type]" value="additional"/>
+        <div class="col-span-2 flex items-center">
+            <button type="button" class="remove-feature bg-red-500 text-white px-3 py-2 rounded-md">
+                <i class="ti ti-trash"></i>
+            </button>
+        </div>
+    </div>`;
                 planItem.find('.features-wrapper').append(featureHTML);
             });
+
             // Remove Feature
             $(document).on('click', '.remove-feature', function() {
                 $(this).closest('.feature-item').remove();

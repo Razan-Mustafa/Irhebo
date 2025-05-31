@@ -93,4 +93,15 @@ class CategoryService
             throw $e;
         }
     }
+
+    public function updatePopularStatus($id)
+    {
+        try {
+            $category = $this->categoryRepository->updatePopularStatus($id);
+            return $category;
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
+    
 }

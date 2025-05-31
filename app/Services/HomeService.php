@@ -57,7 +57,7 @@ class HomeService
     public function getHomeFreelancerData(){
         $userId = Auth::id();
         return [
-            'requests' => RequestResource::collection($this->requestService->getByUser($perPage = 3)['data']),
+            'requests' => RequestResource::collection($this->requestService->getByFreelancer()['data']),
             'services'=> ServiceResource::collection($this->serviceService->getServicesByUserId($userId,$perPage = 3)['data']),
             'portfolios'=>PortfolioResource::collection($this->portfolioService->getPortfolioByUserId($userId,$perPage = 3)['data']),
             'quotations' => QuotationResource::collection($this->quotationService->getAllQuotations($perPage = 10)['data'])

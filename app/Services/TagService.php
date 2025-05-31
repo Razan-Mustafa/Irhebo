@@ -31,7 +31,7 @@ class TagService
         $slug = Str::slug($data['translations']['en']['title']);
 
         if (Tag::where('slug', $slug)->exists()) {
-            throw new \Exception(__('Slug already exists. Please use a different title.'));
+            throw new \Exception(__('duplicate_slug'));
         }
 
         $data['slug'] = $slug;

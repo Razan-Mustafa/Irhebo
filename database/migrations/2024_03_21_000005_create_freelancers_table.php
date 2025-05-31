@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->longText('bio');
+            $table->text('file')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->softDeletes();
             $table->timestamps();

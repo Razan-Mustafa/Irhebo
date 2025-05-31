@@ -64,11 +64,11 @@ class FreelancerRepository implements FreelancerRepositoryInterface
                     'country_id' => $data['country_id'] ?? null,
                     'password' => Hash::make($data['password']),
                     'avatar' => isset($data['avatar']) ? FileManager::upload('users', $data['avatar']) : null,
-                    'verified_at'=>Auth::guard('admin')->check() ? now() : ''
+                    'verified_at' => Auth::guard('admin')->check() ? now() : ''
                 ]);
                 Freelancer::create([
                     'user_id' => $user->id,
-                    'status' => Auth::guard('admin')->check() ? FreelancerStatusEnum::VERIFIED->value : FreelancerStatusEnum::UNVERIFIED->value,
+                    // 'status' => Auth::guard('admin')->check() ? FreelancerStatusEnum::VERIFIED->value : FreelancerStatusEnum::UNVERIFIED->value,
                     'bio' => $data['bio'] ?? null,
                 ]);
                 if (!empty($data['languages'])) {
@@ -125,6 +125,15 @@ class FreelancerRepository implements FreelancerRepositoryInterface
         $client->save();
         return $client;
     }
+
+    public function updateVerification($id)
+    {
+        $freelancer = Freelancer::findOrFail($id);
+        $freelancer->status = $freelancer->status == 'verified' ? 'unverified' : 'verified';
+        $freelancer->save();
+
+        return $freelancer;
+    }
     public function getUserProfile($id)
     {
         return $this->model->with('freelancer', 'languages.language', 'profession', 'country', 'certificates')->find($id);
@@ -141,7 +150,7 @@ class FreelancerRepository implements FreelancerRepositoryInterface
         if (!$user->freelancer) {
             $user->freelancer()->create([
                 'bio' => $data['bio'] ?? '',
-                'status' => 'pending',
+                'status' => 'unverified',
             ]);
         }
         if (!empty($data['category_ids'])) {

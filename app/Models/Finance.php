@@ -9,7 +9,8 @@ class Finance extends Model
     protected $fillable = [
         'request_id',
         'amount',
-        'tax',
+        'fees',
+        'commission',
         'discount',
         'total',
         'payment_status',

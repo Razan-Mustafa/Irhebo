@@ -15,6 +15,7 @@ class QuotationRequest extends FormRequest
     {
         return [
             'category_id'=>'required',
+            'currency'=>'required',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric',

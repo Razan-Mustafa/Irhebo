@@ -27,7 +27,9 @@ class GeneralController extends Controller
             'platform_description_ar',
             'platform_logo',
             'tax',
-            'comission'
+            'comission',
+            'fees',
+            'commission',
         ])->get();
 
         $currencies = Currency::all();

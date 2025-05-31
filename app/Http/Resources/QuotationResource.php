@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use App\Utilities\CurrencyConverter;
+use App\Models\Currency;
 
 class QuotationResource extends JsonResource
 {
@@ -16,11 +18,20 @@ class QuotationResource extends JsonResource
             ->where('quotation_id', $this->id)
             ->exists();
 
+
+        $currencyCode = $request->header('currency', 'USD');
+        $currencyModel = Currency::where('code', strtoupper($currencyCode))->first();
+        $symbol = $currencyModel ? $currencyModel->symbol : '$';
+        $convertedPrice = $this->price
+            ? CurrencyConverter::convert($this->price, 'USD', $currencyCode)
+            : null;
+
         return [
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'price' => $this->price,
+            'price' => $convertedPrice ? number_format($convertedPrice, 2) . $symbol  : null,
+
             'delivery_day' => $this->delivery_day,
             'revisions' => $this->revisions,
             'source_file' => (bool) $this->source_file,

@@ -38,7 +38,7 @@
                         <div class="box-body">
                             <form action="{{ route('tags.store') }}" method="POST">
                                 @csrf
-                                <div class="grid grid-cols-12 gap-4">
+                                <div class="grid grid-cols-12 gap-6">
                                     <!-- Multi-Category Selection -->
                                     <div class="col-span-12 md:col-span-6">
                                         <label class="block text-sm font-medium text-gray-700">
@@ -74,7 +74,7 @@
 
 
                                     <!-- English Title -->
-                                    <div class="col-span-12 md:col-span-4">
+                                    <div class="col-span-12 md:col-span-6">
                                         <label class="block text-sm font-medium text-gray-700">
                                             {{ __('tag_title_en') }}
                                         </label>
@@ -87,7 +87,7 @@
                                     </div>
 
                                     <!-- Arabic Title -->
-                                    <div class="col-span-12 md:col-span-4">
+                                    <div class="col-span-12 md:col-span-6">
                                         <label class="block text-sm font-medium text-gray-700">
                                             {{ __('tag_title_ar') }}
                                         </label>
@@ -131,7 +131,7 @@
                     url: "{{ url('sub-categories/sub-categories-by-category-ids') }}",
                     type: "GET",
                     data: { category_ids: categoryIds },
-                    
+
                     success: function(response) {
                         let options = '';
                         let selectedSubcategoryIds = {!! json_encode(old('sub_category_id', request('sub_category_id', []))) !!};

@@ -70,10 +70,10 @@
                                                 </td>
                                                 <td>{{ $finance->request->user->username }}</td>
                                                 <td>{{ $finance->request->service->user->username }}</td>
-                                                <td>{{ number_format($finance->total, 0) }}</td>
+                                                <td>{{ number_format($finance->total, 2) }}</td>
                                                 <td>{!! \App\Enums\PaymentStatusEnum::tryFrom($finance->payment_status)?->badge() !!}</td>
                                                 <td>{{ $finance->paid_at ?? '-'}}</td>
-                                               
+
                                             </tr>
                                         @endforeach
                                     </tbody>

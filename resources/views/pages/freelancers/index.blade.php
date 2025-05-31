@@ -112,6 +112,8 @@
                                         <th>{{ __('phone') }}</th>
                                         <th>{{ __('profession') }}</th>
                                         <th>{{ __('country') }}</th>
+                                        <th>{{ __('file') }}</th>
+                                        <th>{{ __('verified') }}</th>
                                         <th>{{ __('account_status') }}</th>
                                         <th>{{ __('actions') }}</th>
                                     </tr>
@@ -122,8 +124,8 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>
                                                 @if ($freelancer->avatar)
-                                                    <img  class="rounded-full w-16 h-16" src="{{ asset($freelancer->avatar) }}"
-                                                        alt="">
+                                                    <img class="rounded-full w-16 h-16"
+                                                        src="{{ asset($freelancer->avatar) }}" alt="">
                                                 @endif
                                             </td>
                                             <td>{{ $freelancer->username }}</td>
@@ -132,6 +134,26 @@
                                             <td>{{ $freelancer->profession->translation->title }}</td>
                                             <td>{{ $freelancer->country->title }}</td>
                                             <td>
+                                                @if ($freelancer->freelancer && $freelancer->freelancer->file)
+                                                    <a href="{{ asset($freelancer->freelancer->file) }}"
+                                                        target="_blank">
+                                                        Open File
+                                                    </a>
+                                                @else
+                                                    No File
+                                                @endif
+                                            </td>
+
+                                            <td>
+                                                <div class="flex items-center justify-center">
+                                                    <input type="checkbox"
+                                                        class="ti-switch verification shrink-0 !w-11 !h-6 before:size-5 verify-switch"
+                                                        data-item-id="{{ $freelancer->freelancer->id }}"
+                                                        data-route="{{ route('freelancers.updateVerification') }}"
+                                                        {{ $freelancer->freelancer->status == 'verified' ? 'checked' : '' }}>
+                                                </div>
+                                            </td>
+                                                                                        <td>
                                                 <div class="flex items-center justify-center">
                                                     <input type="checkbox" id="hs-small-switch-{{ $freelancer->id }}"
                                                         class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
@@ -224,4 +246,23 @@
             });
         });
     </script>
+    {{-- <script>
+        $('.verification').on('change', function() {
+            var freelancerId = $(this).data('item-id');
+            var statusValue = $(this).is(':checked') ? 'verified' : 'unverified';
+
+            $.ajax({
+                url: $(this).data('route'),
+                method: 'POST',
+                data: {
+                    id: freelancerId,
+                    status: statusValue,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    console.log('Verification status updated');
+                }
+            });
+        });
+    </script> --}}
 @endpush

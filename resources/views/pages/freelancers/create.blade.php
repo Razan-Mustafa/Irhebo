@@ -50,12 +50,17 @@
                                         class="mt-1 block w-full rounded-lg  border-gray-300">
                                 </div>
 
-                                <div class="col-span-12 md:col-span-6">
-                                    <label for="prefix" class="block text-sm font-medium">{{ __('prefix') }}</label>
-                                    <input type="text" name="prefix" id="prefix"
-                                        class="mt-1 block w-full rounded-lg  border-gray-300">
-                                </div>
 
+                                <div class="col-span-12 md:col-span-6">
+                                    <label for="prefix" class="block text-sm font-medium mb-2">{{ __('prefix') }}</label>
+                                    <select name="prefix" id="prefix"
+                                        class="mt-1 block w-full rounded-lg  border-gray-300">
+                                        @foreach ($countries as $country)
+                                            <option value="{{ $country['phone_code'] }}">{{ $country['phone_code'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                                 <div class="col-span-12 md:col-span-6">
                                     <label for="phone" class="block text-sm font-medium">{{ __('phone') }}</label>
                                     <input type="text" name="phone" id="phone"
@@ -129,7 +134,8 @@
                                     <label for="categories"
                                         class="block text-sm font-medium mb-2">{{ __('categories') }}</label>
                                     <select name="category_ids[]" id="categories"
-                                        class="js-example-basic-multiple mt-1 block w-full rounded-lg border-gray-300" multiple>
+                                        class="js-example-basic-multiple mt-1 block w-full rounded-lg border-gray-300"
+                                        multiple>
                                         <option value="" selected disabled>{{ __('select_categories') }}</option>
                                         @foreach ($categories as $category)
                                             <option value="{{ $category->id }}">{{ $category->translation->title }}

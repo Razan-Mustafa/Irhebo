@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Currency extends Model
 {
-    protected $fillable = ['code', 'name', 'symbol', 'exchange_rate'];
+    protected $fillable = ['code', 'name', 'symbol_en','symbol_ar', 'exchange_rate'];
     public static function getRate($from, $to)
     {
         if ($from === $to) {
@@ -18,7 +18,7 @@ class Currency extends Model
         $toCurrency = self::where('code', strtoupper($to))->first();
 
         if (!$fromCurrency || !$toCurrency) {
-            return 1; 
+            return 1;
         }
 
         return $toCurrency->exchange_rate / $fromCurrency->exchange_rate;
@@ -30,7 +30,7 @@ class Currency extends Model
     }
     public function getSymbolAttribute()
     {
-        $locale = App::getLocale(); 
+        $locale = App::getLocale();
 
         return $locale === 'ar' ? $this->symbol_ar : $this->symbol_en;
     }

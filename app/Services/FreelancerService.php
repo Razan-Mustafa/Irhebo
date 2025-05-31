@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Freelancer;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Interfaces\FreelancerRepositoryInterface;
@@ -47,7 +48,14 @@ class FreelancerService
             throw $e;
         }
     }
-
+    public function updateVerification($id)
+    {
+        try {
+            return $this->freelancerRepository->updateVerification($id);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
     public function find($id)
     {
         return $this->freelancerRepository->find($id);

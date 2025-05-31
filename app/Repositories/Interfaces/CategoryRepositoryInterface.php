@@ -11,4 +11,6 @@ interface CategoryRepositoryInterface
     public function update($id, $data);
     public function delete($id);
     public function updateActivation(int $id);
+    public function updatePopularStatus(int $id);
+
 }

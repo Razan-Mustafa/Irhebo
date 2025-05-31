@@ -19,6 +19,7 @@ use App\Http\Resources\PortfolioResource;
 use App\Http\Resources\FreelancerResource;
 use App\Http\Requests\Api\UpdateProfileRequest;
 use App\Http\Requests\Api\BecomeFreelancerRequest;
+use App\Models\Freelancer;
 
 class UserController extends Controller
 {
@@ -60,7 +61,7 @@ class UserController extends Controller
             $user = $this->freelancerService->getUserProfile($userId);
             $reviews = $this->reviewService->getReviewsByUser($userId);
             $portfolio = $this->portfolioService->getPortfolioByUserId($userId);
-            $services = $this->serviceService->getServicesByUserId($userId,$perPage = 10);
+            $services = $this->serviceService->getServicesByUserId($userId, $perPage = 10);
 
             return $this->successResponse(
                 __('user_profile_retrieved'),
@@ -181,5 +182,30 @@ class UserController extends Controller
         } catch (Exception $e) {
             return $this->exceptionResponse($e);
         }
+    }
+
+
+    public function uploadFileVerification(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:pdf,doc,docx,jpg,jpeg,png,gif,webp,svg|max:2048'
+        ]);
+
+        $user = auth()->user();
+
+        // get or create freelancer record for this user
+        $freelancer = Freelancer::where('user_id', $user->id)->first();
+
+        // upload file
+        if ($request->hasFile('file')) {
+            $file = $request->file;
+            $filePath = $this->uploadFiles($file, 'freelancer');
+
+            $freelancer->file = $filePath;
+        }
+        $freelancer->save();
+
+
+        return $this->successResponse(__('file_uploaded_successfully'));
     }
 }

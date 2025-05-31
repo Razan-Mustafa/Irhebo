@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('finances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('request_id')->constrained()->onDelete('cascade'); 
-            $table->decimal('amount', 10, 2); 
-            $table->decimal('tax', 10, 2)->default(0.00); 
-            $table->decimal('discount', 10, 2)->default(0.00); 
-            $table->decimal('total', 10, 2); 
+            $table->foreignId('request_id')->constrained()->onDelete('cascade');
+            $table->decimal('amount', 10, 2);
+            $table->decimal('fees', 10, 2)->default(0.00);
+            $table->decimal('commission', 10, 2)->default(0.00);
+            $table->decimal('discount', 10, 2)->default(0.00);
+            $table->decimal('total', 10, 2);
             $table->enum('payment_status', ['unpaid','paid', 'failed'])->default('unpaid');
             $table->enum('payment_method', ['cash', 'credit_card', 'bank_transfer', 'stripe'])->nullable();
-            $table->timestamp('paid_at')->nullable(); 
+            $table->timestamp('paid_at')->nullable();
             $table->timestamps();
         });
     }

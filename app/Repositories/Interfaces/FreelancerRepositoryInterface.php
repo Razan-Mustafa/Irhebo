@@ -8,6 +8,7 @@ interface FreelancerRepositoryInterface
     public function store(array $data);
     public function delete($id);
     public function updateActivation($id);
+    public function updateVerification($id);
     public function find($id);
     public function completeProfile(array $data);
     public function getUserProfile($id);

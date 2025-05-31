@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\{
     CategoryController,
     ChatController,
     CheckoutController,
+    CurrencyController,
     FaqController,
     PortfolioController,
     QuotationController,
@@ -23,7 +24,7 @@ use App\Http\Controllers\Api\{
     TagController,
     TicketController,
 };
-
+use App\Http\Middleware\CurrencyMiddleware;
 
 // Auth Routes
 Route::controller(AuthController::class)->group(function ($route) {
@@ -82,6 +83,9 @@ Route::prefix('services')->controller(ServiceController::class)->group(function 
 Route::prefix('notifications')->controller(NotificationController::class)->group(function ($route) {
     $route->get('', 'getNotifications');
 });
+Route::prefix('currencies')->controller(CurrencyController::class)->group(function ($route) {
+    $route->get('', 'index');
+});
 Route::prefix('faqs')->controller(FaqController::class)->group(function($route){
     $route->get('','index');
 });
@@ -99,6 +103,7 @@ Route::middleware('auth:api')->group(function () {
     });
     Route::prefix('users')->controller(UserController::class)->group(function ($route) {
         $route->post('complete-profile', 'completeProfile');
+        $route->post('verify', 'uploadFileVerification');
         $route->get('client-profile', 'getClientProfile');
         $route->get('freelancer-profile', 'getFreelancerProfile');
         $route->post('update-profile', 'updateProfile');

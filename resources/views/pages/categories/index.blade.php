@@ -60,7 +60,7 @@
                                         <th>{{ __('icon') }}</th>
                                         <th>{{ __('title') }}</th>
                                         <th>{{ __('status') }}</th>
-
+                                        <th>{{ __('is_popular') }}</th>
                                         <th>{{ __('actions') }}</th>
                                     </tr>
                                 </thead>
@@ -82,6 +82,16 @@
                                                         {{ $category->is_active ? 'checked' : '' }}>
                                                 </div>
                                             </td>
+                                            <td>
+                                                <div class="flex items-center justify-center">
+                                                    <input type="checkbox" id="popular-switch-{{ $category->id }}"
+                                                        class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                        data-item-id="{{ $category->id }}"
+                                                        data-route="{{ route('categories.updatePopularStatus') }}"
+                                                        {{ $category->is_popular ? 'checked' : '' }}>
+                                                </div>
+                                            </td>
+
                                             <td>
                                                 <a aria-label="anchor"
                                                     href="{{ route('subCategories.index', ['category_id' => $category->id]) }}"
@@ -130,4 +140,5 @@
             $('#basic-table').DataTable();
         });
     </script>
+
 @endpush

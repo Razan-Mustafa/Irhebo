@@ -8,6 +8,7 @@ use App\Services\TagService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\TagRequest;
 use App\Http\Requests\Admin\UpdateTagRequest;
+use App\Models\Tag;
 use Illuminate\Support\Facades\Log;
 
 class TagController extends Controller
@@ -23,7 +24,15 @@ class TagController extends Controller
     {
         $categories = Category::get();
         $params = request()->all();
-        $tags = $this->tagService->getAllTags($params);
+        // $tags = $this->tagService->getAllTags($params);
+        // dd($categories,$params,$tags);
+
+        if (empty($params)) {
+            $tags = Tag::with(['translation', 'subCategory.translation'])->get();
+        } else {
+            $tags = $this->tagService->getAllTags($params);
+        }
+
         return view('pages.tags.index', compact('tags', 'categories'));
     }
 
@@ -40,8 +49,7 @@ class TagController extends Controller
             return redirect()->route('tags.index')
                 ->with('success', __('tag_created_successfully'));
         } catch (\Exception $e) {
-            Log::error($e);
-            return back()->with('error', __('something_went_wrong'))->withInput();
+            return back()->with('error', $e->getMessage())->withInput();
         }
     }
 
@@ -78,7 +86,7 @@ class TagController extends Controller
             return redirect()->route('tags.index')
                 ->with('success', __('tag_deleted_successfully'));
         } catch (\Exception $e) {
-            return back()->with('error_message',$e->getMessage());
+            return back()->with('error_message', $e->getMessage());
         }
     }
 }

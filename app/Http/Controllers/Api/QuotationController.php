@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -9,6 +10,8 @@ use App\Http\Resources\QuotationResource;
 use App\Services\QuotationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Utilities\CurrencyConverter;
+use App\Models\Currency;
 
 class QuotationController extends Controller
 {
@@ -48,16 +51,24 @@ class QuotationController extends Controller
     }
     public function createQuotation(QuotationRequest $request): JsonResponse
     {
+        $currencyCode = $request->currency;
+        $currencyModel = Currency::where('code', strtoupper($currencyCode))->first();
+        $symbol = $currencyModel ? $currencyModel->symbol : '$';
+
         $userId = Auth::id();
         if (!$userId) {
             return $this->errorResponse(__('unauthorized'));
         }
         $data = array_merge($request->validated(), ['user_id' => $userId]);
+        $data['price'] = $data['price']
+            ? CurrencyConverter::convert($data['price'], $currencyCode, 'USD')
+            : null;
+        // dd($data , $data['price']);
         $quotation = $this->quotationService->store($data);
         return $this->successResponse(__('success'), new QuotationResource($quotation));
     }
 
-   
+
 
     public function findById(int $id): JsonResponse
     {
@@ -69,30 +80,29 @@ class QuotationController extends Controller
         }
     }
 
-       public function createComment(QuotationCommentRequest $request): JsonResponse
-       {
-           $userId = Auth::id();
+    public function createComment(QuotationCommentRequest $request): JsonResponse
+    {
+        $userId = Auth::id();
 
-           if (!$userId) {
+        if (!$userId) {
             return $this->errorResponse(__('unauthorized'));
         }
 
-           $data = array_merge($request->validated(), ['user_id' => $userId]);
+        $data = array_merge($request->validated(), ['user_id' => $userId]);
 
-           $comment = $this->quotationService->createQuotationComment($data);
+        $comment = $this->quotationService->createQuotationComment($data);
 
-           return $this->successResponse(__('success'), new QuotationCommentResource($comment));
-       }
+        return $this->successResponse(__('success'), new QuotationCommentResource($comment));
+    }
 
-       public function getCommentsByQuotationId(int $quotationId): JsonResponse
-       {
-           try {
+    public function getCommentsByQuotationId(int $quotationId): JsonResponse
+    {
+        try {
             $perPage = request()->query('per_page');
             $comments = $this->quotationService->getCommentsByQuotationId($quotationId, $perPage);
-            return $this->successResponse(__('quotations_comments_retrieved_successfully'),QuotationCommentResource::collection($comments));
+            return $this->successResponse(__('quotations_comments_retrieved_successfully'), QuotationCommentResource::collection($comments));
         } catch (\Exception $e) {
             return $this->exceptionResponse($e, __('failed_to_retrieve_quotations_comments'));
         }
-       }
-
+    }
 }

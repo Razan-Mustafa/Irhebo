@@ -58,7 +58,7 @@
                                 @endforeach
                             </div>
 
-                            <div class="grid grid-cols-12 gap-6">
+                            {{-- <div class="grid grid-cols-12 gap-6">
                                 <h5 class="col-span-12 text-lg font-semibold mt-3">{{ __('currencies') }}</h5>
 
                                 @foreach ($currencies as $currency)
@@ -72,7 +72,7 @@
                                             value="{{ old('currencies.' . $currency->code . '.exchange_rate', $currency->exchange_rate) }}">
                                     </div>
                                 @endforeach
-                            </div>
+                            </div> --}}
 
 
                             <div class="mt-4 flex justify-center">

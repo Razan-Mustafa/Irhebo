@@ -29,6 +29,7 @@ class UpdateServiceRequest extends FormRequest
             'plans' => ['required', 'array'],
             'plans.*.plan_id' => ['required', 'integer'],
             'plans.*.features' => ['required', 'array'],
+            'currency_id' => 'required|exists:currencies,id',
 
             'plans.*.features.*.title' => ['required', 'string'],
             'plans.*.features.*.value' => 'required',
@@ -38,9 +39,8 @@ class UpdateServiceRequest extends FormRequest
             'tags.*' => 'nullable',
 
             'cover' => 'nullable',
-            'media' => 'nullable',
-            'array',
-            'media.*' => 'nullable',
+            'media' => ['nullable', 'array'],
+            'media.*' => ['nullable'],
         ];
     }
 }

@@ -86,4 +86,13 @@ class CategoryController extends Controller
         }
     }
 
+    public function updatePopularStatus(Request $request)
+    {
+        try {
+            $category = $this->categoryService->updatePopularStatus($request->id);
+            return $this->successResponse(__('status_updated_successfully'));
+        } catch (Exception $e) {
+            return $this->ErrorResponse($e->getMessage());
+        }
+    }
 }
