@@ -99,6 +99,8 @@
                                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">{{ $service->translation->description }}</textarea>
                                     </div>
                                     <div class="col-span-12">
+                                        <label
+                                            class="block text-sm font-medium text-gray-700">{{ __('select_currency') }}</label>
                                         <select name="currency_id" id="currency-filter" class="form-control" required>
                                             <option value="">{{ __('select_currency') }}</option>
                                             @foreach ($currencies as $currency)
@@ -140,39 +142,56 @@
                                             <div class="features-wrapper mt-5">
                                                 @foreach ($servicePlan->features as $fIndex => $feature)
                                                     <div class="feature-item grid grid-cols-12 gap-4 mt-3">
-                                                        <div class="col-span-5">
-                                                            <input type="text"
-                                                                name="plans[{{ $index }}][features][{{ $fIndex }}][title]"
-                                                                value="{{ $feature->translation->title ?? '' }}"
-                                                                placeholder="{{ __('Title') }}"
-                                                                class="form-control w-full" />
-                                                        </div>
-                                                        <div class="col-span-5">
-                                                            <input type="text"
-                                                                name="plans[{{ $index }}][features][{{ $fIndex }}][value]"
-                                                                value="{{ $feature->value }}"
-                                                                placeholder="{{ __('Value') }}"
-                                                                class="form-control w-full" />
-                                                        </div>
+                                                        @if ($feature->type == 'source_files')
+                                                            <div class="col-span-5">
+                                                                <input type="text"
+                                                                    name="plans[{{ $index }}][features][{{ $fIndex }}][title]"
+                                                                    value="{{ $feature->translation->title ?? __('source_files') }}"
+                                                                    readonly
+                                                                    class="form-input w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px] bg-gray-100" />
+                                                            </div>
+                                                            <div class="col-span-5">
+                                                                <select
+                                                                    id="source_file_{{ $index }}_{{ $fIndex }}"
+                                                                    name="plans[{{ $index }}][features][{{ $fIndex }}][value]"
+                                                                    class="form-select w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px]">
+                                                                    <option value="0"
+                                                                        {{ $feature->value == 0 ? 'selected' : '' }}>
+                                                                        {{ __('without_source_files') }}</option>
+                                                                    <option value="1"
+                                                                        {{ $feature->value == 1 ? 'selected' : '' }}>
+                                                                        {{ __('with_source_files') }}</option>
+                                                                </select>
+                                                            </div>
+                                                            <input type="hidden"
+                                                                name="plans[{{ $index }}][features][{{ $fIndex }}][type]"
+                                                                value="{{ $feature->type }}" />
+                                                        @else
+                                                            <div class="col-span-5">
+                                                                <input type="text"
+                                                                    name="plans[{{ $index }}][features][{{ $fIndex }}][title]"
+                                                                    value="{{ $feature->translation->title ?? '' }}"
+                                                                    placeholder="{{ __('Title') }}"
+                                                                    class="form-control w-full" />
+                                                            </div>
+                                                            <div class="col-span-5">
+                                                                <input type="number"
+                                                                    name="plans[{{ $index }}][features][{{ $fIndex }}][value]"
+                                                                    value="{{ $feature->value }}"
+                                                                    placeholder="{{ __('Value') }}"
+                                                                    class="form-control w-full" />
+                                                            </div>
+                                                        @endif
+
                                                         <input type="hidden"
                                                             name="plans[{{ $index }}][features][{{ $fIndex }}][type]"
                                                             value="{{ $feature->type }}" />
-                                                        <div class="col-span-2 flex items-center">
-                                                            <button type="button"
-                                                                class="remove-feature bg-red-500 text-white px-3 py-2 rounded-md">
-                                                                <i class="ti ti-trash"></i>
-                                                            </button>
-                                                        </div>
                                                     </div>
                                                 @endforeach
+
                                             </div>
 
-                                            <div class="text-right mt-3">
-                                                <button type="button"
-                                                    class="add-feature bg-secondary text-white px-3 py-2 rounded-md">
-                                                    <i class="ti ti-plus"></i> {{ __('Add Feature') }}
-                                                </button>
-                                            </div>
+
                                         </div>
                                     @endforeach
                                 </div>
@@ -186,7 +205,18 @@
                                 </div>
 
                                 <!-- Tags -->
+                                <!-- Tags -->
                                 <div class="grid grid-cols-12 gap-4 mt-4">
+                                    <div class="col-span-12">
+                                        <label class="block text-sm font-medium text-gray-700">{{ __('tags') }}</label>
+                                        <select name="tags[]" id="tags"
+                                            class="js-example-basic-multiple mt-1 block w-full rounded-lg border-gray-300"
+                                            multiple>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {{-- <div class="grid grid-cols-12 gap-4 mt-4">
                                     <div class="col-span-12">
                                         <label class="block text-sm font-medium text-gray-700">{{ __('tags') }}</label>
                                         <select name="tags[]" id="tags"
@@ -198,7 +228,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <!-- Media Uploads -->
                                 <div class="grid grid-cols-12 gap-4 mt-4">
                                     <div class="col-span-12 md:col-span-6">
@@ -269,30 +299,44 @@
                     }
                 });
             }
+            const selectedTags = @json($selectedTags);
+            const subCategoryId = "{{ $service->sub_category_id }}";
+
+            function fetchTags(subCategoryId, selectedTags = []) {
+                $.ajax({
+                    url: "{{ url('/api/v1/tags') }}",
+                    type: "GET",
+                    data: {
+                        subcategory_id: subCategoryId
+                    },
+                    success: function(response) {
+                        if (response.status) {
+                            let options = '<option value="">{{ __('select_tags') }}</option>';
+                            response.data.forEach(tag => {
+                                const isSelected = selectedTags.includes(tag.id) ? 'selected' :
+                                    '';
+                                options +=
+                                    `<option value="${tag.id}" ${isSelected}>${tag.translation.title}</option>`;
+                            });
+                            $('#tags').html(options);
+                        } else {
+                            $('#tags').html('<option value="">{{ __('no_tags_found') }}</option>');
+                        }
+                    },
+                    error: function() {
+                        $('#tags').html('<option value="">{{ __('no_tags_found') }}</option>');
+                    }
+                });
+            }
+
+            $(document).ready(function() {
+                if (subCategoryId) {
+                    fetchTags(subCategoryId, selectedTags);
+                }
+            });
+
 
             // Add New Feature
-            $(document).on('click', '.add-feature', function() {
-                const planItem = $(this).closest('.plan-item');
-                const planIndex = $('.plan-item').index(planItem);
-                const featureCount = planItem.find('.feature-item').length;
-
-                const featureHTML = `
-    <div class="feature-item grid grid-cols-12 gap-4 mt-3">
-        <div class="col-span-5">
-            <input type="text" name="plans[${planIndex}][features][${featureCount}][title]" placeholder="{{ __('Title') }}" class="form-control w-full" />
-        </div>
-        <div class="col-span-5">
-            <input type="text" name="plans[${planIndex}][features][${featureCount}][value]" placeholder="{{ __('Value') }}" class="form-control w-full" />
-        </div>
-        <input type="hidden" name="plans[${planIndex}][features][${featureCount}][type]" value="additional"/>
-        <div class="col-span-2 flex items-center">
-            <button type="button" class="remove-feature bg-red-500 text-white px-3 py-2 rounded-md">
-                <i class="ti ti-trash"></i>
-            </button>
-        </div>
-    </div>`;
-                planItem.find('.features-wrapper').append(featureHTML);
-            });
 
             // Remove Feature
             $(document).on('click', '.remove-feature', function() {
@@ -307,36 +351,32 @@
 
 
                 const newPlanHTML = `
-                <div class="plan-item border p-4 rounded-md mb-6 shadow-sm">
-                    <div class="flex justify-end items-center mb-3">
-                        <button type="button" class="remove-plan bg-red-500 text-white px-3 py-1 rounded-md">
-                            <i class="ti ti-trash"></i> {{ __('remove_plan') }}
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-12 gap-4">
-                        <div class="col-span-12 md:col-span-3">
-                            <label>{{ __('Plan') }}</label>
-                            <select name="plans[${planIndex}][plan_id]" class="form-select w-full mt-1 plan-select">
-                                <option value="">{{ __('Select Plan') }}</option>
-                                @foreach ($plans as $plan)
-                                    <option value="{{ $plan->id }}">{{ $plan->translation->title }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="features-wrapper mt-5">
-                        ${generateFixedFeature(planIndex, 0, 'price')}
-                        ${generateFixedFeature(planIndex, 1, 'revisions')}
-                        ${generateFixedFeature(planIndex, 2, 'delivery_days')}
-                        ${generateFixedFeature(planIndex, 3, 'source_files')}
-                    </div>
-                    <div class="text-right mt-3">
-                        <button type="button" class="add-feature bg-secondary text-white px-3 py-2 rounded-md">
-                            <i class="ti ti-plus"></i> {{ __('Add Feature') }}
-                        </button>
-                    </div>
-                </div>
-            `;
+    <div class="plan-item border p-4 rounded-md mb-6 shadow-sm">
+        <div class="flex justify-end items-center mb-3">
+            <button type="button" class="remove-plan bg-red-500 text-white px-3 py-1 rounded-md">
+                <i class="ti ti-trash"></i> {{ __('remove_plan') }}
+            </button>
+        </div>
+        <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 md:col-span-3">
+                <label>{{ __('Plan') }}</label>
+                <select name="plans[${planIndex}][plan_id]" class="form-select w-full mt-1 plan-select">
+                    <option value="">{{ __('Select Plan') }}</option>
+                    @foreach ($plans as $plan)
+                        <option value="{{ $plan->id }}">{{ $plan->translation->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="features-wrapper mt-5">
+            ${generateFixedFeature(planIndex, 0, 'price')}
+            ${generateFixedFeature(planIndex, 1, 'revisions')}
+            ${generateFixedFeature(planIndex, 2, 'delivery_days')}
+            ${generateFixedFeature(planIndex, 3, 'source_files')}
+        </div>
+
+    </div>
+    `;
                 if (planIndex < plansCount) {
                     $('.plans-wrapper').append(newPlanHTML);
                     $('.add-plan').hide();
@@ -351,14 +391,17 @@
             function updatePlanOptions() {
                 const selectedPlans = [];
                 $('.plan-select').each(function() {
-                    const val = $(this).val();
+                    const
+                        val = $(this).val();
                     if (val) selectedPlans.push(val);
                 });
                 $('.plan-select').each(function() {
-                    const currentSelect = $(this);
+                    const
+                        currentSelect = $(this);
                     const currentVal = currentSelect.val();
                     currentSelect.find('option').each(function() {
-                        const optionVal = $(this).val();
+                        const
+                            optionVal = $(this).val();
                         if (optionVal && optionVal !== currentVal && selectedPlans.includes(
                                 optionVal)) {
                             $(this).hide();
@@ -374,23 +417,51 @@
 
             function generateFixedFeature(planIndex, featureIndex, type) {
                 const labelMap = {
-                    price: "{{ __('Price') }}",
-                    revisions: "{{ __('Revisions') }}",
-                    delivery_days: "{{ __('Delivery Days') }}",
-                    source_files: "{{ __('Source Files') }}"
+                    price: "{{ __('price') }}",
+                    revisions: "{{ __('revisions') }}",
+                    delivery_days: "{{ __('delivery_days') }}",
+                    source_files: "{{ __('source_files') }}"
                 };
+                if (type === 'source_files') {
+                    return ` <div
+        class="feature-item grid grid-cols-12 gap-4 mt-3 items-center">
+        <div class="col-span-5">
+            <input type="text" name="plans[${planIndex}][features][${featureIndex}][title]" value="${labelMap[type]}"
+                readonly
+                class="form-input w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px] bg-gray-100" />
+        </div>
+        <div class="col-span-5">
+            <select id="source_file${planIndex}_${featureIndex}"
+                name="plans[${planIndex}][features][${featureIndex}][value]"
+                class="form-select w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px]">
+                <option value="0">{{ __('without_source_files') }}</option>
+                <option value="1">{{ __('with_source_files') }}</option>
+            </select>
+        </div>
+        <input type="hidden" name="plans[${planIndex}][features][${featureIndex}][type]" value="${type}" />
+        </div>
+        `;
+                }
+
+                // باقي الأنواع
                 return `
-                <div class="feature-item grid grid-cols-12 gap-4 mt-3">
-                    <div class="col-span-5">
-                        <input type="text" name="plans[${planIndex}][features][${featureIndex}][title]" value="${labelMap[type]}" placeholder="${labelMap[type]}" class="form-control w-full" />
-                    </div>
-                    <div class="col-span-5">
-                        <input type="text" name="plans[${planIndex}][features][${featureIndex}][value]" class="form-control w-full" />
-                    </div>
-                    <input type="hidden" name="plans[${planIndex}][features][${featureIndex}][type]" value="${type}" />
-                </div>
-            `;
+        <div class="feature-item grid grid-cols-12 gap-4 mt-3 items-center">
+            <div class="col-span-5">
+                <input type="text" name="plans[${planIndex}][features][${featureIndex}][title]"
+                    value="${labelMap[type]}" placeholder="${labelMap[type]}"
+                    class="form-input w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px]" />
+            </div>
+            <div class="col-span-5">
+                <input type="number" name="plans[${planIndex}][features][${featureIndex}][value]"
+                    class="form-input w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px]" />
+            </div>
+            <input type="hidden" name="plans[${planIndex}][features][${featureIndex}][type]" value="${type}" />
+        </div>
+        `;
+
             }
+
+
         });
     </script>
 @endpush

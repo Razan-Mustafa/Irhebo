@@ -226,26 +226,32 @@ class ServiceRepository implements ServiceRepositoryInterface
 
             // Handle the service plans and features
             foreach ($data['plans'] as $planData) {
-                // Attach the Plan to the Service
                 $service->plans()->attach($planData['plan_id']);
 
                 // Handle the features for this plan
                 foreach ($planData['features'] as $feature) {
-                    $featureModel = $service->features()->create([
-                        'plan_id' => $planData['plan_id'],
-                        'value' => $feature['value'],
-                        'type' => $feature['type'],
-                    ]);
+                    $featureModel = $service->features()->updateOrCreate(
+                        [
+                            'plan_id' => $planData['plan_id'],
+                            'type' => $feature['type']
+                        ],
+                        [
+                            'value' => $feature['value'],
+                        ]
+                    );
 
-                    // Create translations for the feature
+                    // Update feature translations
                     foreach (['en', 'ar'] as $locale) {
-                        $featureModel->translations()->create([
-                            'language' => $locale,
-                            'title' => $feature['title'],
-                        ]);
+                        $featureModel->translations()->updateOrCreate(
+                            ['language' => $locale],
+                            [
+                                'title' => $feature['title'],
+                            ]
+                        );
                     }
                 }
             }
+
 
             // Handle tags (if any)
             if (!empty($data['tags'])) {

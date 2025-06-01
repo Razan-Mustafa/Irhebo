@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\ServiceRequest;
 use App\Http\Requests\Admin\UpdateServiceRequest;
 use App\Models\Currency;
 use App\Models\Plan;
+use App\Models\Service;
 use App\Services\CategoryService;
 use App\Services\FreelancerService;
 use App\Services\PlanService;
@@ -43,49 +44,66 @@ class ServiceController extends Controller
         $tags = $this->tagService->getAllTags();
         $plans = $this->planService->index();
         $freelancers = $this->freelancerService->index([]);
+        $currencies = Currency::all();
 
-        return view('pages.services.create', compact('categories', 'tags', 'plans', 'freelancers'));
+        return view('pages.services.create', compact('categories', 'tags', 'plans', 'freelancers', 'currencies'));
     }
-    public function store(Request $request)
+    public function store(UpdateServiceRequest $request)
     {
+        // dd($request->all());
 
-        dd($request->all());
-        $service = $this->serviceService->create($request->validated());
+        $data = $request->validated();
+        $currency = Currency::find($data['currency_id']);
+        $exchangeRate = $currency->exchange_rate;
+
+        foreach ($data['plans'] as &$plan) {
+            foreach ($plan['features'] as &$feature) {
+                if ($feature['type'] === 'price') {
+                    $feature['value'] = number_format($feature['value'] / $exchangeRate, 2, '.', '');
+                }
+            }
+        }
+
+        $service = $this->serviceService->create($data);
+        $service->tags()->sync($data['tags'] ?? []);
         return redirect()->route('services.index')->with('success', __('service_created_successfully'));
     }
     public function edit($id)
     {
         $categories = $this->categoryService->index();
-        $tags = $this->tagService->getAllTags();
         $service = $this->serviceService->getServiceDetails($id);
+        $tags = $service->tags()->pluck('tags.id')->toArray();
+        $selectedTags = $service->tags()->pluck('tags.id')->toArray();
+
         $servicePlans = $this->serviceService->getPlansByServiceId($id);
         $plans = $this->planService->index();
         $freelancers = $this->freelancerService->index([]);
         $currencies = Currency::all();
 
         $plansCount = Plan::count();
-        return view('pages.services.edit', compact('categories', 'tags', 'plans', 'servicePlans', 'freelancers', 'service', 'plansCount',    'currencies'));
+        return view('pages.services.edit', compact('selectedTags', 'categories', 'tags', 'plans', 'servicePlans', 'freelancers', 'service', 'plansCount',    'currencies'));
     }
     public function update(UpdateServiceRequest $request, $id)
     {
         $data = $request->validated();
-
-        // جيب العملة
+        // dd($data);
         $currency = Currency::find($data['currency_id']);
-        $exchangeRate = $currency->exchange_rate; // لنفترض 0.71 مثلاً
+        $exchangeRate = $currency->exchange_rate;
 
-        // عدّل أسعار الـ plans
         foreach ($data['plans'] as &$plan) {
             foreach ($plan['features'] as &$feature) {
                 if ($feature['type'] === 'price') {
-                    // حوّل السعر لدولار
-                $feature['value'] = number_format($feature['value'] / $exchangeRate, 2, '.', '');
+                    $feature['value'] = number_format($feature['value'] / $exchangeRate, 2, '.', '');
                 }
             }
         }
-
         // احفظ التعديلات
         $service = $this->serviceService->update($data, $id);
+        $service = Service::findOrFail($id);
+        $service->update([
+            'user_id' => $data['user_id'] ?? $service->user_id, // لو موجود
+        ]);
+        $service->tags()->sync($data['tags'] ?? []);
 
         return redirect()->route('services.index')->with('success', __('service_updated_successfully'));
     }

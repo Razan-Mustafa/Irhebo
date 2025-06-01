@@ -53,12 +53,13 @@
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
                                             <option value="">{{ __('select_category') }}</option>
                                             @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}">{{ $category->translation->title }}
+                                                <option value="{{ $category->id }}"
+                                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->translation->title }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </div>
-
                                     <!-- Subcategory Selection -->
                                     <div class="col-span-12 md:col-span-6">
                                         <label
@@ -66,11 +67,8 @@
                                         <select id="subcategory-filter" name="sub_category_id"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
                                             <option value="">{{ __('select_subcategory') }}</option>
-                                            {{-- subcategories will be loaded dynamically via JS based on selected category --}}
                                         </select>
                                     </div>
-
-
                                     <!-- Title -->
                                     <div class="col-span-6">
                                         <label class="block text-sm font-medium text-gray-700">{{ __('title') }}</label>
@@ -96,22 +94,14 @@
                                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">{{ old('description') }}</textarea>
                                     </div>
                                 </div>
-                                <div class="col-span-12">
-                                    <label
-                                        class="block text-sm font-medium text-gray-700">{{ __('select_currency') }}</label>
-                                    <select name="currency_id" id="currency-filter" class="form-control" required>
-                                        <option value="">{{ __('select_currency') }}</option>
-                                        @foreach ($currencies as $currency)
-                                            <option value="{{ $currency->id }}">
-                                                {{ $currency->name }} ({{ $currency->symbol }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
                                 <!-- Plans and Features -->
                                 <div class="plans-wrapper mt-3" style="display:none;">
+
+
+
                                     <div class="features-wrapper mt-5">
                                     </div>
+
                                 </div>
 
                                 <!-- Tags -->
@@ -121,6 +111,7 @@
                                         <select name="tags[]" id="tags"
                                             class="js-example-basic-multiple mt-1 block w-full rounded-lg border-gray-300"
                                             multiple>
+
                                         </select>
                                     </div>
                                 </div>
@@ -138,7 +129,6 @@
                                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
                                     </div>
                                 </div>
-
                                 <!-- Submit Button -->
                                 <div class="mt-6 flex justify-between">
                                     <div></div>
@@ -175,7 +165,8 @@
                 width: '100%',
                 closeOnSelect: false
             });
-            fetchSubCategories($('#category-filter').val());
+
+            // Category Change → Load Subcategories
             $('#category-filter').on('change', function() {
                 const categoryId = $(this).val();
                 fetchSubCategories(categoryId);
@@ -189,18 +180,15 @@
                         category_id: categoryId
                     },
                     success: function(response) {
-                        if (response.status) {
-                            let options = '<option value="">{{ __('select_subcategory') }}</option>';
-                            response.data.forEach(sub => {
-                                options += `<option value="${sub.id}">${sub.title}</option>`;
-                            });
-                            $('#subcategory-filter').html(options);
-                        } else {
-                            $('#subcategory-filter').html(
-                                '<option value="">{{ __('no_subcategories_found') }}</option>');
-                        }
+                        let options = '<option value="">{{ __('select_subcategory') }}</option>';
+                        let selectedSubcategoryId = "{{ old('sub_category_id') }}";
+                        response.data.forEach(sub => {
+                            let selected = sub.id == selectedSubcategoryId ? 'selected' : '';
+                            options +=
+                                `<option value="${sub.id}" ${selected}>${sub.title}</option>`;
+                        });
+                        $('#subcategory-filter').html(options);
                     },
-
                     error: function() {
                         $('#subcategory-filter').html(
                             '<option value="">{{ __('no_subcategories_found') }}</option>');
@@ -216,88 +204,96 @@
                         subcategory_id: subCategoryId
                     },
                     success: function(response) {
-                        if (response.status) {
-                            let options = '<option value="">{{ __('select_tags') }}</option>';
-                            response.data.forEach(tag => {
-                                options +=
-                                    `<option value="${tag.id}">${tag.translation.title}</option>`;
-                            });
-                            $('#tags').html(options);
-                        } else {
-                            $('#tags').html('<option value="">{{ __('no_tags_found') }}</option>');
-                        }
+                        let options = '<option value="">{{ __('select_tags') }}</option>';
+                        response.data.forEach(tag => {
+                            const selected = tag.selected ? 'selected' :
+                                '';
+                            options +=
+                                `<option value="${tag.id}" ${selected}>${tag.translation.title}</option>`;
+                        });
+                        $('#tags').html(options);
                     },
                     error: function() {
-                        $('#tags').html('<option value="">{{ __('no_tags_found') }}</option>');
+                        $('#tags').html(
+                            '<option value="">{{ __('no_tags_found') }}</option>');
                     }
                 });
             }
+
             $('#subcategory-filter').on('change', function() {
                 const subCategoryId = $(this).val();
                 fetchTags(subCategoryId);
             });
 
             // Add New Feature
-            // $(document).on('click', '.add-feature', function() {
-            //     const planItem = $(this).closest('.plan-item');
-            //     const planIndex = $('.plan-item').index(planItem);
-            //     const featureCount = planItem.find('.feature-item').length;
+            $(document).on('click', '.add-feature', function() {
+                const planItem = $(this).closest('.plan-item');
+                const planIndex = $('.plan-item').index(planItem);
+                const featureCount = planItem.find('.feature-item').length;
 
-            //     const featureHTML = `
-        //     <div class="feature-item grid grid-cols-12 gap-4 mt-3">
-        //         <div class="col-span-5">
-        //             <input type="text" name="plans[${planIndex}][features][${featureCount}][title]" placeholder="{{ __('Title') }}" class="form-control w-full" />
-        //         </div>
-        //         <div class="col-span-5">
-        //             <input type="text" name="plans[${planIndex}][features][${featureCount}][value]" placeholder="{{ __('Value') }}" class="form-control w-full" />
-        //         </div>
-
-        //     </div>`;
-            //     planItem.find('.features-wrapper').append(featureHTML);
-            // });
+                const featureHTML = `
+                <div class="feature-item grid grid-cols-12 gap-4 mt-3">
+                    <div class="col-span-6">
+                        <input type="text" name="plans[${planIndex}][features][${featureCount}][title]" placeholder="{{ __('Title') }}" class="form-control w-full" />
+                    </div>
+                  <input type="hidden" name="plans[${planIndex}][features][${featureCount}][type]" value="additional"/>
+                    <div class="col-span-3 flex items-center">
+                        <button type="button" class="remove-feature bg-red-500 text-white px-3 py-2 rounded-md">
+                            <i class="ti ti-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+                planItem.find('.features-wrapper').append(featureHTML);
+            });
 
             // Remove Feature
             $(document).on('click', '.remove-feature', function() {
                 $(this).closest('.feature-item').remove();
             });
+
             // Add Plan
             $(document).on('click', '.add-plan', function() {
                 $('.plans-wrapper').show();
-
                 const planIndex = $('.plan-item').length;
-
 
                 const newPlanHTML = `
                 <div class="plan-item border p-4 rounded-md mb-6 shadow-sm">
-                    <div class="flex justify-end items-center mb-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="col-span-1 md:col-span-3">
+                        <label>{{ __('Plan') }}</label>
+                        <select name="plans[${planIndex}][plan_id]" class="form-select w-full mt-1 plan-select">
+                            <option value="">{{ __('Select Plan') }}</option>
+                            @foreach ($plans as $plan)
+                                <option value="{{ $plan->id }}">{{ $plan->translation->title }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                    <div class="features-wrapper grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+                        ${generateFixedFeature(planIndex, 0, 'price','number')}
+                        ${generateFixedFeature(planIndex, 1, 'revisions','number')}
+                        ${generateFixedFeature(planIndex, 2, 'delivery_days','number')}
+                        ${generateFixedFeature(planIndex, 3, 'source_files','checkbox')}
+                    </div>
+
+                    <div class="flex justify-between mt-5">
                         <button type="button" class="remove-plan bg-red-500 text-white px-3 py-1 rounded-md">
                             <i class="ti ti-trash"></i> {{ __('remove_plan') }}
                         </button>
+                        <button type="button" class="add-feature bg-secondary text-white px-3 py-2 rounded-md">
+                            <i class="ti ti-plus"></i> {{ __('Add Feature') }}
+                        </button>
                     </div>
-                    <div class="grid grid-cols-12 gap-4">
-                        <div class="col-span-12 md:col-span-3">
-                            <label>{{ __('Plan') }}</label>
-                            <select name="plans[${planIndex}][plan_id]" class="form-select w-full mt-1 plan-select">
-                                <option value="">{{ __('Select Plan') }}</option>
-                                @foreach ($plans as $plan)
-                                    <option value="{{ $plan->id }}">{{ $plan->translation->title }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="features-wrapper mt-5">
-                        ${generateFixedFeature(planIndex, 0, 'price')}
-                        ${generateFixedFeature(planIndex, 1, 'revisions')}
-                        ${generateFixedFeature(planIndex, 2, 'delivery_days')}
-                        ${generateFixedFeature(planIndex, 3, 'source_files')}
-                    </div>
-
                 </div>
+
             `;
-                $('.plans-wrapper').append(newPlanHTML);
-                $('.add-plan').hide();
+
+            $('.plans-wrapper').append(newPlanHTML);
                 updatePlanOptions();
             });
+
             $(document).on('click', '.remove-plan', function() {
                 $(this).closest('.plan-item').remove();
                 updatePlanOptions();
@@ -309,9 +305,11 @@
                     const val = $(this).val();
                     if (val) selectedPlans.push(val);
                 });
+
                 $('.plan-select').each(function() {
                     const currentSelect = $(this);
                     const currentVal = currentSelect.val();
+
                     currentSelect.find('option').each(function() {
                         const optionVal = $(this).val();
                         if (optionVal && optionVal !== currentVal && selectedPlans.includes(
@@ -323,57 +321,46 @@
                     });
                 });
             }
+
             $(document).on('change', '.plan-select', function() {
                 updatePlanOptions();
             });
-
-            function generateFixedFeature(planIndex, featureIndex, type) {
+            function generateFixedFeature(planIndex, featureIndex, type, inputType) {
                 const labelMap = {
-                    price: "{{ __('price') }}",
-                    revisions: "{{ __('revisions') }}",
-                    delivery_days: "{{ __('delivery_days') }}",
-                    source_files: "{{ __('source_files') }}"
+                    price: "{{ __('Price') }}",
+                    revisions: "{{ __('Revisions') }}",
+                    delivery_days: "{{ __('Delivery Days') }}",
+                    source_files: "{{ __('Source Files') }}"
                 };
 
-                if (type === 'source_files') {
-                    return `
-                    <div class="feature-item grid grid-cols-12 gap-4 mt-3 items-center">
-                        <div class="col-span-5">
-                            <input type="text" name="plans[${planIndex}][features][${featureIndex}][title]"
-                                value="${labelMap[type]}"
-                                readonly
-                                class="form-input w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px] bg-gray-100" />
-                        </div>
-                        <div class="col-span-5">
-                            <select id="source_file${planIndex}_${featureIndex}"
-                                    name="plans[${planIndex}][features][${featureIndex}][value]"
-                                    class="form-select w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px]">
-                                <option value="0">{{ __('without_source_files') }}</option>
-                                <option value="1">{{ __('with_source_files') }}</option>
-                            </select>
-                        </div>
-                        <input type="hidden" name="plans[${planIndex}][features][${featureIndex}][type]" value="${type}" />
-                    </div>
-                        `;
+                let inputField = '';
+                if (inputType === 'checkbox') {
+                    inputField = `
+                        <input type="${inputType}" name="plans[${planIndex}][features][${featureIndex}][title]"
+                            class="form-checkbox text-primary rounded-sm focus:ring-primary h-5 w-5 m-3" />
+                        <label class="text-gray-500">{{ __('with_source_files') }}</label>
+                    `;
+                } else {
+                    inputField = `
+                            <input type="${inputType}" name="plans[${planIndex}][features][${featureIndex}][value]"
+                                class="form-control text-gray-800 mx-3" placeholder="{{ __('Enter ${labelMap[type]}') }}" />
+                            <input type="hidden" name="plans[${planIndex}][features][${featureIndex}][title]"
+                                value="${labelMap[type]}" />
+                            <input type="hidden" name="plans[${planIndex}][features][${featureIndex}][type]"
+                                value="${type}" />
+                    `;
                 }
 
-                // باقي الأنواع
                 return `
-                    <div class="feature-item grid grid-cols-12 gap-4 mt-3 items-center">
-                        <div class="col-span-5">
-                            <input type="text" name="plans[${planIndex}][features][${featureIndex}][title]"
-                                value="${labelMap[type]}"
-                                placeholder="${labelMap[type]}"
-                                class="form-input w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px]" />
+                        <div class="col-span-5 mx-2 my-1">
+                            ${inputField}
                         </div>
-                        <div class="col-span-5">
-                            <input type="number" name="plans[${planIndex}][features][${featureIndex}][value]"
-                                class="form-input w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px]" />
-                        </div>
-                        <input type="hidden" name="plans[${planIndex}][features][${featureIndex}][type]" value="${type}" />
-                    </div>
-                    `;
+                `;
             }
+
+
+
+
         });
     </script>
 @endpush

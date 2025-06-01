@@ -21,6 +21,7 @@ class UpdateServiceRequest extends FormRequest
      */
     public function rules(): array
     {
+
         return [
             'sub_category_id' => ['required', 'exists:sub_categories,id'],
             'title' => ['required', 'string', 'max:255'],
@@ -30,10 +31,11 @@ class UpdateServiceRequest extends FormRequest
             'plans.*.plan_id' => ['required', 'integer'],
             'plans.*.features' => ['required', 'array'],
             'currency_id' => 'required|exists:currencies,id',
+            'user_id' => 'required',
 
             'plans.*.features.*.title' => ['required', 'string'],
             'plans.*.features.*.value' => 'required',
-            'plans.*.features.*.type' => ['required', 'in:additional,price,delivery_days,revisions,source_files'],
+            'plans.*.features.*.type' => ['required', 'in:price,delivery_days,revisions,source_files'],
 
             'tags' => ['nullable', 'array'],
             'tags.*' => 'nullable',
