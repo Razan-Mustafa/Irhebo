@@ -18,17 +18,26 @@ class CountryRepository implements CountryRepositoryInterface
 
     public function index()
     {
-        return $this->model->orderBy('title', 'asc')->get();
+        $locale = app()->getLocale();
+        $column = $locale === 'ar' ? 'title_ar' : 'title_en';
+        return $this->model->orderBy($column, 'asc')->get();
     }
-    public function getAllActive($perPage = null,$search = null)
+
+    public function getAllActive($perPage = null, $search = null)
     {
-        $query = $this->model->where('is_active', true)->orderBy('title', 'asc');
+        $locale = app()->getLocale();
+        $column = $locale === 'ar' ? 'title_ar' : 'title_en';
+
+        $query = $this->model->where('is_active', true)->orderBy($column, 'asc');
+
         if ($search) {
-            $query->where('title', 'LIKE', "%{$search}%");
+            $query->where($column, 'LIKE', "%{$search}%");
         }
 
         return $query->get();
     }
+
+
     public function find($id)
     {
         return $this->model->findOrFail($id);
@@ -36,9 +45,10 @@ class CountryRepository implements CountryRepositoryInterface
 
     public function store($data)
     {
+        $locale = app()->getLocale();
         $country = $this->model->create([
-            'flag' => $data['flag'],
-            'title' => $data['title'],
+            'flag'        => $data['flag'],
+            "title_{$locale}" => $data['title'],
         ]);
 
         return $country;
@@ -47,11 +57,12 @@ class CountryRepository implements CountryRepositoryInterface
     public function update($id, $data)
     {
         $country = $this->find($id);
-        
+
+        $locale = app()->getLocale();
         $updateData = [
-            'title' => $data['title'],
-            'flag' => $data['flag'],
-        ];     
+            "title_{$locale}" => $data['title'],
+            'flag'             => $data['flag'],
+        ];
 
         $country->update($updateData);
 
@@ -71,4 +82,4 @@ class CountryRepository implements CountryRepositoryInterface
         $country->save();
         return $country;
     }
-} 
+}

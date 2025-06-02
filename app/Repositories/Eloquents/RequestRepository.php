@@ -19,24 +19,25 @@ class RequestRepository implements RequestRepositoryInterface
     {
         $this->model = $request;
     }
-    public function getAll(){
-        return $this->model->orderBy('id','DESC')->get();
+    public function getAll()
+    {
+        return $this->model->orderBy('id', 'DESC')->get();
     }
     public function getByUser($perPage)
     {
         $query = $this->model->where('user_id', Auth::id())->orderBy('id', 'desc');
-        return $this->paginate($query,$perPage);
+        return $this->paginate($query, $perPage);
     }
 
     public function getByFreelancer($perPage)
     {
-        $query = $this->model->whereHas('service',function($q){
-            $q->where('user_id',Auth::id());
+        $query = $this->model->whereHas('service', function ($q) {
+            $q->where('user_id', Auth::id());
         });
 
 
 
-        return $this->paginate($query,$perPage);
+        return $this->paginate($query, $perPage);
     }
 
     public function createRequest(array $data)
@@ -62,7 +63,7 @@ class RequestRepository implements RequestRepositoryInterface
             'logs.attachments'
         ])->findOrFail($id);
 
-         $user = Auth::guard('api')->user();
+        $user = Auth::guard('api')->user();
         if ($user && !$user->freelancer()->exists()) {
             $request->need_action = false;
             $request->save();
@@ -72,16 +73,26 @@ class RequestRepository implements RequestRepositoryInterface
     public function addComment($data)
     {
         $request = $this->find($data['request_id']);
+        $current_status = $request->status;
+        $new_status = $data['status'];
         $request->update([
-            'status' => $data['status'],
+            'status' => $new_status,
             'need_action' => true
         ]);
-
+        if ($current_status != $new_status) {
+            $requestLog = RequestLog::create([
+                'user_id' => $data['user_id'],
+                'request_id' => $request->id,
+                'action' => Auth::user()->username . ' has updated the request status to ' . $new_status
+            ]);
+        }
         $requestLog = RequestLog::create([
             'user_id' => $data['user_id'],
             'request_id' => $request->id,
             'action' => $data['action']
         ]);
+
+        // dd( Auth::user()->username.' has updated the request status to '. $new_status);
 
         if (isset($data['attachments']) && is_array($data['attachments'])) {
             foreach ($data['attachments'] as $media) {
@@ -96,10 +107,11 @@ class RequestRepository implements RequestRepositoryInterface
         }
         return $requestLog->load('attachments');
     }
-    public function confirmRequest($id){
+    public function confirmRequest($id)
+    {
         $request = $this->find($id);
         $request->update([
-            'status'=>'confirmed'
+            'status' => 'confirmed'
         ]);
     }
 }

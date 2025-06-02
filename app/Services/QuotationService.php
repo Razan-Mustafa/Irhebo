@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Services;
 
+use App\Models\Quotation;
 use App\Repositories\Interfaces\QuotationRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class QuotationService
 {
@@ -11,7 +14,8 @@ class QuotationService
     {
         $this->quotationRepository = $quotationRepository;
     }
-    public function index(){
+    public function index()
+    {
         return $this->quotationRepository->getAll();
     }
     public function store(array $data)
@@ -23,7 +27,8 @@ class QuotationService
     {
         return $this->quotationRepository->findAll($perPage);
     }
-    public function getByUserId($perPage = null){
+    public function getByUserId($perPage = null)
+    {
         return $this->quotationRepository->getByUserId($perPage);
     }
 
@@ -32,18 +37,35 @@ class QuotationService
         return $this->quotationRepository->findById($id);
     }
 
-       // Create a new quotation comment
-       public function createQuotationComment(array $data)
-       {
-           return $this->quotationRepository->createQuotationComment($data);
-       }
+    // Create a new quotation comment
+    public function createQuotationComment(array $data)
+    {
+        return $this->quotationRepository->createQuotationComment($data);
+    }
 
-       // Get all comments for a specific quotation
-       public function getCommentsByQuotationId(int $quotationId)
-       {
-           return $this->quotationRepository->getCommentsByQuotationId($quotationId);
-       }
-       public function getQuotationDetails($id){
+    // Get all comments for a specific quotation
+    public function getCommentsByQuotationId(int $quotationId)
+    {
+        return $this->quotationRepository->getCommentsByQuotationId($quotationId);
+    }
+    public function getQuotationDetails($id)
+    {
         return $this->quotationRepository->getQuotationDetails($id);
-       }
+    }
+
+    public function getQuotationsForFreelancer($perPage = 10)
+    {
+        $user = Auth::user();
+        $query = Quotation::with('user.profession.translation');
+
+        $categoryIds = $user->categories1->pluck('id')->toArray();
+        $query->whereHas('subCategory', function ($q) use ($categoryIds) {
+            $q->whereIn('category_id', $categoryIds);
+        });
+
+
+        return $query->orderBy('created_at', 'desc')->paginate($perPage);
+    }
+
+
 }

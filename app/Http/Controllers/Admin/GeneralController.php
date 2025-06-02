@@ -6,6 +6,7 @@ use App\Models\General;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Currency;
+use App\Utilities\FileManager;
 
 class GeneralController extends Controller
 {
@@ -33,7 +34,7 @@ class GeneralController extends Controller
         ])->get();
 
         $currencies = Currency::all();
-        return view('pages.general.index', compact('generals','currencies'));
+        return view('pages.general.index', compact('generals', 'currencies'));
     }
 
     public function updateGeneralInfo(Request $request)
@@ -43,8 +44,18 @@ class GeneralController extends Controller
             'settings.*' => 'nullable|string|max:255',
             'currencies' => 'nullable|array',
             'currencies.*.exchange_rate' => 'required|numeric|min:0',
-        ]);
+            'platform_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
 
+        ]);
+        if ($request->hasFile('platform_logo')) {
+
+            $filePath = FileManager::upload('logo', $request->file('platform_logo'));
+
+            General::updateOrCreate(
+                ['key' => 'platform_logo'],
+                ['value' => $filePath]
+            );
+        }
         foreach ($validatedData['settings'] as $key => $value) {
             General::updateOrCreate(
                 ['key' => $key],

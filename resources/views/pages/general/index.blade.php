@@ -40,7 +40,8 @@
                         <div class="border-b pb-4 mb-4">
                             <h5 class="text-lg font-semibold">{{ __('general_info') }}</h5>
                         </div>
-                        <form action="{{ route('general.updateGeneralInfo') }}" method="POST">
+                        <form action="{{ route('general.updateGeneralInfo') }}" method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
@@ -50,10 +51,24 @@
                                         <label class="block text-sm font-medium text-gray-700 mb-1">
                                             {{ app()->getLocale() == 'en' ? __(Str::title(str_replace('_', ' ', $general->key))) : __($general->key) }}
                                         </label>
-                                        <input type="text"
-                                            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring focus:ring-primary focus:border-primary"
-                                            name="settings[{{ $general->key }}]"
-                                            value="{{ old('settings.' . $general->key, $general->value) }}">
+
+                                        @if ($general->key == 'platform_logo')
+                                            <input type="file"
+                                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring focus:ring-primary focus:border-primary"
+                                                name="platform_logo">
+
+                                            @if ($general->value)
+                                                <div class="mt-2">
+                                                    <img src="{{ asset($general->value) }}" alt="Platform Logo"
+                                                        class="h-16">
+                                                </div>
+                                            @endif
+                                        @else
+                                            <input type="text"
+                                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring focus:ring-primary focus:border-primary"
+                                                name="settings[{{ $general->key }}]"
+                                                value="{{ old('settings.' . $general->key, $general->value) }}">
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>

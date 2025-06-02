@@ -54,13 +54,14 @@ class HomeService
             'faqs' => FaqResource::collection($this->faqService->index()),
         ];
     }
-    public function getHomeFreelancerData(){
+    public function getHomeFreelancerData()
+    {
         $userId = Auth::id();
         return [
             'requests' => RequestResource::collection($this->requestService->getByFreelancer()['data']),
-            'services'=> ServiceResource::collection($this->serviceService->getServicesByUserId($userId,$perPage = 3)['data']),
-            'portfolios'=>PortfolioResource::collection($this->portfolioService->getPortfolioByUserId($userId,$perPage = 3)['data']),
-            'quotations' => QuotationResource::collection($this->quotationService->getAllQuotations($perPage = 10)['data'])
+            'services' => ServiceResource::collection($this->serviceService->getServicesByUserId($userId, $perPage = 3)['data']),
+            'portfolios' => PortfolioResource::collection($this->portfolioService->getPortfolioByUserId($userId, $perPage = 3)['data']),
+            'quotations' => QuotationResource::collection($this->quotationService->getQuotationsForFreelancer($perPage = 10)),
 
         ];
     }

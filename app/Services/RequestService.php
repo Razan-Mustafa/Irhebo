@@ -38,7 +38,7 @@ class RequestService
         $data['user_id'] = auth()->guard('api')->user()->id;
         $data['order_number'] = '#' . mt_rand(100000, 999999);
         $data['title'] = $service->translation->title;
-        $data['image'] = $service->media->where('is_cover', true)->first()->media_path;
+        $data['image'] = $service->media->where('is_cover', true)->first()->media_path??  null;
         $plan = Plan::where('id', $data['plan_id'])
             ->with(['features' => function ($query) use ($data) {
                 $query->where('type', 'delivery_days')->where('service_id', $data['service_id']);
@@ -46,7 +46,7 @@ class RequestService
             ->first();
 
         $deliveryDaysValue = intval($plan->features->first()->value);
-        $data['start_date'] = null;
+        $data['start_date'] = now();
         $data['end_date'] = Carbon::now()->addDays($deliveryDaysValue)->toDateString();
 
 
@@ -85,7 +85,7 @@ class RequestService
             'paid_at'        => null,
         ]);
         // dd($price->value);
-        return $this->requestRepository->createRequest($data);
+        // return $this->requestRepository->createRequest($data);
     }
     public function getRequestDetails($id)
     {

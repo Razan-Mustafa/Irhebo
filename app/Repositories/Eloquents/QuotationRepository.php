@@ -14,16 +14,18 @@ class QuotationRepository implements QuotationRepositoryInterface
     protected $model;
     protected $quotationComment;
 
-    public function __construct(Quotation $quotation,Quotation_Comments $quotationComment)
+    public function __construct(Quotation $quotation, Quotation_Comments $quotationComment)
     {
         $this->model = $quotation;
         $this->quotationComment = $quotationComment;
     }
-    public function getAll(){
-        return $this->model->with('user.profession')->orderBy('id','desc')->get();
+    public function getAll()
+    {
+        return $this->model->with('user.profession')->orderBy('id', 'desc')->get();
     }
     public function store(array $data)
     {
+        // dd($data);
         return $this->model->create($data);
     }
 
@@ -35,7 +37,7 @@ class QuotationRepository implements QuotationRepositoryInterface
 
     public function getByUserId($perPage = null)
     {
-        $query = $this->model->with('user.profession')->where('user_id',Auth::id());
+        $query = $this->model->with('user.profession')->where('user_id', Auth::id());
         return $this->paginate($query, $perPage);
     }
 
@@ -44,18 +46,17 @@ class QuotationRepository implements QuotationRepositoryInterface
         return $this->model->find($id);
     }
 
-       public function createQuotationComment(array $data)
-       {
-           return $this->quotationComment->create($data);
-       }
+    public function createQuotationComment(array $data)
+    {
+        return $this->quotationComment->create($data);
+    }
 
-       public function getCommentsByQuotationId(int $quotationId)
-       {
-           return $this->quotationComment->where('quotation_id', $quotationId)->with(['quotation','user.profession'])->get();
-       }
-       public function getQuotationDetails($id){
-        return $this->model->with(['quotationComments','user.profession'])->find($id);
-
-
-       }
+    public function getCommentsByQuotationId(int $quotationId)
+    {
+        return $this->quotationComment->where('quotation_id', $quotationId)->with(['quotation', 'user.profession'])->get();
+    }
+    public function getQuotationDetails($id)
+    {
+        return $this->model->with(['quotationComments', 'user.profession'])->find($id);
+    }
 }

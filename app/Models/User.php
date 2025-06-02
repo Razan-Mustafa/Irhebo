@@ -149,10 +149,18 @@ class User extends Authenticatable
     {
         return $this->hasMany(Quotation_Comments::class);
     }
-    public function categories(){
-        return $this->hasMany(FreelancerCateogry::class,'user_id');
+    public function categories()
+    {
+        return $this->hasMany(FreelancerCateogry::class, 'user_id');
     }
-    public function certificates(){
-        return $this->hasMany(FreelancerCertificate::class,'user_id');
+    public function certificates()
+    {
+        return $this->hasMany(FreelancerCertificate::class, 'user_id');
+    }
+
+
+    public function categories1()
+    {
+        return $this->belongsToMany(Category::class, 'freelancer_cateogries');
     }
 }

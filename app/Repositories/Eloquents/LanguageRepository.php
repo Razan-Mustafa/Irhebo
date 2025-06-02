@@ -19,6 +19,12 @@ class LanguageRepository implements LanguageRepositoryInterface
 
     public function getAllActive($perPage = null)
     {
-        return $this->model->where('is_active', true)->orderBy('title', 'asc')->get();
+        $locale = app()->getLocale();
+        $column = $locale === 'ar' ? 'title_ar' : 'title_en';
+
+        return $this->model
+            ->where('is_active', true)
+            ->orderBy($column, 'asc')
+            ->get();
     }
 }

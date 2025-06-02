@@ -15,9 +15,9 @@ class LanguageResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'flag' => $this->flag,
+            'id'    => $this->id,
+            'title' => app()->getLocale() == 'ar' ? $this->title_ar : $this->title_en,
+            'flag'  => $this->flag,
         ];
     }
 }

@@ -29,7 +29,7 @@ class PortfolioRepository implements PortfolioRepositoryInterface
     }
     public function getPortfolioByService($serviceId)
     {
-        return $this->model->whereHas('services', function ($query) use ($serviceId) {
+        return $this->model->with(['media', 'user'])->whereHas('services', function ($query) use ($serviceId) {
             $query->where('service_id', $serviceId);
         })->get();
     }
@@ -122,7 +122,7 @@ class PortfolioRepository implements PortfolioRepositoryInterface
     public function delete($id)
     {
         $portfolio = $this->find($id);
-     
+
         return $portfolio->delete();
     }
     public function deleteMedia($id)

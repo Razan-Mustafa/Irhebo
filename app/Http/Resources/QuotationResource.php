@@ -17,8 +17,10 @@ class QuotationResource extends JsonResource
         $disabledComment = Quotation_Comments::where('user_id', Auth::id())
             ->where('quotation_id', $this->id)
             ->exists();
-
-
+        $comments = Quotation_Comments::with('user.profession')
+            ->where('quotation_id', $this->id)
+            ->get();
+        // dd($comment);
         $currencyCode = $request->header('currency', 'USD');
         $currencyModel = Currency::where('code', strtoupper($currencyCode))->first();
         $symbol = $currencyModel ? $currencyModel->symbol : '$';
@@ -44,6 +46,8 @@ class QuotationResource extends JsonResource
             'created_at' => Carbon::parse($this->created_at)->toDayDateTimeString(),
             'updated_at' => Carbon::parse($this->updated_at)->toDayDateTimeString(),
             'disabled_comment' => $disabledComment,
+            'comments' => QuotationCommentResource::collection($comments),
+
         ];
     }
 }

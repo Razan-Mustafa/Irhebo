@@ -7,19 +7,31 @@ use App\Http\Requests\Api\QuotationCommentRequest;
 use App\Http\Requests\Api\QuotationRequest;
 use App\Http\Resources\QuotationCommentResource;
 use App\Http\Resources\QuotationResource;
+use App\Http\Resources\RequestResource;
+use App\Models\Category;
 use App\Services\QuotationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Utilities\CurrencyConverter;
 use App\Models\Currency;
+use App\Models\Freelancer;
+use App\Models\Plan;
+use App\Models\PlanFeature;
+use App\Models\Quotation;
+use App\Models\Quotation_Comments;
+use App\Models\Request;
+use App\Models\Service;
+use App\Services\RequestService;
 
 class QuotationController extends Controller
 {
     protected $quotationService;
+    protected $requestService;
 
-    public function __construct(QuotationService $quotationService)
+    public function __construct(QuotationService $quotationService, RequestService $requestService)
     {
         $this->quotationService = $quotationService;
+        $this->requestService = $requestService;
     }
     public function getAll()
     {
@@ -104,5 +116,70 @@ class QuotationController extends Controller
         } catch (\Exception $e) {
             return $this->exceptionResponse($e, __('failed_to_retrieve_quotations_comments'));
         }
+    }
+    public function approveQuotation(Request $request, $id)
+    {
+        $comment = Quotation_Comments::findOrFail($id);
+        $quotation = Quotation::findOrFail($comment->quotation_id);
+        $category = Category::find($quotation->subCategory->category_id);
+
+        $service = new Service();
+        $service->sub_category_id = $quotation->sub_category_id;
+        $service->user_id = $comment->user_id;
+        $service->status = 'approved';
+        $service->save();
+        $service->translations()->create([
+            'language' => 'en',
+            'title' => $quotation->title,
+            'description' => $quotation->description,
+        ]);
+
+        // Add Arabic translation
+        $service->translations()->create([
+            'language' => 'ar',
+            'title' => $quotation->title,
+            'description' => $quotation->description,
+        ]);
+        // price
+        $feature_price = new PlanFeature();
+        $feature_price->plan_id = 1;
+        $feature_price->service_id = $service->id;
+        $feature_price->value = $quotation->price;
+        $feature_price->type = 'price';
+        $feature_price->save();
+
+        // delivery_days
+        $feature_days = new PlanFeature();
+        $feature_days->plan_id = 1;
+        $feature_days->service_id = $service->id;
+        $feature_days->value = $quotation->delivery_day;
+        $feature_days->type = 'delivery_days';
+        $feature_days->save();
+
+        // revisions
+        $feature_revisions = new PlanFeature();
+        $feature_revisions->plan_id = 1;
+        $feature_revisions->service_id = $service->id;
+        $feature_revisions->value = $quotation->revisions;
+        $feature_revisions->type = 'revisions';
+        $feature_revisions->save();
+
+        // source_files
+        $feature_source = new PlanFeature();
+        $feature_source->plan_id = 1;
+        $feature_source->service_id = $service->id;
+        $feature_source->value = $quotation->source_file;
+        $feature_source->type = 'source_files';
+        $feature_source->save();
+
+        // dd($category);
+        $data = [
+            'service_id' => $service->id,
+            'plan_id' => 1,
+        ];
+
+        $request = $this->requestService->createRequest($data);
+
+        return $this->successResponse(__('success'));
     }
 }

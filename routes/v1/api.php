@@ -142,6 +142,7 @@ Route::middleware('auth:api')->group(function () {
         $route->get('', 'getAll');
         $route->get('get-by-user-id', 'getByUserId');
         $route->post('create', 'createQuotation');
+        $route->post('approve-quotation/{id}', 'approveQuotation');
         $route->get('/details/{id}', 'findById');
         $route->post('create-comment', 'createComment');
         $route->get('/comment-list/{quotationId}', 'getCommentsByQuotationId');

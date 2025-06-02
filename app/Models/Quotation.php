@@ -10,7 +10,7 @@ class Quotation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'category_id',
+        'sub_category_id',
         'title',
         'description',
         'price',
@@ -25,9 +25,11 @@ class Quotation extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function category(){
-        return $this->belongsTo(Category::class);
+    public function subCategory()
+    {
+        return $this->belongsTo(SubCategory::class, 'sub_category_id');
     }
+
     public function quotationComments()
     {
         return $this->hasMany(Quotation_Comments::class);

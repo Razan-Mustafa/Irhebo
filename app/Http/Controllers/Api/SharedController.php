@@ -40,8 +40,7 @@ class SharedController extends Controller
       $countries = $this->countryService->getAllActive($perPage, $search);
 
       return $this->successResponse(__('countries_retrieved'), [
-         'countries' => CountryResource::collection($countries['data']),
-         'meta' => $countries['meta'],
+         'countries' => CountryResource::collection($countries),
       ]);
    }
 
@@ -50,12 +49,11 @@ class SharedController extends Controller
       $perPage = request('per_page', null);
       $languages = $this->languageService->getAllActive($perPage);
       return $this->successResponse(__('languages_retrieved'), [
-         'languages' => LanguageResource::collection($languages['data']),
+         'languages' => LanguageResource::collection($languages),
          'levels' => collect(LanguageLevelEnum::cases())->map(fn($level) => [
             'key' => $level->value,
             'value' => $level->label(),
          ])->values(),
-         'meta' => $languages['meta'],
       ]);
    }
    public function getRegisterData()
@@ -72,7 +70,7 @@ class SharedController extends Controller
                'key' => $level->value,
                'value' => $level->label(),
             ])->values(),
-           
+
          ],
       ]);
    }

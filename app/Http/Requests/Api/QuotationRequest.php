@@ -14,7 +14,7 @@ class QuotationRequest extends FormRequest
     public function rules()
     {
         return [
-            'category_id'=>'required',
+            'sub_category_id'=>'required',
             'currency'=>'required',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
