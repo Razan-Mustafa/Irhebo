@@ -105,7 +105,6 @@ class FilterController extends Controller
                 $min = $filter['min'] ?? 0;
                 $max = $filter['max'] ?? 999999;
 
-                // If it's price — convert min/max from requested currency to USD
                 if ($type === 'price') {
                     $convertedMin = CurrencyConverter::convert($min, $fromCurrency, 'USD');
                     $convertedMax = CurrencyConverter::convert($max, $fromCurrency, 'USD');
@@ -132,15 +131,28 @@ class FilterController extends Controller
             }
         }
 
-        if (empty($filters)) {
-            $services = Service::with(['media', 'user.profession.translation'])->get();
-        } elseif ($serviceIds && $serviceIds->isNotEmpty()) {
-            $services = Service::with(['media', 'user.profession.translation'])
-                ->whereIn('id', $serviceIds)
-                ->get();
-        } else {
+        // Search keyword from request
+        $search = $request->input('search');
+
+        // Base query for services
+        $servicesQuery = Service::with(['media', 'user.profession.translation']);
+
+        if ($serviceIds && $serviceIds->isNotEmpty()) {
+            $servicesQuery->whereIn('id', $serviceIds);
+        } elseif (!empty($filters)) {
+            // If filters exist but no matching services, return empty
             $services = collect();
+            return $this->successResponse(__('success'), ServiceResource::collection($services));
         }
+
+        // Apply search if exists
+        if ($search) {
+            $servicesQuery->whereHas('translation', function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+        $services = $servicesQuery->get();
 
         return $this->successResponse(__('success'), ServiceResource::collection($services));
     }
