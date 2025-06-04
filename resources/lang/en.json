@@ -480,5 +480,6 @@
     "is_popular": "Is Popular",
     "select_currency": "Select Currency",
     "duplicate_slug": "Slug already exists. Please use a different title.",
-    "file_uploaded_successfully": "File uploaded successfully."
+    "file_uploaded_successfully": "File uploaded successfully.",
+    "quotation_approved": "The quotation has been approved successfully."
 }

@@ -423,5 +423,6 @@
     "is_popular": "شائع",
     "select_currency": "اختر العملة",
     "duplicate_slug": "المُعرف (Slug) موجود بالفعل. يرجى استخدام عنوان مختلف.",
-    "file_uploaded_successfully": "تم رفع الملف بنجاح."
+    "file_uploaded_successfully": "تم رفع الملف بنجاح.",
+    "quotation_approved": "تمت الموافقة على عرض السعر بنجاح."
 }

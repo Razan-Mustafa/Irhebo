@@ -40,7 +40,7 @@ class PortfolioRepository implements PortfolioRepositoryInterface
     }
     public function getPortfolioDetails($id)
     {
-        return $this->model->with('media','services')->find($id);
+        return $this->model->with('media','services.media','services.user.profession')->find($id);
     }
     public function find($id)
     {

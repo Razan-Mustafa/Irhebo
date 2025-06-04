@@ -247,6 +247,8 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
         $route->put('update-terms', 'updateTerms')->name('updateTerms');
     });
 
+
+    
     Route::resource('currencies', CurrencyController::class);
     Route::post('categories/update-popular-status', [CategoryController::class, 'updatePopularStatus'])->name('categories.updatePopularStatus');
 });

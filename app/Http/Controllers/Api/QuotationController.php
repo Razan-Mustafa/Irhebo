@@ -179,7 +179,8 @@ class QuotationController extends Controller
         ];
 
         $request = $this->requestService->createRequest($data);
+        $quotation->delete();
 
-        return $this->successResponse(__('success'));
+        return $this->successResponse(__('success'), __('quotation_approved'));
     }
 }
