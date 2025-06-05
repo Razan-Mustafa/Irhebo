@@ -168,7 +168,8 @@ class ServiceController extends Controller
             $data = $request->validated();
 
             // Get currency code from header (default 'USD')
-            $currencyCode = $request->header('currency', 'USD');
+            $currencyCode = $request->currency;
+            // dd($data['plans']);
 
             // Loop on each plan and convert price to USD
             foreach ($data['plans'] as &$plan) {
@@ -208,7 +209,7 @@ class ServiceController extends Controller
     {
         try {
             // Get currency code from header (default 'USD')
-            $currencyCode = $request->header('currency', 'USD');
+            $currencyCode = $request->currency;
             $currencyModel = Currency::where('code', strtoupper($currencyCode))->first();
             $symbol = $currencyModel ? $currencyModel->symbol : '$';
 
@@ -224,14 +225,14 @@ class ServiceController extends Controller
             foreach ($data['plans'] as $planData) {
 
                 $plan = $service->plans()->where('plan_id', $planData['plan_id'])->first();
-
+                $service_id = ($plan->pivot->service_id);
                 if ($plan) {
                     // plan exists -> update its features
                     foreach ($planData['features'] as $featureData) {
-                        $feature = $plan->features()->where('type', $featureData['type'])->first();
-
+                        $feature = $plan->features()->where('type', $featureData['type'])->where('service_id', $service_id)->first();
                         if ($feature) {
                             // Convert price if it's price type
+                            // dd($featureData['type']);
                             if ($featureData['type'] === 'price') {
                                 $featureData['value'] = CurrencyConverter::convert($featureData['value'], $currencyCode, 'USD');
                             }

@@ -15,6 +15,10 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+    $langCode = request()->header('Accept-Language', 'en'); // default 'en'
+
+    $titleField = 'title_' . $langCode;
         $data = [
             'id' => $this->id,
             'name' => $this->username,
@@ -37,12 +41,12 @@ class UserResource extends JsonResource
             'role' => $this->freelancer ? 'freelancer' : 'client',
             'languages' => $this->languages->map(fn($lang) => [
                 'id' => $lang->language->id,
-                'title' => $lang->language->title,
+                'title' => $lang->language->{$titleField} ?? $lang->language->title_en,
                 'flag' => $lang->language->flag,
                 'level' => $lang->level,
             ])
         ];
-    
+
         return $data;
     }
 }

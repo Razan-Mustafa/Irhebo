@@ -26,7 +26,7 @@ class UpdateServiceRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
 
-            'plans' => ['required', 'array', 'size:3'],
+            'plans' => ['required', 'array'],
             'plans.*.plan_id' => ['required', 'integer'],
             'plans.*.features' => ['required', 'array'],
 

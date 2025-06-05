@@ -361,7 +361,7 @@
                 return `
                     <div class="feature-item grid grid-cols-12 gap-4 mt-3 items-center">
                         <div class="col-span-5">
-                            <input type="text" name="plans[${planIndex}][features][${featureIndex}][title]"
+                            <input readonly type="text" name="plans[${planIndex}][features][${featureIndex}][title]"
                                 value="${labelMap[type]}"
                                 placeholder="${labelMap[type]}"
                                 class="form-input w-full border-gray-300 rounded-md focus:ring-primary focus:border-primary text-base h-[42px]" />
