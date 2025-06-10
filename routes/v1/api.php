@@ -141,6 +141,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('quotations')->controller(QuotationController::class)->group(function ($route) {
         $route->get('', 'getAll');
         $route->get('get-by-user-id', 'getByUserId');
+        $route->get('get-by-freelancer-id', 'getByFreelancerId');
         $route->post('create', 'createQuotation');
         $route->post('approve-quotation/{id}', 'approveQuotation');
         $route->get('/details/{id}', 'findById');

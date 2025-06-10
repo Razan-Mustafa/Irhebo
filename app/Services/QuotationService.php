@@ -61,11 +61,11 @@ class QuotationService
         $categoryIds = $user->categories1->pluck('id')->toArray();
         $query->whereHas('subCategory', function ($q) use ($categoryIds) {
             $q->whereIn('category_id', $categoryIds);
-        });
-
+        })
+            ->whereDoesntHave('quotationComments', function ($q) use ($user) {
+                $q->where('user_id', $user->id); // or 'user_id' if you're using that
+            });
 
         return $query->orderBy('created_at', 'desc')->paginate($perPage);
     }
-
-
 }

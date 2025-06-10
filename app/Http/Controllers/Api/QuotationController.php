@@ -61,6 +61,7 @@ class QuotationController extends Controller
             return $this->exceptionResponse($e, __('failed_to_retrieve_quotations'));
         }
     }
+
     public function createQuotation(QuotationRequest $request): JsonResponse
     {
         $currencyCode = $request->currency;
@@ -182,5 +183,32 @@ class QuotationController extends Controller
         $quotation->delete();
 
         return $this->successResponse(__('success'), __('quotation_approved'));
+    }
+
+
+    public function getByFreelancerId()
+    {
+        try {
+            $perPage = request()->query('per_page');
+            // $quotations = $this->quotationService->getAllQuotations($perPage);
+            $freelancer = Auth::user();
+            $freelancerCategoryIds = $freelancer->categories->pluck('category_id')->toArray();
+
+            $quotations = Quotation::with('user.profession')->whereHas('subCategory', function ($query) use ($freelancerCategoryIds) {
+                $query->whereIn('category_id', $freelancerCategoryIds);
+            })->paginate($perPage);
+
+            // dd($freelancer, $this->quotationService->getAllQuotations($perPage));
+
+// dd($freelancerCategoryIds, $quotations);
+
+            return $this->successResponse(__('quotations_retrieved_successfully'), [
+                'quotations' => QuotationResource::collection($quotations),
+                // 'meta' => $quotations['meta']
+            ]);
+            return response()->json($quotations);
+        } catch (\Exception $e) {
+            return $this->exceptionResponse($e, __('failed_to_retrieve_quotations'));
+        }
     }
 }

@@ -57,8 +57,11 @@ class HomeService
     public function getHomeFreelancerData()
     {
         $userId = Auth::id();
+        $requests = $this->requestService->getByFreelancer()['data']
+            ->whereIn('status', ['pending', 'in_progress']);
+        // dd($requests);
         return [
-            'requests' => RequestResource::collection($this->requestService->getByFreelancer()['data']),
+            'requests' => RequestResource::collection($requests),
             'services' => ServiceResource::collection($this->serviceService->getServicesByUserId($userId, $perPage = 3)['data']),
             'portfolios' => PortfolioResource::collection($this->portfolioService->getPortfolioByUserId($userId, $perPage = 3)['data']),
             'quotations' => QuotationResource::collection($this->quotationService->getQuotationsForFreelancer($perPage = 10)),

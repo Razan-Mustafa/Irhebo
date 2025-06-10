@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Profession extends Model
 {
-    use HasFactory,SoftDeletes,HasTranslations;
+    use HasFactory, SoftDeletes, HasTranslations;
 
 
     protected $fillable = [
@@ -19,13 +19,17 @@ class Profession extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'deleted_at'=> 'datetime'
+        'deleted_at' => 'datetime'
     ];
     protected $with = ['translation'];
 
-   
+
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+    public function title()
+    {
+        return $this->hasOne(ProfessionTranslation::class)->where('language', app()->getLocale());
     }
 }
