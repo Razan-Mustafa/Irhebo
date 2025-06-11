@@ -32,6 +32,6 @@ class Quotation extends Model
 
     public function quotationComments()
     {
-        return $this->hasMany(Quotation_Comments::class);
+        return $this->hasMany(Quotation_Comments::class, 'quotation_id');
     }
 }

@@ -46,7 +46,7 @@
                                                 {{ $quotation->title }}</div>
                                             <div class="my-3"><strong>{{ __('price') }}:</strong>
                                                 {{ number_format($quotation->price, 2) }}</div>
-                                            <div class="my-3"><strong>{{ __('delivery_day') }}:</strong>
+                                            <div class="my-3"><strong>{{ __('delivery_days') }}:</strong>
                                                 {{ $quotation->delivery_day }} {{ __('days') }}</div>
                                             <div class="my-3"><strong>{{ __('revisions') }}:</strong>
                                                 {{ $quotation->revisions }}</div>

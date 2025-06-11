@@ -13,7 +13,7 @@
                 </div>
                 <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] ps-[0.5rem]">
-                        <a class="flex items-center text-primary" href="{{ route('home.index') }}">
+                        <a class="flex items-center text-primary" href="{{ route('freelancer.home.index') }}">
                             <i class="ti ti-home me-1"></i> {{ __('home') }}
                             <i class="ti ti-chevrons-right px-[0.5rem] rtl:rotate-180"></i>
                         </a>
@@ -54,7 +54,7 @@
                                     <tr>
                                         <th>#</th>
                                         <th>{{ __('code') }}</th>
-                                        <th>{{ __('user') }}</th>
+                                        {{-- <th>{{ __('user') }}</th> --}}
                                         <th>{{ __('subject') }}</th>
                                         <th>{{ __('status') }}</th>
                                         <th>{{ __('actions') }}</th>
@@ -65,14 +65,14 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $ticket->code }}</td>
-                                            <td>{{ $ticket->user->username }}</td>
+                                            {{-- <td>{{ $ticket->user->username }}</td> --}}
                                             <td>{{ $ticket->subject }}</td>
                                             <td>
                                                 {!! \App\Enums\TicketStatusEnum::tryFrom($ticket->status)?->badge() !!}
                                             </td>
 
                                             <td>
-                                                <a href="{{ route('tickets.show',$ticket->id) }}"
+                                                <a href="{{ route('freelancer.tickets.show',$ticket->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
                                                     <i class="las la-eye"></i>
                                                 </a>

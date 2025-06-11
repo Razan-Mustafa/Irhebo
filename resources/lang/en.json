@@ -481,5 +481,11 @@
     "select_currency": "Select Currency",
     "duplicate_slug": "Slug already exists. Please use a different title.",
     "file_uploaded_successfully": "File uploaded successfully.",
-    "quotation_approved": "The quotation has been approved successfully."
+    "quotation_approved": "The quotation has been approved successfully.",
+    "quotation_information": "Quotation Information",
+    "user_information": "User Information",
+    "add_comment": "Add Comment",
+    "quotation_details": "Quotation Details",
+    "select_prefix": "Select Prefix",
+    "user_categories_retrieved": "User categories retrieved successfully."
 }

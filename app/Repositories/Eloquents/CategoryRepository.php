@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\FreelancerCateogry;
 use App\Utilities\FileManager;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryRepository implements CategoryRepositoryInterface
 {
@@ -23,6 +24,15 @@ class CategoryRepository implements CategoryRepositoryInterface
     public function getUserCategories()
     {
         $categoryIds = FreelancerCateogry::where('user_id', auth()->id())
+            ->pluck('category_id');
+
+        return Category::whereIn('id', $categoryIds)->get();
+    }
+
+    public function getUserCategoriesApi()
+    {
+        // dd(auth()->id());
+        $categoryIds = FreelancerCateogry::where('user_id', Auth::guard('api')->id())
             ->pluck('category_id');
 
         return Category::whereIn('id', $categoryIds)->get();

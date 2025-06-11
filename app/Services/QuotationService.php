@@ -68,4 +68,23 @@ class QuotationService
 
         return $query->orderBy('created_at', 'desc')->paginate($perPage);
     }
+
+    public function getQuotationsForFreelancerWithComment($perPage = 10)
+    {
+        $user = Auth::user();
+
+        $query = Quotation::with([
+            'user',
+            'quotationComments.user',  // عشان يحمّل الـ user مع كل comment
+            'user.profession.translation'
+        ]);
+
+        $categoryIds = $user->categories1->pluck('id')->toArray();
+
+        $query->whereHas('subCategory', function ($q) use ($categoryIds) {
+            $q->whereIn('category_id', $categoryIds);
+        });
+
+        return $query->orderBy('created_at', 'desc')->paginate($perPage);
+    }
 }

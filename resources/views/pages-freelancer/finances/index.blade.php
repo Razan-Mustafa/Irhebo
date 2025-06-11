@@ -16,7 +16,7 @@
                 </div>
                 <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] ps-[0.5rem]">
-                        <a class="flex items-center text-primary" href="{{ route('home.index') }}">
+                        <a class="flex items-center text-primary" href="{{ route('freelancer.home.index') }}">
                             <i class="ti ti-home me-1"></i> {{ __('home') }}
                             <i class="ti ti-chevrons-right px-[0.5rem] rtl:rotate-180"></i>
                         </a>
@@ -38,17 +38,17 @@
                         </div>
 
                         <div class="box-body">
-                            <form id="bulk-update-form" method="POST" action="{{ route('finances.bulkUpdate') }}">
+                            <form id="bulk-update-form" method="POST" action="{{ route('freelancer.finances.bulkUpdate') }}">
                                 @csrf
 
                                 <table id="basic-table" class="table text-center">
                                     <thead>
                                         <tr>
-                                            <th><input type="checkbox" id="select-all" class="rounded-sm border-gray-800 text-primary focus:ring-primary"></th>
+                                            {{-- <th><input type="checkbox" id="select-all" class="rounded-sm border-gray-800 text-primary focus:ring-primary"></th> --}}
                                             <th>#</th>
                                             <th>{{ __('request_id') }}</th>
                                             <th>{{ __('client') }}</th>
-                                            <th>{{ __('freelancer') }}</th>
+                                            {{-- <th>{{ __('freelancer') }}</th> --}}
                                             <th>{{ __('amount') }}</th>
                                             <th>{{ __('payment_status') }}</th>
                                             <th>{{ __('paid_at') }}</th>
@@ -57,19 +57,19 @@
                                     <tbody>
                                         @foreach ($finances as $finance)
                                             <tr>
-                                                <td>
+                                                {{-- <td>
                                                     @if ($finance->payment_status !== \App\Enums\PaymentStatusEnum::PAID->value)
                                                         <input type="checkbox" name="finance_ids[]" value="{{ $finance->id }}" class="rounded-sm border-gray-800 text-primary focus:ring-primary single-checkbox">
                                                     @endif
-                                                </td>
+                                                </td> --}}
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>
-                                                    <a class="text-primary underline" href="{{ route('requests.show', $finance->request->id) }}">
+                                                    <a class="text-primary underline" href="{{ route('freelancer.requests.show', $finance->request->id) }}">
                                                         {{ $finance->request->order_number }}
                                                     </a>
                                                 </td>
                                                 <td>{{ $finance->request->user->username }}</td>
-                                                <td>{{ $finance->request->service->user->username }}</td>
+                                                {{-- <td>{{ $finance->request->service->user->username }}</td> --}}
                                                 <td>{{ number_format($finance->total, 2) }}</td>
                                                 <td>{!! \App\Enums\PaymentStatusEnum::tryFrom($finance->payment_status)?->badge() !!}</td>
                                                 <td>{{ $finance->paid_at ?? '-'}}</td>
@@ -111,7 +111,7 @@
 
             $('#basic-table').DataTable({
                 columnDefs: [
-                    { orderable: false, targets: [0, 7] }
+                    { orderable: false, targets: [0, 5] }
                 ]
             });
 

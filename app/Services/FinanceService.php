@@ -16,6 +16,9 @@ class FinanceService{
     public function getAll(){
         return $this->financeRepository->getAll();
     }
+    public function getForFreelancer(){
+        return $this->financeRepository->getForFreelancer();
+    }
     public function bulkUpdate(array $data): void
 {
     $financeIds = $data['finance_ids'];

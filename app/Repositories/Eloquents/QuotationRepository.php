@@ -53,10 +53,10 @@ class QuotationRepository implements QuotationRepositoryInterface
 
     public function getCommentsByQuotationId(int $quotationId)
     {
-        return $this->quotationComment->where('quotation_id', $quotationId)->with(['quotation', 'user.profession'])->get();
+        return $this->quotationComment->where('quotation_id', $quotationId)->with(['quotation', 'user.profession','quotationComments.user'])->get();
     }
     public function getQuotationDetails($id)
     {
-        return $this->model->with(['quotationComments', 'user.profession'])->find($id);
+        return $this->model->with(['quotationComments', 'user.profession','quotationComments.user'])->find($id);
     }
 }

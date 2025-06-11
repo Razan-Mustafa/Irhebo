@@ -91,6 +91,7 @@ Route::prefix('faqs')->controller(FaqController::class)->group(function($route){
 });
 Route::prefix('users')->controller(UserController::class)->group(function ($route) {
     $route->get('freelancer-profile/{userId}', 'getFreelancerProfileByUserId');
+    $route->get('freelancer-categories', 'getFreelancerCategoriesByUserId');
 });
 // Protected Routes (Require Authentication)
 Route::middleware('auth:api')->group(function () {

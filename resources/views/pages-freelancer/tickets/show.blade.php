@@ -11,27 +11,39 @@
                 <div class="box-body">
                     <div class="grid grid-cols-12 gap-4">
                         <!-- ticket Code -->
-                        <div class="col-span-12 md:col-span-3">
+                        <div class="col-span-12 md:col-span-4">
                             <label class="block text-sm font-bold text-gray-700">{{ __('Ticket Code') }}</label>
                             <p>{{ $ticket->code }}</p>
                         </div>
                         <!-- User -->
-                        <div class="col-span-12 md:col-span-3">
+                        {{-- <div class="col-span-12 md:col-span-3">
                             <label class="block text-sm font-bold text-gray-700">{{ __('User') }}</label>
                             <p>{{ $ticket->user->username }}</p>
-                        </div>
+                        </div> --}}
                         <!-- Subject -->
-                        <div class="col-span-12 md:col-span-3">
+                        <div class="col-span-12 md:col-span-4">
                             <label class="block text-sm font-bold text-gray-700">{{ __('Subject') }}</label>
                             <p>{{ $ticket->subject }}</p>
                         </div>
                         <!-- Status -->
-                        <div class="col-span-12 md:col-span-3">
+                        <div class="col-span-12 md:col-span-4">
                             <label class="block text-sm font-bold text-gray-700">{{ __('Status') }}</label>
                             <p>
                                 {!! \App\Enums\TicketStatusEnum::tryFrom($ticket->status)?->badge() !!}
                             </p>
+
+                            <form action="{{ route('freelancer.tickets.changeStatus', $ticket->id) }}" method="POST" class="mt-2">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="status"
+                                    value="{{ $ticket->status === 'open' ? 'closed' : 'open' }}">
+                                <button type="submit"
+                                    class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                                    {{ $ticket->status === 'open' ? __('Close Ticket') : __('Open Ticket') }}
+                                </button>
+                            </form>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -94,24 +106,29 @@
                     <h5 class="box-title">{{ __('Reply to Ticket') }}</h5>
                 </div>
                 <div class="box-body">
-                    <form action="{{ route('tickets.reply', $ticket->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('freelancer.tickets.reply', $ticket->id) }}" method="POST"
+                        enctype="multipart/form-data">
                         @csrf
                         <div class="space-y-4">
                             <!-- Textarea for Message -->
                             <div>
-                                <label for="message" class="block text-sm font-medium text-gray-700">{{ __('Your Reply') }}</label>
+                                <label for="message"
+                                    class="block text-sm font-medium text-gray-700">{{ __('Your Reply') }}</label>
                                 <textarea name="message" id="message" rows="4" class="w-full p-2 border border-gray-300 rounded-lg"></textarea>
                             </div>
 
                             <!-- File Attachment -->
                             <div>
-                                <label for="attachment" class="block text-sm font-medium text-gray-700">{{ __('Attach Files') }}</label>
-                                <input type="file" name="attachment[]" id="attachment" multiple class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
+                                <label for="attachment"
+                                    class="block text-sm font-medium text-gray-700">{{ __('Attach Files') }}</label>
+                                <input type="file" name="attachment[]" id="attachment" multiple
+                                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
                             </div>
 
                             <div class="flex justify-end">
-                                <button type="submit"   class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                               {{ __('send reply') }} <i class="las la-paper-plane text-lg"></i></button>
+                                <button type="submit"
+                                    class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                    {{ __('send reply') }} <i class="las la-paper-plane text-lg"></i></button>
                             </div>
                         </div>
                     </form>

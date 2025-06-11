@@ -16,16 +16,16 @@ class FinanceController extends Controller
         $this->financeService = $financeService;
     }
     public function index(){
-        $finances = $this->financeService->getAll();
-        return view('pages.finances.index',compact('finances'));
+        $finances = $this->financeService->getForFreelancer();
+        return view('pages-freelancer.finances.index',compact('finances'));
     }
-    public function bulkUpdate(Request $request){
-       $data = $request->validate([
-        'finance_ids'=>'required|array',
-        'finance_ids.*'=>'required|numeric'
-       ]);
-       $this->financeService->bulkUpdate($data);
-       return redirect()->route('finances.index')->with('success', __('finances_updated_successfully'));
+    // public function bulkUpdate(Request $request){
+    //    $data = $request->validate([
+    //     'finance_ids'=>'required|array',
+    //     'finance_ids.*'=>'required|numeric'
+    //    ]);
+    //    $this->financeService->bulkUpdate($data);
+    //    return redirect()->route('finances.index')->with('success', __('finances_updated_successfully'));
 
-    }
+    // }
 }

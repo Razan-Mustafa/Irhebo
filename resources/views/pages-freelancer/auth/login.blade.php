@@ -23,9 +23,9 @@
                                 <div class="grid grid-cols-12 gap-4">
                                     <!-- phone -->
                                     <div class="col-span-12">
-                                        <label for="signin-phone" class="form-label">{{ __('phone') }}</label>
+                                        <label for="prefixLogin" class="form-label">{{ __('phone') }}</label>
                                         <div class="flex">
-                                            <select name="prefix" class="form-select border-2 rounded-md mr-2">
+                                            <select id="prefixLogin" name="prefix" class="form-select border-2 rounded-md mr-2">
                                                 @foreach ($countries as $country)
                                                     <option value="{{ $country->phone_code }}">{{ $country->phone_code }}</option>
                                                 @endforeach
@@ -77,3 +77,4 @@
         </div>
     </div>
 @endsection
+

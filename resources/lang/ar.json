@@ -424,5 +424,11 @@
     "select_currency": "اختر العملة",
     "duplicate_slug": "المُعرف (Slug) موجود بالفعل. يرجى استخدام عنوان مختلف.",
     "file_uploaded_successfully": "تم رفع الملف بنجاح.",
-    "quotation_approved": "تمت الموافقة على عرض السعر بنجاح."
+    "quotation_approved": "تمت الموافقة على عرض السعر بنجاح.",
+    "quotation_information": "معلومات العرض",
+    "user_information": "معلومات المستخدم",
+    "add_comment": "إضافة تعليق",
+    "quotation_details": "تفاصيل الاقتباس",
+    "select_prefix": "اختر البادئة",
+    "user_categories_retrieved": "تم جلب تصنيفات المستخدم بنجاح."
 }

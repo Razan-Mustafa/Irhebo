@@ -19,7 +19,9 @@ use App\Http\Resources\PortfolioResource;
 use App\Http\Resources\FreelancerResource;
 use App\Http\Requests\Api\UpdateProfileRequest;
 use App\Http\Requests\Api\BecomeFreelancerRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Freelancer;
+use App\Services\CategoryService;
 
 class UserController extends Controller
 {
@@ -28,12 +30,14 @@ class UserController extends Controller
     protected $reviewService;
     protected $portfolioService;
     protected $serviceService;
-    public function __construct(FreelancerService $freelancerService, ClientService $clientService, ReviewService $reviewService, PortfolioService $portfolioService, ServiceService $serviceService)
+    protected $categoryService;
+    public function __construct(FreelancerService $freelancerService, ClientService $clientService, ReviewService $reviewService, PortfolioService $portfolioService, ServiceService $serviceService,CategoryService $categoryService)
     {
         $this->freelancerService = $freelancerService;
         $this->clientService = $clientService;
         $this->reviewService = $reviewService;
         $this->portfolioService = $portfolioService;
+        $this->categoryService = $categoryService;
         $this->serviceService = $serviceService;
     }
     public function getClientProfile()
@@ -50,6 +54,20 @@ class UserController extends Controller
             return $this->exceptionResponse($e);
         }
     }
+
+
+    public function getFreelancerCategoriesByUserId()
+    {
+        try {
+            $categories = $this->categoryService->getUserCategoriesApi();
+            // dd($categories);
+            return $this->successResponse(__('user_categories_retrieved'), CategoryResource::collection($categories));
+        } catch (\Exception $e) {
+            return $this->exceptionResponse($e);
+        }
+    }
+
+
     public function getFreelancerProfile()
     {
         try {

@@ -13,7 +13,7 @@
                 </div>
                 <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] ps-[0.5rem]">
-                        <a class="flex items-center text-primary" href="{{ route('home.index') }}">
+                        <a class="flex items-center text-primary" href="{{ route('freelancer.home.index') }}">
                             <i class="ti ti-home me-1"></i> {{ __('home') }}
                             <i class="ti ti-chevrons-right px-[0.5rem] rtl:rotate-180"></i>
                         </a>
@@ -53,12 +53,20 @@
                                                 {!! \App\Enums\QuotationStatusEnum::tryFrom($quotation->status)?->badge() !!}
                                             </td>
                                             <td>
-
-                                                <a aria-label="anchor" href="{{ route('quotations.show', $quotation->id) }}"
+                                                <a aria-label="anchor"
+                                                    href="{{ route('freelancer.quotations.show', $quotation->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
                                                     <i class="las la-eye"></i>
                                                 </a>
+
+                                                <a aria-label="{{ __('add_comment') }}"
+                                                    href="{{ route('freelancer.quotations.comment.create', $quotation->id) }}"
+                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill"
+                                                    title="{{ __('add_comment') }}">
+                                                    <i class="las la-comment"></i>
+                                                </a>
                                             </td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>

@@ -20,7 +20,21 @@ class ReviewRepository implements ReviewRepositoryInterface
     }
     public function index()
     {
-        return $this->model->with('user','service')->latest()->paginate(9); 
+        return $this->model->with('user', 'service')->latest()->paginate(9);
+    }
+
+
+    public function getForFreelancer()
+    {
+        $userId = auth()->id();
+
+        return $this->model
+            ->whereHas('service', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->with(['user', 'service.user'])  // note: 'services' plural
+            ->orderBy('id', 'DESC')
+            ->get();
     }
     public function getByUserAndService(int $userId, int $serviceId)
     {

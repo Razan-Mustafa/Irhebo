@@ -155,6 +155,7 @@
 
 @push('scripts')
     {!! JsValidator::formRequest('App\\Http\\Requests\\Admin\\ClientRequest') !!}
+    
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -166,6 +167,12 @@
             });
             $('#country_id').select2({
                 placeholder: "{{ __('select_country') }}",
+                allowClear: true,
+                width: '100%',
+                closeOnSelect: false
+            });
+            $('#prefix').select2({
+                placeholder: "{{ __('select_prefix') }}",
                 allowClear: true,
                 width: '100%',
                 closeOnSelect: false

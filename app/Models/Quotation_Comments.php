@@ -18,7 +18,7 @@ class Quotation_Comments extends Model
     // Define the relationship with the User model
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // Define the relationship with the Quotation model
@@ -26,5 +26,4 @@ class Quotation_Comments extends Model
     {
         return $this->belongsTo(Quotation::class);
     }
-
 }

@@ -203,6 +203,12 @@
                 width: '100%',
                 closeOnSelect: false
             });
+            $('#prefix').select2({
+                placeholder: "{{ __('select_prefix') }}",
+                allowClear: true,
+                width: '100%',
+                closeOnSelect: false
+            });
             $('#add-certificate-btn').on('click', function(e) {
                 e.preventDefault();
 

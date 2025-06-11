@@ -38,10 +38,10 @@
                                 <p>{!! nl2br(e($portfolio->description)) !!}</p>
                             </div>
 
-                            <div>
+                            {{-- <div>
                                 <strong>{{ __('freelancer') }}:</strong>
                                 <p>{{ $portfolio->user?->username ?? '-' }}</p>
-                            </div>
+                            </div> --}}
 
                             <div>
                                 <strong>{{ __('services') }}:</strong>
@@ -55,7 +55,7 @@
                             <div>
                                 <strong>{{ __('cover') }}:</strong><br>
                                     <img src="{{ asset($portfolio->media->where('is_cover',true)->first()->media_path) }}" alt="Cover" class="mt-2 h-48 rounded">
-                           
+
                             </div>
 
                             <div>
@@ -67,7 +67,7 @@
                                 @endforelse
                             </div>
 
-                          
+
                         </div>
                     </div>
                 </div>

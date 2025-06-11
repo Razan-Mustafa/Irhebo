@@ -25,6 +25,10 @@ class CategoryService
     {
         return $this->categoryRepository->getUserCategories();
     }
+    public function getUserCategoriesApi()
+    {
+        return $this->categoryRepository->getUserCategoriesApi();
+    }
     public function getAllActive($isPopular = null)
     {
         return $this->categoryRepository->getAllActive($isPopular);

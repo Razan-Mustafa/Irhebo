@@ -16,89 +16,14 @@
                 <ul class="main-menu">
                     <li class="slide__category"><span class="category-name">{{ __('main') }}</span></li>
                     <li class="slide">
-                        <a href="{{ route('home.index') }}" class="side-menu__item">
+                        <a href="{{ route('freelancer.home.index') }}" class="side-menu__item">
                             <i class="bx bx-home side-menu__icon"></i>
                             <span class="side-menu__label">{{ __('dashboard') }}</span>
                         </a>
                     </li>
 
                     <li class="slide__category"><span class="category-name">{{ __('pages') }}</span></li>
-                    {{-- <li class="slide has-sub">
-                        <a href="javascript:void(0);" class="side-menu__item">
-                            <i class="bx bx-user side-menu__icon"></i>
-                            <span class="side-menu__label">{{ __('users') }}</span>
-                            <i class="fe fe-chevron-right side-menu__angle"></i>
-                        </a>
-                        <ul class="slide-menu">
-                            <li class="slide">
-                                <a href="{{ route('admins.index') }}" class="side-menu__item">
-                                    <i class="bx bx-shield-quarter side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('administrators') }}</span>
-                                </a>
-                            </li>
 
-                            <li class="slide">
-                                <a href="{{ route('clients.index') }}" class="side-menu__item">
-                                    <i class="bx bx-user side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('clients') }}</span>
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('freelancers.index') }}" class="side-menu__item">
-                                    <i class="bx bx-briefcase side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('freelancers') }}</span>
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('roles.index') }}" class="side-menu__item">
-                                    <i class="bx bx-key side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('roles') }}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li> --}}
-
-
-                    {{-- <li class="slide">
-                    <a href="{{ route('countries.index') }}" class="side-menu__item">
-                        <i class="bx bx-globe side-menu__icon"></i>
-                        <span class="side-menu__label">{{ __('countries') }}</span>
-                    </a>
-                </li> --}}
-
-                    {{-- <li class="slide has-sub">
-                        <a href="javascript:void(0);" class="side-menu__item">
-                            <i class="bx bx-category-alt side-menu__icon"></i>
-                            <span class="side-menu__label">{{ __('categories_management') }}</span>
-                            <i class="fe fe-chevron-right side-menu__angle"></i>
-                        </a>
-                        <ul class="slide-menu">
-                            <li class="slide">
-                                <a href="{{ route('categories.index') }}" class="side-menu__item">
-                                    <i class="bx bx-category side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('categories') }}</span>
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('subCategories.index') }}" class="side-menu__item">
-                                    <i class="bx bx-layer side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('sub_categories') }}</span>
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('tags.index') }}" class="side-menu__item">
-                                    <i class="bx bx-tag side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('tags') }}</span>
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('plans.index') }}" class="side-menu__item">
-                                    <i class="bx bx-file side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('plans') }}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li> --}}
 
                     <li class="slide">
                         <a href="{{ route('freelancer.services.index') }}" class="side-menu__item">
@@ -137,94 +62,14 @@
                             <span class="side-menu__label">{{ __('Reviews') }}</span>
                         </a>
                     </li>
-                    {{-- <li class="slide">
-                    <a href="{{ route('freelancer.filters.index') }}" class="side-menu__item">
-                        <i class="bx bx-filter side-menu__icon"></i>
-                        <span class="side-menu__label">{{ __('filters') }}</span>
-                    </a>
-                </li> --}}
-
-                    {{-- <li class="slide">
-                    <a href="{{ route('freelancer.features.index') }}" class="side-menu__item">
-                        <i class="bx bx-check-square side-menu__icon"></i>
-                        <span class="side-menu__label">{{ __('fixed_features') }}</span>
-                    </a>
-                </li> --}}
 
                     <li class="slide">
                         <a href="{{ route('freelancer.tickets.index') }}" class="side-menu__item">
                             <i class="bx bx-message side-menu__icon"></i>
-                            <span class="side-menu__label">{{ __('support_tickets') }} <span
-                                    class="text-warning text-[0.75em] rounded-sm badge !py-[0.25rem] !px-[0.45rem] !bg-warning/10 ms-2">3</span></span>
+                            <span class="side-menu__label">{{ __('support_tickets') }} </span>
                         </a>
                     </li>
-                    <li class="slide has-sub">
 
-                        <a href="javascript:void(0);" class="side-menu__item">
-                            <i class="bx bx-cog side-menu__icon"></i>
-                            <span class="side-menu__label">{{ __('general_info') }}</span>
-                            <i class="fe fe-chevron-right side-menu__angle"></i>
-                        </a>
-                        <ul class="slide-menu">
-                            <li class="slide has-sub">
-                                <a href="javascript:void(0);" class="side-menu__item">
-                                    <i class="bx bx-image side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('sliders') }}</span>
-                                    <i class="fe fe-chevron-right side-menu__angle"></i>
-                                </a>
-                                <ul class="slide-menu">
-                                    <li class="slide">
-                                        <a href="{{ route('freelancer.sliders.mobileSliders') }}" class="side-menu__item">
-                                            <i class="bx bx-mobile side-menu__icon"></i>
-                                            <span class="side-menu__label">{{ __('mobile_intro_screens') }}</span>
-                                        </a>
-                                    </li>
-                                    <li class="slide">
-                                        <a href="{{ route('freelancer.sliders.webSliders') }}" class="side-menu__item">
-                                            <i class="bx bx-desktop side-menu__icon"></i>
-                                            <span class="side-menu__label">{{ __('web_sliders') }}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('freelancer.professions.index') }}" class="side-menu__item">
-                                    <i class="bx bx-hard-hat side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('professions') }}</span>
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('freelancer.general.generalInfo') }}" class="side-menu__item">
-                                    <i class="bx bx-cog side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('general') }}</span>
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('freelancer.general.privacyPolicy') }}" class="side-menu__item">
-                                    <i class="bx bx-shield-quarter side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('privacy_policy') }}</span>
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('freelancer.general.terms') }}" class="side-menu__item">
-                                    <i class="bx bx-lock side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('terms') }}</span>
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('freelancer.currencies.index') }}" class="side-menu__item">
-                                    <i class="bx bx-dollar-circle side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('currencies') }}</span>
-                                </a>
-                            </li>
-                            <li class="slide">
-                                <a href="{{ route('freelancer.faqs.index') }}" class="side-menu__item">
-                                    <i class="bx bx-help-circle side-menu__icon"></i>
-                                    <span class="side-menu__label">{{ __('faqs') }}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
 
                 </ul>
             @elseif(auth()->guard('admin')->check())
@@ -369,8 +214,7 @@
                     <li class="slide">
                         <a href="{{ route('tickets.index') }}" class="side-menu__item">
                             <i class="bx bx-message side-menu__icon"></i>
-                            <span class="side-menu__label">{{ __('support_tickets') }} <span
-                                    class="text-warning text-[0.75em] rounded-sm badge !py-[0.25rem] !px-[0.45rem] !bg-warning/10 ms-2">3</span></span>
+                            <span class="side-menu__label">{{ __('support_tickets') }} </span>
                         </a>
                     </li>
                     <li class="slide has-sub">
