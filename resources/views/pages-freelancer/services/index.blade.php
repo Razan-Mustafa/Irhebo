@@ -14,7 +14,7 @@
                 </div>
                 <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] ps-[0.5rem]">
-                        <a class="flex items-center text-primary" href="{{ route('home.index') }}">
+                        <a class="flex items-center text-primary" href="{{ route('freelancer.home.index') }}">
                             <i class="ti ti-home me-1"></i> {{ __('home') }}
                             <i class="ti ti-chevrons-right px-[0.5rem] rtl:rotate-180"></i>
                         </a>
@@ -30,14 +30,14 @@
                         <div class="box-header flex justify-between align-center">
                             <h5 class="box-title">{{ __('services') }}</h5>
                             <div class="ms-auto flex items-center gap-2">
-                                <a href="{{ route('services.create') }}"
+                                <a href="{{ route('freelancer.services.create') }}"
                                     class="flex items-center gap-2 px-4 py-2 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
                                     <i class="las la-plus-circle text-lg"></i>{{ __('create_service') }}
                                 </a>
-                                <a href="javascript:void(0)" id="filter-btn"
+                                {{-- <a href="javascript:void(0)" id="filter-btn"
                                     class="flex items-center gap-2 px-4 py-2 text-white bg-secondary hover:bg-blue-600 rounded-lg shadow">
                                     <i class="las la-filter"></i> {{ __('filter') }}
-                                </a>
+                                </a> --}}
                             </div>
                         </div>
                         <div class="box-footer border-t p-4" style="display: none;">
@@ -86,7 +86,7 @@
                                         <th>#</th>
                                         <th>{{ __('title') }}</th>
                                         <th>{{ __('category') }}</th>
-                                        <th>{{ __('freelancer') }}</th>
+                                        {{-- <th>{{ __('freelancer') }}</th> --}}
                                         <th>{{ __('actions') }}</th>
                                     </tr>
                                 </thead>
@@ -96,10 +96,10 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $service->translation->title }}</td>
                                             <td>{{ $service->subCategory->translation->title }}</td>
-                                            <td>{{ $service->user->username }}</td>
+                                            {{-- <td>{{ $service->user->username }}</td> --}}
                                             <td>
 
-                                                <a aria-label="anchor" href="{{ route('services.edit', $service->id) }}"
+                                                <a aria-label="anchor" href="{{ route('freelancer.services.edit', $service->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
                                                     <i class="las la-edit"></i>
                                                 </a>
@@ -109,7 +109,7 @@
                                                     <i class="las la-trash"></i>
                                                 </a>
                                                 <form id="delete-form-{{ $service->id }}"
-                                                    action="{{ route('services.destroy', $service->id) }}" method="POST"
+                                                    action="{{ route('freelancer.services.destroy', $service->id) }}" method="POST"
                                                     class="hidden">
                                                     @csrf
                                                     @method('DELETE')
@@ -160,7 +160,7 @@
                 };
 
                 var queryString = $.param(params);
-                window.location.href = "{{ route('services.index') }}?" + queryString;
+                window.location.href = "{{ route('freelancer.services.index') }}?" + queryString;
             });
             if (
                 @json(!empty(request()->get('category'))) ||
@@ -169,7 +169,7 @@
                 $('.box-footer').show();
             }
             $('#filter-reset').on('click', function() {
-                window.location.href = "{{ route('services.index') }}";
+                window.location.href = "{{ route('freelancer.services.index') }}";
             });
 
         });

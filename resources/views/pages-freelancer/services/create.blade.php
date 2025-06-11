@@ -13,7 +13,7 @@
                 </div>
                 <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] ps-[0.5rem]">
-                        <a class="flex items-center text-primary" href="{{ route('services.index') }}">
+                        <a class="flex items-center text-primary" href="{{ route('freelancer.services.index') }}">
                             {{ __('services') }}
                             <i class="ti ti-chevrons-right px-[0.5rem] rtl:rotate-180"></i>
                         </a>
@@ -39,7 +39,8 @@
                             <h5 class="box-title">{{ __('create_service') }}</h5>
                         </div>
                         <div class="box-body">
-                            <form action="{{ route('services.store') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('freelancer.services.store') }}" method="POST"
+                                enctype="multipart/form-data">
                                 @csrf
                                 @php
                                     $planIndex = 0;
@@ -78,7 +79,7 @@
                                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
                                     </div>
                                     <!-- Freelancer -->
-                                    <div class="col-span-6">
+                                    {{-- <div class="col-span-6">
                                         <label
                                             class="block text-sm font-medium text-gray-700">{{ __('freelancer') }}</label>
                                         <select name="user_id" id="user_id" class="form-control mt-1">
@@ -87,7 +88,9 @@
                                                 <option value="{{ $freelancer->id }}">{{ $freelancer->username }}</option>
                                             @endforeach
                                         </select>
-                                    </div>
+                                    </div> --}}
+                                    <input type="hidden" name="user_id" value="{{ Auth::id() }}">
+
                                     <!-- Description -->
                                     <div class="col-span-12">
                                         <label

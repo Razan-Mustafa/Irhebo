@@ -20,6 +20,10 @@ class FreelancerService
     {
         return $this->freelancerRepository->index($params);
     }
+    public function getByAuthUser()
+    {
+        return $this->freelancerRepository->getByAuthUser();
+    }
     public function store($data)
     {
         return $this->freelancerRepository->store($data);

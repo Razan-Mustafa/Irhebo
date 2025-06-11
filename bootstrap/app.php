@@ -4,6 +4,7 @@ use App\Http\Middleware\SetLocale;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\AdminAuthenticate;
+use App\Http\Middleware\FreelancerMiddleware;
 use App\Http\Middleware\SetDashboardLocale;
 use App\Http\Middleware\SetLocaleFromHeader;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'admin' => AdminAuthenticate::class,
+            'freelancer' => FreelancerMiddleware::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class

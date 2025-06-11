@@ -15,6 +15,9 @@ class PortfolioService
     public function index(){
         return $this->portfolioRepository->index();
     }
+    public function getUserPortfolio(){
+        return $this->portfolioRepository->getUserPortfolio();
+    }
     public function getPortfolioByUserId($userId, $perPage = null)
     {
         return $this->portfolioRepository->getPortfolioByUserId($userId, $perPage);
@@ -23,7 +26,7 @@ class PortfolioService
     {
         return $this->portfolioRepository->getPortfolioByService($serviceId);
     }
-  
+
     public function getFeaturedPortfolios($perPage = null)
     {
         return $this->portfolioRepository->getFeaturedPortfolios($perPage);

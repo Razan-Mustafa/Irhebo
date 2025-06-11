@@ -26,6 +26,10 @@ class ServiceRepository implements ServiceRepositoryInterface
     {
         return $this->model->with('subCategory', 'user')->orderBy('id', 'desc')->get();
     }
+    public function getForFreelancer($id)
+    {
+        return $this->model->where('user_id', $id)->with('subCategory', 'user', 'media', 'user.profession')->orderBy('id', 'desc')->get();
+    }
     public function getAllActive($perPage = null)
     {
         $query = $this->model->with('reviews')->status('approved')->orderBy('id', 'desc');

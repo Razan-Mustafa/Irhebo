@@ -13,7 +13,7 @@
                 </div>
                 <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] ps-[0.5rem]">
-                        <a class="flex items-center text-primary" href="{{ route('portfolios.index') }}">
+                        <a class="flex items-center text-primary" href="{{ route('freelancer.portfolios.index') }}">
                             {{ __('portfolios') }}
                             <i class="ti ti-chevrons-right px-[0.5rem] rtl:rotate-180"></i>
                         </a>
@@ -39,7 +39,8 @@
                             <h5 class="box-title">{{ __('add_portfolio') }}</h5>
                         </div>
                         <div class="box-body">
-                            <form action="{{ route('portfolios.store') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('freelancer.portfolios.store') }}" method="POST"
+                                enctype="multipart/form-data">
                                 @csrf
                                 <div class="grid grid-cols-12 gap-4 my-3">
                                     <div class="col-span-12 md:col-span-12">
@@ -55,13 +56,16 @@
                                     </div>
                                     <div class="col-span-12 md:col-span-12">
                                         <label class="block text-sm font-medium text-gray-700">{{ __('cover') }}</label>
-                                        <input type="file" name="cover" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
+                                        <input type="file" name="cover"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
                                     </div>
                                     <div class="col-span-12 md:col-span-12">
                                         <label class="block text-sm font-medium text-gray-700">{{ __('media') }}</label>
-                                        <input type="file" name="media[]" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary" multiple>
+                                        <input type="file" name="media[]"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                                            multiple>
                                     </div>
-                                    <div class="col-span-12 md:col-span-6">
+                                    {{-- <div class="col-span-12 md:col-span-6">
                                         <label for="freelancer_id"
                                             class="block text-sm font-medium text-gray-700">{{ __('freelancers') }}</label>
                                         <select name="user_id" id="freelancer_id"
@@ -71,16 +75,24 @@
                                                 <option value="{{ $freelancer->id }}">{{ $freelancer->username }}</option>
                                             @endforeach
                                         </select>
-                                    </div>
+                                    </div> --}}
+                                    <input type="hidden" name="user_id" value="{{ Auth::id() }}">
+
                                     <div class="col-span-12 md:col-span-6">
                                         <label for="service_ids"
                                             class="block text-sm font-medium text-gray-700">{{ __('services') }}</label>
                                         <select name="service_ids[]" id="service_ids"
                                             class="js-example-basic-multiple mt-1 block w-full rounded-lg border-gray-300"
                                             multiple>
-
+                                            @foreach ($services as $service)
+                                                <option value="{{ $service->id }}"
+                                                    {{ collect(old('service_ids'))->contains($service->id) ? 'selected' : '' }}>
+                                                    {{ $service->translation->title }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
+
                                 </div>
                                 <div class="mt-6 text-center">
                                     <button type="submit"
@@ -115,7 +127,7 @@
             initializeSelect2();
 
             $('#freelancer_id').on('change', function() {
-                            console.log(oldSelectedServices);
+                console.log(oldSelectedServices);
 
                 let freelancerId = $(this).val();
                 if (!freelancerId) return;
@@ -130,8 +142,10 @@
                         if (response.status) {
                             let options = '';
                             response.data.services.forEach(service => {
-                                let selected = oldSelectedServices.includes(service.id.toString()) ? 'selected' : '';
-                                options += `<option value="${service.id}" ${selected}>${service.title}</option>`;
+                                let selected = oldSelectedServices.includes(service.id
+                                    .toString()) ? 'selected' : '';
+                                options +=
+                                    `<option value="${service.id}" ${selected}>${service.title}</option>`;
                             });
                             $('#service_ids').html(options).trigger('change');
                         }
@@ -139,7 +153,7 @@
                 });
             });
 
-            @if(old('freelancer_id'))
+            @if (old('freelancer_id'))
                 $('#freelancer_id').val('{{ old('freelancer_id') }}').trigger('change');
             @endif
         });

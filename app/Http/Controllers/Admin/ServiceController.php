@@ -107,4 +107,10 @@ class ServiceController extends Controller
 
         return redirect()->route('services.index')->with('success', __('service_updated_successfully'));
     }
+
+    public function destroy($id)
+    {
+        $this->serviceService->delete($id);
+        return redirect()->route('services.index')->with('success', __('service_deleted_successfully'));
+    }
 }

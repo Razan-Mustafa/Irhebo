@@ -94,22 +94,33 @@ class ServiceController extends Controller
             ]
         );
     }
-    public function serviceDetails($serviceId)
+    public function serviceDetails(Request $request, $serviceId)
     {
+
+        $currencyCode = $request->header('currency', 'USD');
+        $currencyModel = Currency::where('code', strtoupper($currencyCode))->first();
+        $symbol = $currencyModel ? $currencyModel->symbol : '$';
+        // dd($currencyCode);
         $service = $this->serviceService->getServiceDetails($serviceId);
         $portfolio = $this->portfolioService->getPortfolioByService($service->id);
         $recommended = $this->serviceService->getRelatedServices($serviceId);
         $plans = $this->serviceService->getPlansByServiceId($serviceId);
-        $plans = $plans->map(function ($planItem) {
+        $plans = $plans->map(function ($planItem) use ($currencyCode, $symbol) {
             return [
                 'id' => $planItem->plan->id,
                 'title' => $planItem->plan->translation->title,
-                'features' => collect($planItem->features)->map(function ($feature) {
-                    return collect([
+                'features' => collect($planItem->features)->map(function ($feature) use ($currencyCode, $symbol) {
+                    $value = $feature->value;
+                    // Convert if it's a price type
+                    if ($feature->type === 'price') {
+                        $convertedValue = CurrencyConverter::convert($value, 'USD', $currencyCode);
+                        $value = $convertedValue . ' ' . $symbol;
+                    }
+                    return [
                         'type' => $feature->type,
                         'title' => $feature->translation->title,
-                        'value' => $feature->value,
-                    ]);
+                        'value' => $value,
+                    ];
                 }),
             ];
         });

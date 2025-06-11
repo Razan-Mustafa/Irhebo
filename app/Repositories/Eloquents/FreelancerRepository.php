@@ -6,6 +6,7 @@ use App\Enums\FreelancerStatusEnum;
 use App\Models\User;
 use App\Models\Freelancer;
 use App\Models\FreelancerCateogry;
+use App\Models\Service;
 use App\Models\UserLanguage;
 use App\Utilities\FileManager;
 use Illuminate\Support\Facades\DB;
@@ -136,7 +137,7 @@ class FreelancerRepository implements FreelancerRepositoryInterface
     }
     public function getUserProfile($id)
     {
-        return $this->model->with('freelancer', 'languages.language', 'profession', 'country', 'certificates','categories.translation')->find($id);
+        return $this->model->with('freelancer', 'languages.language', 'profession', 'country', 'certificates', 'categories.translation')->find($id);
     }
     public function completeProfile(array $data)
     {
@@ -219,5 +220,17 @@ class FreelancerRepository implements FreelancerRepositoryInterface
     public function restore($id)
     {
         return $this->model->withTrashed()->findOrFail($id)->restore();
+    }
+
+    public function getByAuthUser()
+    {
+        $services = Service::where('user_id', auth()->id())->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'services' => $services
+            ]
+        ]);
     }
 }

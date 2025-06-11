@@ -20,6 +20,11 @@ class CategoryService
     {
         return $this->categoryRepository->index();
     }
+
+    public function getUserCategories()
+    {
+        return $this->categoryRepository->getUserCategories();
+    }
     public function getAllActive($isPopular = null)
     {
         return $this->categoryRepository->getAllActive($isPopular);
@@ -103,5 +108,5 @@ class CategoryService
             throw $e;
         }
     }
-    
+
 }

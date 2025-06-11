@@ -16,15 +16,16 @@ class FreelancerMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // dd('sad');
         // لو مش مسجل دخول
-        if (!Auth::check()) {
-            return redirect('/login')->with('error', 'Please log in to access this page.');
+        if (!Auth::guard('freelancer')->check()) {
+            return redirect('/freelancer/login')->with('error', 'Please log in to access this page.');
         }
 
-        // لو مش Freelancer
-        if (!Auth::user()->is_freelancer) {
-            return redirect('/')->with('error', 'You do not have permission to access this page.');
-        }
+        // // لو مش Freelancer
+        // if (!Auth::user()->is_freelancer) {
+        //     return redirect('/')->with('error', 'You do not have permission to access this page.');
+        // }
 
         return $next($request);
     }

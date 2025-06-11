@@ -85,7 +85,7 @@ class RequestService
             'paid_at'        => null,
         ]);
         // dd($price->value);
-        // return $this->requestRepository->createRequest($data);
+        return $this->requestRepository->createRequest($data);
     }
     public function getRequestDetails($id)
     {

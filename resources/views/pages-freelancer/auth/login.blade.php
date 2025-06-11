@@ -18,15 +18,22 @@
                             <p class="text-base text-gray-500 dark:text-gray-400 text-center mb-6">{{ __('welcome_back') }}
                             </p>
                             <!-- Form Fields -->
-                            <form method="POST" action="{{ route('login.submit') }}">
+                            <form method="POST" action="{{ route('freelancer.login.submit') }}">
                                 @csrf
                                 <div class="grid grid-cols-12 gap-4">
-                                    <!-- Email -->
+                                    <!-- phone -->
                                     <div class="col-span-12">
-                                        <label for="signin-email" class="form-label">{{ __('email') }}</label>
-                                        <input type="email" name="email"
-                                            class="form-control form-control-lg w-full border-2 rounded-md"
-                                            id="signin-email" placeholder="{{ __('email') }}" required>
+                                        <label for="signin-phone" class="form-label">{{ __('phone') }}</label>
+                                        <div class="flex">
+                                            <select name="prefix" class="form-select border-2 rounded-md mr-2">
+                                                @foreach ($countries as $country)
+                                                    <option value="{{ $country->phone_code }}">{{ $country->phone_code }}</option>
+                                                @endforeach
+                                            </select>
+                                            <input type="tel" name="phone"
+                                                class="form-control form-control-lg w-full border-2 rounded-md"
+                                                id="signin-phone" placeholder="{{ __('phone') }}" required>
+                                        </div>
                                     </div>
                                     <!-- Password -->
                                     <div class="col-span-12">

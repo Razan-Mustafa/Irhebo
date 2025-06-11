@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Service extends Model
 {
-    use HasFactory, HasTranslations,SoftDeletes;
+    use HasFactory, HasTranslations, SoftDeletes;
 
     protected $fillable = [
         'sub_category_id',
@@ -76,5 +76,8 @@ class Service extends Model
     {
         return $this->belongsToMany(Portfolio::class, 'portfolio_service');
     }
-
+    // public function translation()
+    // {
+    //     return $this->hasOne(ServiceTranslation::class)->where('language', app()->getLocale());
+    // }
 }

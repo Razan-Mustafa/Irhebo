@@ -13,7 +13,7 @@
                 </div>
                 <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] ps-[0.5rem]">
-                        <a class="flex items-center text-primary" href="{{ route('home.index') }}">
+                        <a class="flex items-center text-primary" href="{{ route('freelancer.home.index') }}">
                             <i class="ti ti-home me-1"></i> {{ __('home') }}
                             <i class="ti ti-chevrons-right px-[0.5rem] rtl:rotate-180"></i>
                         </a>
@@ -28,7 +28,7 @@
                     <div class="box">
                         <div class="box-header">
                             <h5 class="box-title">{{ __('portfolios') }}</h5>
-                            <a href="{{ route('portfolios.create') }}"
+                            <a href="{{ route('freelancer.portfolios.create') }}"
                                 class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
                                 <i class="las la-plus-circle text-lg"></i>{{ __('add_portfolio') }}
                             </a>
@@ -52,12 +52,12 @@
                                             <td>
 
                                                 <a aria-label="anchor"
-                                                    href="{{ route('portfolios.show', $portfolio->id) }}"
+                                                    href="{{ route('freelancer.portfolios.show', $portfolio->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill">
                                                     <i class="las la-eye"></i>
                                                 </a>
                                                   <a aria-label="anchor"
-                                                    href="{{ route('portfolios.edit', $portfolio->id) }}"
+                                                    href="{{ route('freelancer.portfolios.edit', $portfolio->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
                                                     <i class="las la-edit"></i>
                                                 </a>
@@ -67,7 +67,7 @@
                                                     <i class="las la-trash"></i>
                                                 </a>
                                                 <form id="delete-form-{{ $portfolio->id }}"
-                                                    action="{{ route('portfolios.destroy', $portfolio->id) }}"
+                                                    action="{{ route('freelancer.portfolios.destroy', $portfolio->id) }}"
                                                     method="POST" class="hidden">
                                                     @csrf
                                                     @method('DELETE')

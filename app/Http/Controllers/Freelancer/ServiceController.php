@@ -33,20 +33,21 @@ class ServiceController extends Controller
 
     public function index()
     {
-        $services = $this->serviceService->index();
+        $freelancerId = auth()->guard('freelancer')->id();
+        $services = $this->serviceService->getForFreelancer($freelancerId);
         $categories = $this->categoryService->index();
         $freelancers = $this->freelancerService->index([]);
-        return view('pages.services.index', compact('services', 'categories', 'freelancers'));
+        return view('pages-freelancer.services.index', compact('services', 'categories', 'freelancers'));
     }
     public function create()
     {
-        $categories = $this->categoryService->index();
+        $categories = $this->categoryService->getUserCategories();
         $tags = $this->tagService->getAllTags();
         $plans = $this->planService->index();
         $freelancers = $this->freelancerService->index([]);
         $currencies = Currency::all();
 
-        return view('pages.services.create', compact('categories', 'tags', 'plans', 'freelancers', 'currencies'));
+        return view('pages-freelancer.services.create', compact('categories', 'tags', 'plans', 'freelancers', 'currencies'));
     }
     public function store(UpdateServiceRequest $request)
     {
@@ -66,11 +67,11 @@ class ServiceController extends Controller
 
         $service = $this->serviceService->create($data);
         $service->tags()->sync($data['tags'] ?? []);
-        return redirect()->route('services.index')->with('success', __('service_created_successfully'));
+        return redirect()->route('freelancer.services.index')->with('success', __('service_created_successfully'));
     }
     public function edit($id)
     {
-        $categories = $this->categoryService->index();
+        $categories = $this->categoryService->getUserCategories();
         $service = $this->serviceService->getServiceDetails($id);
         $tags = $service->tags()->pluck('tags.id')->toArray();
         $selectedTags = $service->tags()->pluck('tags.id')->toArray();
@@ -81,7 +82,7 @@ class ServiceController extends Controller
         $currencies = Currency::all();
 
         $plansCount = Plan::count();
-        return view('pages.services.edit', compact('selectedTags', 'categories', 'tags', 'plans', 'servicePlans', 'freelancers', 'service', 'plansCount',    'currencies'));
+        return view('pages-freelancer.services.edit', compact('selectedTags', 'categories', 'tags', 'plans', 'servicePlans', 'freelancers', 'service', 'plansCount',    'currencies'));
     }
     public function update(UpdateServiceRequest $request, $id)
     {
@@ -105,6 +106,12 @@ class ServiceController extends Controller
         ]);
         $service->tags()->sync($data['tags'] ?? []);
 
-        return redirect()->route('services.index')->with('success', __('service_updated_successfully'));
+        return redirect()->route('freelancer.services.index')->with('success', __('service_updated_successfully'));
+    }
+
+    public function destroy($id)
+    {
+        $this->serviceService->delete($id);
+        return redirect()->route('freelancer.services.index')->with('success', __('service_deleted_successfully'));
     }
 }

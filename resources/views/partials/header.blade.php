@@ -111,9 +111,16 @@
                       </button>
                       <div class="md:block hidden dropdown-profile">
                           <p class="font-semibold mb-0 leading-none text-[#536485] text-[0.813rem] ">
-                              {{ auth()->guard('admin')->user()->username }}
+                              @if (auth()->guard('freelancer')->check())
+                                  {{ auth()->guard('freelancer')->user()->username }}
+                              @elseif(auth()->guard('admin')->check())
+                                  {{ auth()->guard('admin')->user()->username }}
+                              @else
+                                  Guest
+                              @endif
                           </p>
                       </div>
+
                       <div class="hs-dropdown-menu ti-dropdown-menu !-mt-3 border-0 w-[11rem] !p-0 border-defaultborder hidden main-header-dropdown pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end"
                           aria-labelledby="dropdown-profile">
                           <ul class="text-defaulttextcolor font-medium dark:text-[#8c9097] dark:text-white/50">
@@ -125,7 +132,13 @@
                                   </a>
                               </li>
                               <li>
-                                  <form id="logout-form" action="{{ route('logout') }}" method="POST" class="w-full">
+                                  <form id="logout-form"
+                                      @if (auth()->guard('freelancer')->check()) action="{{ route('freelancer.logout') }}"
+                              @elseif(auth()->guard('admin')->check())
+                            action="{{ route('logout') }}"
+                              @else
+                                  Guest @endif
+                                      method="POST" class="w-full">
                                       @csrf
                                       <button type="submit"
                                           class="w-full ti-dropdown-item !text-[0.8125rem] !p-[0.65rem] !gap-x-0 !inline-flex logout-btn">

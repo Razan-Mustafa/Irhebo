@@ -81,7 +81,7 @@ class HomeController extends Controller
             ->get();
 
 
-        return view('welcome', compact(
+        return view('pages-freelancer.welcome', compact(
             'filter',
             'from',
             'to',
@@ -97,7 +97,7 @@ class HomeController extends Controller
             'status',
             'ticketStatus',
             'tickets',
-                'quotations'
+            'quotations'
 
         ));
     }

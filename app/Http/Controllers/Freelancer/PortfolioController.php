@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Freelancer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PortfolioRequest;
 use App\Http\Requests\Admin\UpdatePortfolioRequest;
+use App\Models\Service;
 use App\Services\FreelancerService;
 use App\Services\PortfolioService;
 use App\Services\ServiceService;
@@ -25,19 +26,19 @@ class PortfolioController extends Controller
     }
     public function index()
     {
-        $portfolios = $this->portfolioService->index();
-        return view('pages.portfolios.index', compact('portfolios'));
+        $portfolios = $this->portfolioService->getUserPortfolio();
+        return view('pages-freelancer.portfolios.index', compact('portfolios'));
     }
     public function create()
     {
-        $freelancers = $this->freelancerService->index([]);
-        return view('pages.portfolios.create', compact('freelancers'));
+        $services = Service::where('user_id', auth()->id())->get();
+        return view('pages-freelancer.portfolios.create', compact('services'));
     }
     public function store(PortfolioRequest $request)
     {
         try {
             $this->portfolioService->create($request->validated());
-            return redirect()->route('portfolios.index')
+            return redirect()->route('freelancer.portfolios.index')
                 ->with('success', __('portfolio_created_successfully'));
         } catch (Exception $e) {
             return redirect()->back()
@@ -48,14 +49,14 @@ class PortfolioController extends Controller
     public function edit($id)
     {
         $portfolio = $this->portfolioService->getPortfolioDetails($id);
-        $freelancers = $this->freelancerService->index([]);
-        return view('pages.portfolios.edit', compact('portfolio', 'freelancers'));
+        $services = Service::where('user_id', auth()->id())->get();
+        return view('pages-freelancer.portfolios.edit', compact('portfolio', 'services'));
     }
     public function update(UpdatePortfolioRequest $request, $id)
     {
         try {
             $this->portfolioService->update($request->validated(), $id);
-            return redirect()->route('portfolios.index')
+            return redirect()->route('freelancer.portfolios.index')
                 ->with('success', __('portfolio_updated_successfully'));
         } catch (Exception $e) {
             return redirect()->back()
@@ -66,12 +67,12 @@ class PortfolioController extends Controller
     public function show($id)
     {
         $portfolio = $this->portfolioService->getPortfolioDetails($id);
-        return view('pages.portfolios.show', compact('portfolio'));
+        return view('pages-freelancer.portfolios.show', compact('portfolio'));
     }
     public function destroy($id)
     {
         $this->portfolioService->delete($id);
-        return redirect()->route('portfolios.index')
+        return redirect()->route('freelancer.portfolios.index')
             ->with('success', __('portfolio_deleted_successfully'));
     }
 }

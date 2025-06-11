@@ -82,7 +82,7 @@ return [
         ],
         'freelancers' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Freelancer::class, // أو Freelancer::class لو عندك موديل منفصل
+            'model' => App\Models\User::class, // أو Freelancer::class لو عندك موديل منفصل
         ],
         // 'users' => [
         //     'driver' => 'database',

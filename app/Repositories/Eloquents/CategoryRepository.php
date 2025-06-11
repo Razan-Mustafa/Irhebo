@@ -3,6 +3,7 @@
 namespace App\Repositories\Eloquents;
 
 use App\Models\Category;
+use App\Models\FreelancerCateogry;
 use App\Utilities\FileManager;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
 
@@ -18,6 +19,13 @@ class CategoryRepository implements CategoryRepositoryInterface
     public function index()
     {
         return $this->model->orderBy('id', 'desc')->get();
+    }
+    public function getUserCategories()
+    {
+        $categoryIds = FreelancerCateogry::where('user_id', auth()->id())
+            ->pluck('category_id');
+
+        return Category::whereIn('id', $categoryIds)->get();
     }
     public function getAllActive($isPopular = null)
     {

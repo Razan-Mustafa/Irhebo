@@ -23,6 +23,14 @@ class PortfolioRepository implements PortfolioRepositoryInterface
         $query = Portfolio::query();
         return $query->get();
     }
+
+    public function getUserPortfolio()
+    {
+        return Portfolio::where('user_id', auth()->id())
+            ->orderBy('id', 'desc')
+            ->get();
+    }
+
     public function getPortfolioByUserId($userId, $perPage = null)
     {
         $query = $this->model->with(['media', 'user.profession'])->where('user_id', $userId)->orderBy('id', 'desc');

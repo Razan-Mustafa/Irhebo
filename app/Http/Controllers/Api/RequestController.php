@@ -13,7 +13,7 @@ use App\Http\Resources\RequestDetailsResource;
 use App\Http\Requests\Api\RequestCreateRequest;
 use App\Http\Requests\Api\AddRequestCommentRequest;
 use App\Models\PlanFeature;
-  
+
 class RequestController extends Controller
 {
     protected $requestService;
@@ -53,8 +53,8 @@ class RequestController extends Controller
     public function createRequest(RequestCreateRequest $request)
     {
         try {
+            // dd($request);
             $request = $this->requestService->createRequest($request->validated());
-
            return $this->successResponse(__('success'), new RequestResource($request));
         } catch (\Exception $e) {
             return $this->exceptionResponse($e);

@@ -23,8 +23,12 @@ class ServiceService
     {
         return $this->serviceRepository->find($id);
     }
+    public function getForFreelancer($id)
+    {
+        return $this->serviceRepository->getForFreelancer($id);
+    }
 
-  
+
     public function deleteService($id)
     {
         return $this->serviceRepository->delete($id);
