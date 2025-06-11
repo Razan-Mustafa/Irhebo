@@ -18,7 +18,8 @@ class PortfolioRepository implements PortfolioRepositoryInterface
     {
         $this->model = $portfolio;
     }
-    public function index(){
+    public function index()
+    {
         $query = Portfolio::query();
         return $query->get();
     }
@@ -40,7 +41,7 @@ class PortfolioRepository implements PortfolioRepositoryInterface
     }
     public function getPortfolioDetails($id)
     {
-        return $this->model->with('media','services.media','services.user.profession')->find($id);
+        return $this->model->with('media', 'services.media', 'services.user.profession')->find($id);
     }
     public function find($id)
     {
@@ -85,11 +86,13 @@ class PortfolioRepository implements PortfolioRepositoryInterface
     public function update($data, $portfolio)
     {
         try {
+
             $portfolio->update([
                 'title' => $data['title'],
                 'description' => $data['description'],
                 'is_featured' => isset($data['is_featured']) ? $data['is_featured'] : $portfolio->is_featured,
             ]);
+
             if (!empty($data['media'])) {
                 foreach ($data['media'] as $media) {
                     $mediaPath = FileManager::upload('portfolios', $media);
@@ -100,6 +103,7 @@ class PortfolioRepository implements PortfolioRepositoryInterface
                     ]);
                 }
             }
+
             if (!empty($data['cover'])) {
                 $portfolio->media()->where('is_cover', true)->delete();
                 $coverPath = FileManager::upload('portfolios', $data['cover']);
@@ -114,6 +118,8 @@ class PortfolioRepository implements PortfolioRepositoryInterface
             if (!empty($data['service_ids'])) {
                 $portfolio->services()->attach($data['service_ids']);
             }
+            $portfolio->load(['media', 'services.media', 'services.user']);
+
             return $portfolio;
         } catch (Exception $e) {
             throw $e;

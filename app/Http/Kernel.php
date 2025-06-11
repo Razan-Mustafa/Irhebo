@@ -26,6 +26,8 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\SetLocale::class,
+            'freelancer' => \App\Http\Middleware\FreelancerMiddleware::class,
+
         ],
         'api' => [
             \App\Http\Middleware\CurrencyMiddleware::class,

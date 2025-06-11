@@ -45,4 +45,14 @@ class Category extends Model
     {
         return $this->morphMany(Faq::class, 'faqable');
     }
+
+    public function translations()
+    {
+        return $this->hasMany(CategoryTranslation::class);
+    }
+
+    public function translation()
+    {
+        return $this->hasOne(CategoryTranslation::class)->where('language', app()->getLocale());
+    }
 }

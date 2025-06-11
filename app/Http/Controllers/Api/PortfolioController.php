@@ -22,8 +22,8 @@ class PortfolioController extends Controller
     public function getPortfolioByUserId(Request $request)
     {
         $userId = $request->input('user_id', Auth::guard('api')->id());
-       
-        
+
+
         $portfolio = $this->portfolioService->getPortfolioByUserId($userId);
         return $this->successResponse(__('success'), [
             'portfolios' => PortfolioResource::collection($portfolio['data']),

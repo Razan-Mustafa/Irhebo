@@ -136,7 +136,7 @@ class FreelancerRepository implements FreelancerRepositoryInterface
     }
     public function getUserProfile($id)
     {
-        return $this->model->with('freelancer', 'languages.language', 'profession', 'country', 'certificates')->find($id);
+        return $this->model->with('freelancer', 'languages.language', 'profession', 'country', 'certificates','categories.translation')->find($id);
     }
     public function completeProfile(array $data)
     {

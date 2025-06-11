@@ -151,7 +151,7 @@ class User extends Authenticatable
     }
     public function categories()
     {
-        return $this->hasMany(FreelancerCateogry::class, 'user_id');
+        return $this->belongsToMany(Category::class, 'freelancer_cateogries', 'user_id', 'category_id');
     }
     public function certificates()
     {

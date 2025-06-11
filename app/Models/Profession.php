@@ -28,7 +28,12 @@ class Profession extends Model
     {
         return $this->hasMany(User::class);
     }
-    public function title()
+    // public function title()
+    // {
+    //     return $this->hasOne(ProfessionTranslation::class)->where('language', app()->getLocale());
+    // }
+
+    public function translation()
     {
         return $this->hasOne(ProfessionTranslation::class)->where('language', app()->getLocale());
     }

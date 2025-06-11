@@ -8,7 +8,9 @@ class FreelancerCertificate extends Model
 {
     protected $fillable = ['user_id', 'file_name', 'file_path', 'description'];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
+
 }

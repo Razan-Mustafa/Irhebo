@@ -44,6 +44,10 @@ return [
             'driver' => 'session',
             'provider' => 'admins',
         ],
+        'freelancer' => [
+            'driver' => 'session',
+            'provider' => 'freelancers',
+        ],
         'api' => [
             'driver' => 'passport',
             'provider' => 'users',
@@ -76,7 +80,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
-
+        'freelancers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Freelancer::class, // أو Freelancer::class لو عندك موديل منفصل
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

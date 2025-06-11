@@ -20,7 +20,6 @@ class PortfolioDetalisResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'media' => PortfolioMediaResource::collection($this->media),
-
             'service' => ServiceResource::collection($this->services),
         ];
     }

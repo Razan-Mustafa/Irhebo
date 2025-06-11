@@ -17,7 +17,7 @@ class FreelancerResource extends JsonResource
     {
         $langCode = request()->header('Accept-Language', 'en'); // default 'en'
         $titleField = 'title_' . $langCode;
-        // dd($this->profession);
+        // dd($this->categories->translation);
         return [
             'id' => $this->id,
             'name' => $this->username,
@@ -26,7 +26,18 @@ class FreelancerResource extends JsonResource
             'prefix' => $this->prefix,
             'phone' => $this->phone,
             'gender' => $this->gender_label,
-            'profession' => $this->profession->title ?? null,
+            'profession' => $this->profession->translation->title ?? null,
+            'categories' => $this->categories
+                ->unique('id')   // عشان يفلتر على حسب الـ id ويشيل التكرار
+                ->map(function ($category) {
+                    return [
+                        'id' => $category->id,
+                        'title' => $category->translation?->title
+                            ?? $category->translations()->where('language', 'en')->first()?->title
+                            ?? 'No title',
+                    ];
+                }),
+
             'country' => $this->country->title ?? null,
             'avatar' => $this->avatar ? url($this->avatar) : null,
             'role' => $this->freelancer ? 'freelancer' : 'client',
