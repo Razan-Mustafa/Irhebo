@@ -84,18 +84,33 @@
                                 </div>
                                 {{-- Comments --}}
                                 <div class="border p-4 rounded-md">
-                                    <h2 class="text-xl font-semibold text-gray-700 mb-2">{{ __('comments') }}</h2>
+                                    <h2 class="text-xl font-semibold text-gray-700 mb-2">{{ __('comment') }}</h2>
                                     <div class="space-y-3">
-                                        @foreach ($quotation->quotationComments as $comment)
+                                        @php
+                                            $userComment = $quotation->quotationComments->firstWhere(
+                                                'user_id',
+                                                auth()->id(),
+                                            );
+                                        @endphp
+
+                                        @if ($userComment)
                                             <div class="bg-gray-200 p-4 rounded-md">
-                                                <strong>{{ $comment->user->username }}:</strong>
-                                                <p>{{ $comment->comment }}</p>
+                                                <strong>{{ $userComment->user->username }}:</strong>
+                                                <p>{{ $userComment->comment }}</p>
                                                 <span
-                                                    class="text-sm text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                                    class="text-sm text-gray-500">{{ $userComment->created_at->diffForHumans() }}</span>
                                             </div>
-                                        @endforeach
+                                            @else{{ __('add_comment') }}
+                                            <a aria-label="{{ __('add_comment') }}"
+                                                href="{{ route('freelancer.quotations.comment.create', $quotation->id) }}"
+                                                class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill"
+                                                title="{{ __('add_comment') }}">
+                                                <i class="las la-comment"> </i>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
+
 
                             </div>
                         </div>

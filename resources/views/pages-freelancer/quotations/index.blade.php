@@ -58,13 +58,22 @@
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
                                                     <i class="las la-eye"></i>
                                                 </a>
+                                                @php
+                                                    $userHasCommented = $quotation->quotationComments->contains(
+                                                        function ($comment) {
+                                                            return $comment->user_id === auth()->id();
+                                                        },
+                                                    );
+                                                @endphp
 
-                                                <a aria-label="{{ __('add_comment') }}"
-                                                    href="{{ route('freelancer.quotations.comment.create', $quotation->id) }}"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill"
-                                                    title="{{ __('add_comment') }}">
-                                                    <i class="las la-comment"></i>
-                                                </a>
+                                                @if (!$userHasCommented)
+                                                    <a aria-label="{{ __('add_comment') }}"
+                                                        href="{{ route('freelancer.quotations.comment.create', $quotation->id) }}"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm mx-1 rounded-pill ti-btn-primary"
+                                                        title="{{ __('add_comment') }}">
+                                                        <i class="las la-comment"></i>
+                                                    </a>
+                                                @endif
                                             </td>
 
                                         </tr>

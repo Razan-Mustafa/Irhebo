@@ -60,6 +60,10 @@ use App\Repositories\Interfaces\FreelancerRepositoryInterface;
 use App\Repositories\Interfaces\ProfessionRepositoryInterface;
 use App\Repositories\Interfaces\SubCategoryRepositoryInterface;
 use App\Repositories\Interfaces\NotificationRepositoryInterface;
+use Illuminate\Support\Facades\View;
+use App\Models\Currency;
+use App\Models\General;
+use Illuminate\Support\Facades\DB;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -70,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(AdminRepositoryInterface::class, AdminRepository::class);
         $this->app->bind(ClientRepositoryInterface::class, ClientRepository::class);
-        $this->app->bind(AuthRepositoryInterface::class,AuthRepository::class);
+        $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
         $this->app->bind(FreelancerRepositoryInterface::class, FreelancerRepository::class);
         $this->app->bind(ProfessionRepositoryInterface::class, ProfessionRepository::class);
         $this->app->bind(CountryRepositoryInterface::class, CountryRepository::class);
@@ -78,21 +82,21 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SliderRepositoryInterface::class, SliderRepository::class);
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(SubCategoryRepositoryInterface::class, SubCategoryRepository::class);
-        $this->app->bind(ServiceRepositoryInterface::class,ServiceRepository::class);
-        $this->app->bind(PlanRepositoryInterface::class,PlanRepository::class);
-        $this->app->bind(FaqRepositoryInterface::class,FaqRepository::class);
-        $this->app->bind(LanguageRepositoryInterface::class,LanguageRepository::class);
+        $this->app->bind(ServiceRepositoryInterface::class, ServiceRepository::class);
+        $this->app->bind(PlanRepositoryInterface::class, PlanRepository::class);
+        $this->app->bind(FaqRepositoryInterface::class, FaqRepository::class);
+        $this->app->bind(LanguageRepositoryInterface::class, LanguageRepository::class);
         $this->app->bind(WishlistRepositoryInterface::class, WishlistRepository::class);
         $this->app->bind(ReviewRepositoryInterface::class, ReviewRepository::class);
         $this->app->bind(NotificationRepositoryInterface::class, NotificationRepository::class);
         $this->app->bind(TagRepositoryInterface::class, TagRepository::class);
         $this->app->bind(PortfolioRepositoryInterface::class, PortfolioRepository::class);
         $this->app->bind(RequestRepositoryInterface::class, RequestRepository::class);
-        $this->app->bind(TicketRepositoryInterface::class,TicketRepository::class);
-        $this->app->bind(RoleRepositoryInterface::class,RoleRepository::class);
-        $this->app->bind(QuotationRepositoryInterface::class,QuotationRepository::class);
-        $this->app->bind(ChatRepositoryInterface::class,ChatRepository::class);
-        $this->app->bind(FinanceRepositoryInterface::class,FinanceRepository::class);
+        $this->app->bind(TicketRepositoryInterface::class, TicketRepository::class);
+        $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
+        $this->app->bind(QuotationRepositoryInterface::class, QuotationRepository::class);
+        $this->app->bind(ChatRepositoryInterface::class, ChatRepository::class);
+        $this->app->bind(FinanceRepositoryInterface::class, FinanceRepository::class);
     }
     /**
      * Bootstrap any application services.
@@ -107,5 +111,21 @@ class AppServiceProvider extends ServiceProvider
             MessageReadEvent::class,
             UpdateMessageReadStatus::class,
         );
+
+        View::composer('*', function ($view) {
+            // Retrieve the whatsapp number value where key='whatsapp'
+            $whatsappNumber = General::where('key', 'whatsapp')->value('value');
+
+            $currencies = Currency::all()->map(function ($item) {
+                return [
+                    'code' => $item->code,
+                    'exchange_rate' => $item->exchange_rate,
+                    'symbol' => app()->getLocale() == 'ar' ? $item->symbol_ar : $item->symbol_en,
+                ];
+            });
+
+            $view->with('allcurrencies', $currencies)
+                ->with('whatsappNumber', $whatsappNumber);
+        });
     }
 }

@@ -24,7 +24,7 @@ class NotificationController extends Controller
     {
         $perPage = request('per_page', null);
         $userId = Auth::guard('api')->id();
-       
+
         $notifications = $this->notificationService->getUserNotifications($userId, $perPage);
 
         return $this->successResponse(__('notifications_retrieved'), [
@@ -36,11 +36,18 @@ class NotificationController extends Controller
     /**
      * Mark a notification as read.
      */
-    public function markAsRead()
-    {
-        $userId = Auth::id();
+    // public function markAsRead()
+    // {
+    //     $userId = Auth::id();
 
-        $result = $this->notificationService->markNotificationAsRead($userId);
+    //     $result = $this->notificationService->markNotificationAsRead($userId);
+
+    //         return $this->successResponse(__('notification_marked_as_read'));
+    // }
+
+    public function markAsReadByNotification($notificationId)
+    {
+        $result = $this->notificationService->markNotificationAsRead($notificationId);
 
             return $this->successResponse(__('notification_marked_as_read'));
     }

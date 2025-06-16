@@ -34,9 +34,6 @@ class RequestRepository implements RequestRepositoryInterface
         $query = $this->model->whereHas('service', function ($q) {
             $q->where('user_id', Auth::id());
         });
-
-
-
         return $this->paginate($query, $perPage);
     }
 

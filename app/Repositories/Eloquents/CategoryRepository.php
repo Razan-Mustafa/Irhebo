@@ -19,7 +19,7 @@ class CategoryRepository implements CategoryRepositoryInterface
 
     public function index()
     {
-        return $this->model->orderBy('id', 'desc')->get();
+        return $this->model->with('translations')->orderBy('id', 'desc')->get();
     }
     public function getUserCategories()
     {

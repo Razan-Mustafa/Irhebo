@@ -13,7 +13,7 @@
                 </div>
                 <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] ps-[0.5rem]">
-                        <a class="flex items-center text-primary" href="{{ route('home.index') }}">
+                        <a class="flex items-center text-primary" href="{{ route('freelancer.home.index') }}">
                             <i class="ti ti-home me-1"></i> {{ __('home') }}
                             <i class="ti ti-chevrons-right px-[0.5rem] rtl:rotate-180"></i>
                         </a>
@@ -33,13 +33,194 @@
                             <div class="max-w-5xl mx-auto p-6 bg-white rounded-xl shadow-md space-y-6">
                                 <h1 class="text-2xl font-bold text-gray-800">{{ __('request_details') }}:
                                     {{ $request->order_number }}</h1>
+                                <div class="my-3">
+                                    @if ($request->status === 'pending')
+                                        <button type="button" onclick="openUpdateModalPending('in_progress')"
+                                            class="flex items-center gap-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded shadow transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Approve Request
+                                        </button>
+
+                                        {{-- model for pending --}}
+                                        <div id="update-modal-pending"
+                                            class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                            <div class="bg-white p-6 rounded w-96 relative">
+                                                <button type="button" onclick="closeUpdateModalPending()"
+                                                    class="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+                                                    style="position: absolute; top: 0.5rem; right: 0.5rem;">×</button>
+
+                                                <h3 class="text-lg font-semibold mb-4">Add Comment & Attachment</h3>
+
+                                                <form id="update-form"
+                                                    action="{{ route('freelancer.requests.changeStatus', ['id' => $request->id]) }}"
+                                                    method="POST" enctype="multipart/form-data">
+                                                    @csrf
+                                                    <input type="hidden" name="status" id="status-input-pending"
+                                                        value="">
+                                                    <div class="mb-4">
+                                                        <label for="comment" class="block mb-1 font-medium">Comment</label>
+                                                        <textarea name="comment" id="comment" rows="3" class="w-full border rounded p-2" required></textarea>
+                                                    </div>
+                                                    <div class="mb-4">
+                                                        <label for="attachment" class="block mb-1 font-medium">Attachment
+                                                        </label>
+                                                        <input type="file" name="attachment" id="attachment"
+                                                            class="w-full" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                                                    </div>
+                                                    <button type="submit"
+                                                        class="px-4 py-2 bg-blue-600 text-white rounded">Submit
+                                                        Update</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    @elseif ($request->status === 'in_progress')
+                                        <div class="flex flex-wrap items-center gap-3 mt-4">
+                                            <!-- Complete Request Form -->
+                                            <button type="button" onclick="openUpdateModalProgress('completed')"
+                                                class="flex items-center gap-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded shadow transition">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Complete Request
+                                            </button>
+
+                                            <!-- Modal for change status -->
+                                            <div id="update-modal-progress"
+                                                class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                                <div class="bg-white p-6 rounded w-96 relative">
+                                                    <button type="button" onclick="closeUpdateModalProgress()"
+                                                        class="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+                                                        style="position: absolute; top: 0.5rem; right: 0.5rem;">×</button>
+
+                                                    <h3 class="text-lg font-semibold mb-4">Add Comment & Attachment</h3>
+
+                                                    <form id="update-form"
+                                                        action="{{ route('freelancer.requests.changeStatus', ['id' => $request->id]) }}"
+                                                        method="POST" enctype="multipart/form-data">
+                                                        @csrf
+
+                                                        <input type="hidden" name="status" id="status-input-progress"
+                                                            value="">
+                                                        <div class="mb-4">
+                                                            <label for="comment"
+                                                                class="block mb-1 font-medium">Comment</label>
+                                                            <textarea name="comment" id="comment" rows="3" class="w-full border rounded p-2" required></textarea>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <label for="attachment"
+                                                                class="block mb-1 font-medium">Attachment
+                                                            </label>
+                                                            <input type="file" name="attachment" id="attachment"
+                                                                class="w-full" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                                                                required>
+                                                        </div>
+                                                        <button type="submit"
+                                                            class="px-4 py-2 bg-blue-600 text-white rounded">Submit
+                                                            Update</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+
+
+
+
+
+
+                                            <!-- Modal for add update-->
+                                            <div id="update-modal-add-update"
+                                                class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                                <div class="bg-white p-6 rounded w-96 relative">
+                                                    <button type="button"
+                                                        onclick="document.getElementById('update-modal-add-update').classList.add('hidden')"
+                                                        class="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+                                                        style="position: absolute; top: 0.5rem; right: 0.5rem;">×</button>
+
+
+                                                    <h3 class="text-lg font-semibold mb-4">Add Comment & Attachment
+                                                    </h3>
+
+                                                    <form
+                                                        action="{{ route('freelancer.requests.addUpdate', $request->id) }}"
+                                                        method="POST" enctype="multipart/form-data">
+                                                        @csrf
+                                                        <div class="mb-4">
+                                                            <label for="comment"
+                                                                class="block mb-1 font-medium">Comment</label>
+                                                            <textarea name="comment" id="comment" rows="3" class="w-full border rounded p-2" required></textarea>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <label for="attachment"
+                                                                class="block mb-1 font-medium">Attachment
+                                                                (optional)</label>
+                                                            <input type="file" name="attachment" id="attachment"
+                                                                class="w-full" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                                                        </div>
+                                                        <button type="submit"
+                                                            class="px-4 py-2 bg-blue-600 text-white rounded">Submit
+                                                            Update</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+
+                                            <!-- Add Update Button -->
+                                            <button type="button"
+                                                onclick="document.getElementById('update-modal-add-update').classList.remove('hidden')"
+                                                class="flex items-center gap-1 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded shadow transition">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M12 4v16m8-8H4" />
+                                                </svg>
+                                                Add Update
+                                            </button>
+
+
+
+
+                                            <!-- Download Contract Button -->
+                                            <a href="#"
+                                                class="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded shadow transition">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M4 4v16h16V4H4zm4 8h8m-8 4h4" />
+                                                </svg>
+                                                Download Contract
+                                            </a>
+                                        </div>
+                                    @elseif($request->status !== 'cancelled')
+                                        <!-- Download Contract Button -->
+                                        <div class="flex flex-wrap items-center gap-3 mt-4">
+                                            <a href="#"
+                                                class="flex items-center gap-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded shadow transition">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M4 4v16h16V4H4zm4 8h8m-8 4h4" />
+                                                </svg>
+                                                Download Contract
+                                            </a>
+                                        </div>
+                                    @endif
+                                </div>
+
+
+
 
                                 {{-- Order Info --}}
                                 <div class="border p-4 rounded-md">
                                     <h2 class="text-xl font-semibold text-gray-700 mb-2">{{ __('request_details') }}</h2>
                                     <div class="grid grid-cols-12 gap-4">
                                         <div class="col-span-6">
-                                            <div class="my-3"><strong>{{ __('title') }}:</strong> {{ $request->title }}
+                                            <div class="my-3"><strong>{{ __('title') }}:</strong>
+                                                {{ $request->title }}
                                             </div>
                                             <div class="my-3"><strong>{{ __('status') }}:</strong>
                                                 {{ ucfirst($request->status) }}</div>
@@ -49,12 +230,19 @@
                                                 {{ $request->end_date }}</div>
                                             <div class="my-3">
                                                 @if (isset($request->status) && $request->status !== '')
-                                                <span class="{{ \App\Enums\RequestStatusEnum::from($request->status)->badge() }}">
-                                                    {{ \App\Enums\RequestStatusEnum::from($request->status)->label() }}
-                                                </span>
-                                         @endif
+                                                    <span
+                                                        class="{{ \App\Enums\RequestStatusEnum::from($request->status)->badge() }}">
+                                                        {{ \App\Enums\RequestStatusEnum::from($request->status)->label() }}
+                                                    </span>
+                                                @endif
 
                                             </div>
+
+                                            {{-- Status Change Actions --}}
+
+
+
+
                                         </div>
                                         <div class="col-span-6"><strong>{{ __('image') }}:</strong><br>
                                             <img src="{{ asset($request->image) }}" alt="Service Image"
@@ -117,18 +305,14 @@
                                 </div>
 
                                 {{-- Logs --}}
-                                @if (count($request->logs) > 0)
-                                    <div class="border p-4 rounded-md">
-                                        <h2 class="text-xl font-semibold text-gray-700 mb-2">{{ __('logs') }}</h2>
-                                        <div class="mt-3 space-y-2">
-                                            @foreach ($request->logs as $log)
-                                                <div class="flex justify-start bg-gray-200 px-4 py-2 rounded">
-                                                    <span>{{ $log->action }}</span>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
+                                <div class="mt-4 text-right">
+                                    <a href="{{ route('freelancer.requests.logs', $request->id) }}"
+                                        class="px-4 py-2 bg-indigo-600 text-white rounded">
+                                        See Logs History
+                                    </a>
+                                </div>
+
+
                             </div>
                         </div>
                     </div>
@@ -138,4 +322,31 @@
     </div>
 @endsection
 @push('scripts')
+    <script>
+        // فتح مودال الـ pending مع تعيين الحالة
+        function openUpdateModalPending(newStatus) {
+            document.getElementById('status-input-pending').value = newStatus;
+            document.getElementById('update-modal-pending').classList.remove('hidden');
+        }
+
+        // إغلاق مودال الـ pending ومسح الحقول
+        function closeUpdateModalPending() {
+            document.getElementById('update-modal-pending').classList.add('hidden');
+            document.getElementById('comment-pending').value = '';
+            document.getElementById('attachment-pending').value = '';
+        }
+
+        // فتح مودال الـ progress مع تعيين الحالة
+        function openUpdateModalProgress(newStatus) {
+            document.getElementById('status-input-progress').value = newStatus;
+            document.getElementById('update-modal-progress').classList.remove('hidden');
+        }
+
+        // إغلاق مودال الـ progress ومسح الحقول
+        function closeUpdateModalProgress() {
+            document.getElementById('update-modal-progress').classList.add('hidden');
+            document.getElementById('comment-progress').value = '';
+            document.getElementById('attachment-progress').value = '';
+        }
+    </script>
 @endpush

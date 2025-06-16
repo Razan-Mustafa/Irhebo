@@ -15,10 +15,29 @@ class FinanceController extends Controller
     {
         $this->financeService = $financeService;
     }
-    public function index(){
-        $finances = $this->financeService->getForFreelancer();
-        return view('pages-freelancer.finances.index',compact('finances'));
+    // public function index()
+    // {
+    //     $finances = $this->financeService->getForFreelancer();
+    //     return view('pages-freelancer.finances.index', compact('finances'));
+    // }
+
+    public function index(Request $request)
+    {
+        $statusFilter = $request->query('payment_status'); // ممكن تكون 'paid' أو 'unpaid' أو null
+
+        $financesQuery = $this->financeService->getForFreelancer(); // تعديل هنا عشان يرجع Query Builder بدل Collection
+
+        if ($statusFilter === 'paid') {
+            $financesQuery->where('payment_status', \App\Enums\PaymentStatusEnum::PAID->value);
+        } elseif ($statusFilter === 'unpaid') {
+            $financesQuery->where('payment_status', '!=', \App\Enums\PaymentStatusEnum::PAID->value);
+        }
+
+        $finances = $financesQuery->get();
+
+        return view('pages-freelancer.finances.index', compact('finances', 'statusFilter'));
     }
+
     // public function bulkUpdate(Request $request){
     //    $data = $request->validate([
     //     'finance_ids'=>'required|array',

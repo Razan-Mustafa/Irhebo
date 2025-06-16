@@ -28,6 +28,10 @@
                     <div class="box">
                         <div class="box-header flex justify-between items-center">
                             <h5 class="box-title">{{ __('tickets') }}</h5>
+                            <a href="{{ route('freelancer.tickets.create') }}"
+                                class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                <i class="las la-plus-circle text-lg"></i>{{ __('add_ticket') }}
+                            </a>
                             <a href="javascript:void(0);" style="white-space: nowrap;" id="filter-btn"
                                 class="flex items-center gap-2 px-4 py-3 text-white bg-success hover:bg-blue-600 rounded-lg shadow mx-2">
                                 <i class="las la-filter text-lg"></i> {{ __('filter') }}

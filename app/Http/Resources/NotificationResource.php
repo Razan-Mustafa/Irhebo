@@ -9,16 +9,29 @@ class NotificationResource extends JsonResource
 {
     public function toArray($request)
     {
+        $locale = app()->getLocale();
+
+        $locale = app()->getLocale();
+
+        $titleJson = json_decode($this->title, true);
+        $bodyJson = json_decode($this->body, true);
+
+        $title = $titleJson[$locale] ?? $titleJson['en'] ?? null;
+        $body = $bodyJson[$locale] ?? $bodyJson['en'] ?? null;
+
+
+
         return [
-            'id' => $this->id,
-            'action' => $this->action,
-            'action_id' => $this->action_id,
-            'icon' => $this->icon,
-            'is_general' => $this->is_general,
-            'is_read' => optional($this->userNotifications->first())->is_read ?? false,
-            'title' => $this->translation?->title,
-            'description' => $this->translation?->description,
-            'created_at' => Carbon::parse($this->created_at)->diffForHumans(),
+            'id'                => $this->id,
+            'user_id'           => $this->user_id,
+            'title'             => $title,
+            'body'              => $body,
+            'type'              => $this->type,
+            'type_id'           => $this->type_id,
+            'is_read'           => $this->is_read,
+            'onesignal_id'      => $this->onesignal_id,
+            'response_onesignal' => $this->response_onesignal,
+            'created_at'        => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }
 }

@@ -32,13 +32,28 @@
                     <div class="box">
                         <div class="box-header flex justify-between align-center">
                             <h5 class="box-title">{{ __('finances') }}</h5>
-                            <button id="mark-paid-btn" type="submit" form="bulk-update-form" class="hidden flex items-center gap-2 px-4 py-2 text-white bg-success hover:bg-blue-600 rounded-lg shadow mt-3">
+                            <button id="mark-paid-btn" type="submit" form="bulk-update-form"
+                                class="hidden flex items-center gap-2 px-4 py-2 text-white bg-success hover:bg-blue-600 rounded-lg shadow mt-3">
                                 {{ __('mark_selected_as_paid') }}
                             </button>
                         </div>
 
                         <div class="box-body">
-                            <form id="bulk-update-form" method="POST" action="{{ route('freelancer.finances.bulkUpdate') }}">
+                            <form method="GET" action="{{ route('freelancer.finances.index') }}" class="mb-4">
+                                <label for="payment_status" class="me-2">{{ __('filter_payment_status') }}:</label>
+                                <select name="payment_status" id="payment_status" onchange="this.form.submit()"
+                                    class="border rounded p-1"  style="width: 220px;">
+                                    <option value="">{{ __('all') }}</option>
+                                    <option value="paid"
+                                        {{ isset($statusFilter) && $statusFilter == 'paid' ? 'selected' : '' }}>
+                                        {{ __('paid') }}</option>
+                                    <option value="unpaid"
+                                        {{ isset($statusFilter) && $statusFilter == 'unpaid' ? 'selected' : '' }}>
+                                        {{ __('unpaid') }}</option>
+                                </select>
+                            </form>
+                            <form id="bulk-update-form" method="POST"
+                                action="{{ route('freelancer.finances.bulkUpdate') }}">
                                 @csrf
 
                                 <table id="basic-table" class="table text-center">
@@ -64,7 +79,8 @@
                                                 </td> --}}
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>
-                                                    <a class="text-primary underline" href="{{ route('freelancer.requests.show', $finance->request->id) }}">
+                                                    <a class="text-primary underline"
+                                                        href="{{ route('freelancer.requests.show', $finance->request->id) }}">
                                                         {{ $finance->request->order_number }}
                                                     </a>
                                                 </td>
@@ -72,7 +88,7 @@
                                                 {{-- <td>{{ $finance->request->service->user->username }}</td> --}}
                                                 <td>{{ number_format($finance->total, 2) }}</td>
                                                 <td>{!! \App\Enums\PaymentStatusEnum::tryFrom($finance->payment_status)?->badge() !!}</td>
-                                                <td>{{ $finance->paid_at ?? '-'}}</td>
+                                                <td>{{ $finance->paid_at ?? '-' }}</td>
 
                                             </tr>
                                         @endforeach
@@ -98,7 +114,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             const $markBtn = $('#mark-paid-btn');
 
             function toggleButtonVisibility() {
@@ -110,18 +126,19 @@
             }
 
             $('#basic-table').DataTable({
-                columnDefs: [
-                    { orderable: false, targets: [0, 5] }
-                ]
+                columnDefs: [{
+                    orderable: false,
+                    targets: [0, 5]
+                }]
             });
 
-            $('#select-all').on('change', function () {
+            $('#select-all').on('change', function() {
                 const checked = this.checked;
                 $('.single-checkbox').prop('checked', checked);
                 toggleButtonVisibility();
             });
 
-            $(document).on('change', '.single-checkbox', function () {
+            $(document).on('change', '.single-checkbox', function() {
                 const all = $('.single-checkbox').length;
                 const checkedCount = $('.single-checkbox:checked').length;
 

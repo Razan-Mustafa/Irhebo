@@ -2,33 +2,24 @@
 
 namespace App\Models;
 
-use App\Traits\HasTranslations;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
-    use HasFactory, HasTranslations;
-
     protected $fillable = [
-        'action',
-        'action_id',
-        'is_general',
-        'icon'
+        'user_id',
+        'response_onesignal',
+        'onesignal_id',
+        'title',
+        'body',
+        'type',
+        'type_id',
+        'is_read',
     ];
 
-    protected $casts = [
-        'is_general' => 'boolean'
-    ];
-    protected $with = ['translation'];
-
-
-
-    /**
-     * Get the user notifications for this notification.
-     */
-    public function userNotifications()
+    // Relationships
+    public function user()
     {
-        return $this->hasMany(UserNotification::class);
+        return $this->belongsTo(User::class);
     }
 }

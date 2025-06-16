@@ -82,6 +82,7 @@ Route::prefix('services')->controller(ServiceController::class)->group(function 
 
 Route::prefix('notifications')->controller(NotificationController::class)->group(function ($route) {
     $route->get('', 'getNotifications');
+    $route->put('mark-as-read/{id}', 'markAsReadByNotification');
 });
 Route::prefix('currencies')->controller(CurrencyController::class)->group(function ($route) {
     $route->get('', 'index');

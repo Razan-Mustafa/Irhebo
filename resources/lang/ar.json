@@ -430,5 +430,16 @@
     "add_comment": "إضافة تعليق",
     "quotation_details": "تفاصيل الاقتباس",
     "select_prefix": "اختر البادئة",
-    "user_categories_retrieved": "تم جلب تصنيفات المستخدم بنجاح."
+    "user_categories_retrieved": "تم جلب تصنيفات المستخدم بنجاح.",
+    "add_ticket": "إضافة تذكرة",
+    "subject": "الموضوع",
+    "message": "الرسالة",
+    "attachment": "مرفق",
+    "select_request": "اختر الطلب",
+    "request": "طلب",
+    "faq": "الأسئلة المتكررة",
+    "filter_payment_status": "تصفية حسب حالة الدفع",
+    "all": "الكل",
+    "paid": "مدفوع",
+    "unpaid": "غير مدفوع"
 }

@@ -487,5 +487,16 @@
     "add_comment": "Add Comment",
     "quotation_details": "Quotation Details",
     "select_prefix": "Select Prefix",
-    "user_categories_retrieved": "User categories retrieved successfully."
+    "user_categories_retrieved": "User categories retrieved successfully.",
+    "add_ticket": "Add Ticket",
+    "subject": "Subject",
+    "message": "Message",
+    "attachment": "Attachment",
+    "select_request": "Select Request",
+    "request": "Request",
+    "faq": "Frequently Asked Questions",
+    "filter_payment_status": "Filter by Payment Status",
+    "all": "All",
+    "paid": "Paid",
+    "unpaid": "Unpaid"
 }

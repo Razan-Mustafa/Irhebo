@@ -41,18 +41,17 @@
                     </form>
                 </div>
 
-                <div class="grid grid-cols-4 gap-6 mt-6">
-
+                <div class="grid grid-cols-5 gap-6 mt-6">
                     <!-- Admins Card -->
                     <div
                         class="border rounded-[10px] border-gray-300 dark:border-gray-700 overflow-hidden bg-white dark:bg-[#1f2937] flex flex-col justify-between">
                         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Admins</h4>
+                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Portfolios</h4>
                         </div>
                         <div class="p-6 flex items-center justify-between">
                             <span
-                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $adminsCount }}</span>
-                            <a href="{{ route('admins.create') }}"
+                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $portfolioCount }}</span>
+                            <a href="{{ route('freelancer.portfolios.create') }}"
                                 class="inline-flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-2xl">+</a>
                         </div>
                     </div>
@@ -61,12 +60,12 @@
                     <div
                         class="border rounded-[10px] border-gray-300 dark:border-gray-700 overflow-hidden bg-white dark:bg-[#1f2937] flex flex-col justify-between">
                         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Clients</h4>
+                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Services</h4>
                         </div>
                         <div class="p-6 flex items-center justify-between">
                             <span
-                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $clientsCount }}</span>
-                            <a href="{{ route('clients.create') }}"
+                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $servicesCount }}</span>
+                            <a href="{{ route('freelancer.services.create') }}"
                                 class="inline-flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-2xl">+</a>
                         </div>
                     </div>
@@ -75,11 +74,11 @@
                     <div
                         class="border rounded-[10px] border-gray-300 dark:border-gray-700 overflow-hidden bg-white dark:bg-[#1f2937] flex flex-col justify-between">
                         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Freelancers</h4>
+                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Support Tickets</h4>
                         </div>
                         <div class="p-6 flex items-center justify-between">
                             <span
-                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $freelancersCount }}</span>
+                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $ticketsCount }}</span>
                             <a href="{{ route('freelancers.create') }}"
                                 class="inline-flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-2xl">+</a>
                         </div>
@@ -89,69 +88,28 @@
                     <div
                         class="border rounded-[10px] border-gray-300 dark:border-gray-700 overflow-hidden bg-white dark:bg-[#1f2937] flex flex-col justify-between">
                         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Roles</h4>
+                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Finances</h4>
                         </div>
                         <div class="p-6 flex items-center justify-between">
                             <span
-                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $rolesCount }}</span>
-                            <a href="{{ route('roles.create') }}"
-                                class="inline-flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-2xl">+</a>
+                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $financesCount }}</span>
+                            {{-- <a href="{{ route('roles.create') }}"
+                                class="inline-flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-2xl">+</a> --}}
                         </div>
                     </div>
 
-                    <!-- Category Card -->
-                    <div
-                        class="border rounded-[10px] border-gray-300 dark:border-gray-700 overflow-hidden bg-white dark:bg-[#1f2937] flex flex-col justify-between">
-                        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Category</h4>
-                        </div>
-                        <div class="p-6 flex items-center justify-between">
-                            <span
-                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $categoriesCount }}</span>
-                            <a href="{{ route('categories.create') }}"
-                                class="inline-flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-2xl">+</a>
-                        </div>
-                    </div>
-
-                    <!-- Sub Category Card -->
-                    <div
-                        class="border rounded-[10px] border-gray-300 dark:border-gray-700 overflow-hidden bg-white dark:bg-[#1f2937] flex flex-col justify-between">
-                        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Sub Category</h4>
-                        </div>
-                        <div class="p-6 flex items-center justify-between">
-                            <span
-                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $subCategoriesCount }}</span>
-                            <a href="{{ route('subCategories.create') }}"
-                                class="inline-flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-2xl">+</a>
-                        </div>
-                    </div>
-
-                    <!-- Tag Card -->
-                    <div
-                        class="border rounded-[10px] border-gray-300 dark:border-gray-700 overflow-hidden bg-white dark:bg-[#1f2937] flex flex-col justify-between">
-                        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Tag</h4>
-                        </div>
-                        <div class="p-6 flex items-center justify-between">
-                            <span
-                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $tagsCount }}</span>
-                            <a href="{{ route('tags.create') }}"
-                                class="inline-flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-2xl">+</a>
-                        </div>
-                    </div>
 
                     <!-- Service Card -->
                     <div
                         class="border rounded-[10px] border-gray-300 dark:border-gray-700 overflow-hidden bg-white dark:bg-[#1f2937] flex flex-col justify-between">
                         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Service</h4>
+                            <h4 class="text-lg font-semibold text-defaulttextcolor dark:text-white">Request</h4>
                         </div>
                         <div class="p-6 flex items-center justify-between">
                             <span
-                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $servicesCount }}</span>
-                            <a href="{{ route('services.create') }}"
-                                class="inline-flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-2xl">+</a>
+                                class="text-5xl font-bold text-defaulttextcolor dark:text-white">{{ $requestsCount }}</span>
+                            {{-- <a href="{{ route('services.create') }}"
+                                class="inline-flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full text-2xl">+</a> --}}
                         </div>
                     </div>
                 </div>
@@ -163,11 +121,11 @@
                     <h3 class="text-2xl font-semibold text-defaulttextcolor dark:text-white mb-4">Latest Requests</h3>
                     <div class="flex gap-2 mb-4">
                         @php
-                            $statuses = ['all', 'pending', 'confirmed', 'in_progress', 'cancelled', 'completed'];
+                            $statuses = ['all', 'pending', 'in_progress'];
                         @endphp
 
                         @foreach ($statuses as $item)
-                            <a href="{{ route('home.index', ['status' => $item]) }}"
+                            <a href="{{ route('freelancer.home.index', ['status' => $item]) }}"
                                 class="px-4 py-2 rounded
                 {{ $status == $item ? 'bg-primary text-white' : 'bg-gray-200' }}">
                                 {{ ucfirst(str_replace('_', ' ', $item)) }}
@@ -186,9 +144,9 @@
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         Client</th>
-                                    <th
+                                    {{-- <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                                        Freelancer</th>
+                                        Freelancer</th> --}}
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                         Start Date</th>
@@ -212,8 +170,8 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
                                             {{ $request->user->username ?? '-' }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
-                                            {{ $request->service->user->username ?? '-' }}</td>
+                                        {{-- <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
+                                            {{ $request->service->user->username ?? '-' }}</td> --}}
                                         <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
                                             {{ $request->start_date }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
@@ -239,7 +197,7 @@
 
                 <div class="mt-10">
                     <h3 class="text-2xl font-semibold text-defaulttextcolor dark:text-white mb-4">Support Tickets </h3>
-                    <div class="flex gap-2 mb-4">
+                    {{-- <div class="flex gap-2 mb-4">
                         <a href="{{ route('home.index', ['ticket_status' => 'all']) }}"
                             class="px-4 py-2 rounded {{ request('ticket_status') == 'all' || !request('ticket_status') ? 'bg-primary text-white' : 'bg-gray-200' }}">
                             All
@@ -252,7 +210,7 @@
                             class="px-4 py-2 rounded {{ request('ticket_status') == 'closed' ? 'bg-primary text-white' : 'bg-gray-200' }}">
                             Closed
                         </a>
-                    </div>
+                    </div> --}}
 
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
                         <thead class="bg-gray-50 dark:bg-[#374151]">
@@ -260,9 +218,9 @@
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                     Code</th>
-                                <th
+                                {{-- <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                                    Client</th>
+                                    Client</th> --}}
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
                                     Subject</th>
@@ -283,9 +241,9 @@
                                             #{{ $ticket->code }}
                                         </a>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
+                                    {{-- <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
                                         {{ $ticket->user->username ?? '-' }}
-                                    </td>
+                                    </td> --}}
                                     <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
                                         {{ $ticket->subject }}
                                     </td>
@@ -350,7 +308,13 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
                                             {{ $quotation->created_at->format('Y-m-d') }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
-                                            {{ $quotation->quotation_comments_count  }}
+
+                                            <a aria-label="{{ __('add_comment') }}"
+                                                href="{{ route('freelancer.quotations.comment.create', $quotation->id) }}"
+                                                class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill"
+                                                title="{{ __('add_comment') }}">
+                                                <i class="las la-comment"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 @endforeach

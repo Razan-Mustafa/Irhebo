@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\QuotationController;
 use App\Http\Controllers\Admin\RequestController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Freelancer\AuthController as FreelancerAuthController;
+use App\Http\Controllers\Freelancer\FaqController as FreelancerFaqController;
 use App\Http\Controllers\Freelancer\FinanceController as FreelancerFinanceController;
 use App\Http\Controllers\Freelancer\HomeController as FreelancerHomeController;
 use App\Http\Controllers\Freelancer\PortfolioController as FreelancerPortfolioController;
@@ -40,6 +41,13 @@ use App\Models\Currency;
 Route::get('language/{locale}', [HomeController::class, 'changeLocale'])
     ->name('locale.change')
     ->whereIn('locale', config('app.supported_locales', ['en', 'ar']));
+
+
+Route::get('currency/{currency}', [FreelancerHomeController::class, 'changeCurrency'])
+    ->name('currency.change');
+
+
+
 // Guest Routes
 Route::middleware('guest:admin')->group(function ($route) {
     $route->get('', [AuthController::class, 'showLoginForm'])->name('login');
@@ -315,6 +323,9 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
         $route->put('update/{id}', 'update')->name('update');
         $route->get('show/{id}', 'show')->name('show');
         $route->delete('destroy/{id}', 'destroy')->name('destroy');
+        $route->post('change-status/{id}', 'changeStatus')->name('changeStatus');
+        $route->get('{id}/logs', 'logs')->name('logs');
+        $route->post('{id}/add-update', 'addUpdate')->name('addUpdate');
     });
     $route->controller(FreelancerQuotationController::class)->name('quotations.')->prefix('quotations')->group(function ($route) {
         $route->get('', 'index')->name('index');
@@ -342,6 +353,8 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
     $route->controller(FreelancerTicketController::class)->name('tickets.')->prefix('tickets')->group(function ($route) {
         $route->get('', 'index')->name('index');
         $route->get('show/{id}', 'show')->name('show');
+        $route->get('create', 'create')->name('create');
+        $route->post('store', 'store')->name('store');
         $route->post('reply/{id}', 'reply')->name('reply');
         $route->put('{ticket}/change-status', 'changeStatus')->name('changeStatus');
     });
@@ -354,4 +367,8 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
         $route->delete('destroy/{id}', 'destroy')->name('destroy');
     });
 
+
+    $route->controller(FreelancerFaqController::class)->name('faqs.')->prefix('faqs')->group(function ($route) {
+        $route->get('', 'index')->name('index');
+    });
 });

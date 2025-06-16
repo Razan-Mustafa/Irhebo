@@ -98,8 +98,89 @@
                   </div>
                   <!-- End light and dark theme -->
 
+                  @if (auth()->guard('freelancer')->check())
+                      <!-- start header currency -->
+                      <div
+                          class="header-element py-[1rem] md:px-[0.65rem] px-2 header-currency hs-dropdown ti-dropdown hidden sm:block [--placement:bottom-left]">
+                          <button id="dropdown-currency" type="button"
+                              class="hs-dropdown-toggle ti-dropdown-toggle !p-0 flex-shrink-0 !border-0 !rounded-full !shadow-none">
+                              <img src="{{ asset('build/assets/images/icons/cash.png') }}" alt="currency icon"
+                                  class="h-[1.25rem] w-[1.25rem] rounded-full">
+                          </button>
+
+                          <div class="hs-dropdown-menu ti-dropdown-menu min-w-[8rem] hidden !-mt-3"
+                              aria-labelledby="dropdown-currency">
+                              <div class="ti-dropdown-divider divide-y divide-gray-200 dark:divide-white/10">
+                                  <div class="py-2 first:pt-0 last:pb-0">
+                                      @foreach ($allcurrencies as $currency)
+                                          <a href="{{ route('currency.change', $currency['code']) }}"
+                                              class="ti-dropdown-item !p-[0.65rem] {{ session('currency', 'usd') == $currency['code'] ? 'active' : '' }}">
+                                              <div class="flex items-center space-x-2 rtl:space-x-reverse w-full">
+                                                  <div>
+                                                      <p class="!text-[0.8125rem] font-medium">
+                                                          {{ $currency['symbol'] }}
+                                                      </p>
+                                                  </div>
+                                              </div>
+                                          </a>
+                                      @endforeach
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <!-- end header currency -->
 
 
+
+                      <!-- FAQ Icon Button -->
+
+                      <div class="header-element header-theme-mode !items-center sm:block">
+                          <!-- FAQ Button -->
+                          <a href="{{ route('freelancer.faqs.index') }}"
+                              class="sidemenu-toggle animated-arrow  hor-toggle horizontal-navtoggle inline-flex items-center"
+                              aria-label="FAQs">
+                              <img src="{{ asset('build/assets/images/icons/frequently-asked-questions.png') }}"
+                                  alt="FAQ Icon" class="h-[1.25rem] w-[1.25rem]">
+                          </a>
+                      </div>
+
+                      <!-- chat Icon Button -->
+
+                      <div class="header-element header-theme-mode  !items-center sm:block">
+                          <a href=""
+                              class="sidemenu-toggle animated-arrow  hor-toggle horizontal-navtoggle inline-flex items-center"
+                              aria-label="Chat">
+                              <img src="{{ asset('build/assets/images/icons/chat.png') }}" alt="Chat Icon"
+                                  class="h-[1.25rem] w-[1.25rem]">
+                          </a>
+                      </div>
+                      {{-- whatsapp --}}
+                      <div class="header-element header-theme-mode  !items-center sm:block">
+                          <a href="https://wa.me/{{ preg_replace('/\D/', '', $whatsappNumber) }}" target="_blank"
+                              class="sidemenu-toggle animated-arrow hor-toggle horizontal-navtoggle inline-flex items-center"
+                              aria-label="whatsapp">
+                              <img src="{{ asset('build/assets/images/icons/whatsapp.png') }}" alt="whatsapp Icon"
+                                  class="h-[1.25rem] w-[1.25rem]">
+                          </a>
+                      </div>
+
+                      {{-- notification --}}
+                      <div class="header-element header-theme-mode !items-center sm:block">
+                          <a href="#" class="relative inline-flex items-center" aria-label="Notification">
+                              <img src="{{ asset('build/assets/images/icons/bell.png') }}" alt="Notification Icon"
+                                  class="h-[1.25rem] w-[1.25rem]">
+
+                              <span style="transform: translate(50%, -50%)"
+                                  class="absolute top-0 left-0 inline-flex items-center justify-center
+  px-1 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                  {{ $notificationCount ?? 0 }}
+                              </span>
+                          </a>
+                      </div>
+
+
+
+                  @endif
 
                   <!-- Header Profile -->
                   <div
@@ -150,6 +231,7 @@
                           </ul>
                       </div>
                   </div>
+
                   <!-- End Header Profile -->
                   <!-- Switcher Icon -->
                   {{-- <div class="header-element md:px-[0.48rem]">
@@ -167,9 +249,42 @@
   </header>
   <!-- END HEADER -->
 
+
+  {{-- Ai --}}
+  {{-- AI Button --}}
+  <a href="#"
+      style="
+     position: fixed;
+     bottom: 1rem;
+     right: 1rem;
+     background-color: rgb(59, 59, 113);
+     color: white;
+     width: 60px;
+     height: 60px;
+     border-radius: 50%;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     z-index: 50;
+     cursor: pointer;
+     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+     transition: background-color 0.3s ease;
+   "
+      onmouseover="this.style.backgroundColor='rgb(45, 45, 85)'"
+      onmouseout="this.style.backgroundColor='rgb(59, 59, 113)'">
+      <img src="{{ asset('build/assets/images/icons/ai.png') }}" alt="AI icon"
+          style="width: 40px; height: 40px; object-fit: contain;">
+  </a>
+
+
   <div class="language-switcher">
       <a href="{{ route('locale.change', 'en') }}"
           class="{{ app()->getLocale() == 'en' ? 'active' : '' }}">English</a>
       <a href="{{ route('locale.change', 'ar') }}"
           class="{{ app()->getLocale() == 'ar' ? 'active' : '' }}">العربية</a>
   </div>
+  <script>
+      document.querySelector('select[name="currency"]').addEventListener('change', function() {
+          window.location.href = this.value;
+      });
+  </script>

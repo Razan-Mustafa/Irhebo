@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Category;
+use App\Models\Currency;
+use App\Models\Finance;
 use App\Models\Freelancer;
+use App\Models\Portfolio;
 use App\Models\Quotation;
 use App\Models\Request as ModelsRequest;
 use App\Models\Service;
@@ -41,24 +44,41 @@ class HomeController extends Controller
             $to = $request->input('to');
         }
 
-        $getCount = function ($model, $from, $to) {
-            if ($from && $to) {
-                return $model::whereBetween('created_at', [$from, $to])->count();
+
+        $getCount = function ($model, $from, $to, $relationPath = null) {
+            $query = $model::query();
+
+            if ($relationPath) {
+                $query->whereHas($relationPath, function ($q) {
+                    $q->where('user_id', auth()->id());
+                });
+            } else {
+                $query->where('user_id', auth()->id());
             }
-            return $model::count();
+
+            if ($from && $to) {
+                $query->whereBetween('created_at', [$from, $to]);
+            }
+
+            return $query->count();
         };
 
-        $adminsCount = $getCount(Admin::class, $from, $to);
-        $clientsCount = $getCount(User::class, $from, $to) - $getCount(Freelancer::class, $from, $to);
-        $freelancersCount = $getCount(Freelancer::class, $from, $to);
-        $rolesCount = $getCount(Role::class, $from, $to);
-        $categoriesCount = $getCount(Category::class, $from, $to);
-        $subCategoriesCount = $getCount(SubCategory::class, $from, $to);
-        $tagsCount = $getCount(Tag::class, $from, $to);
-        $servicesCount = $getCount(Service::class, $from, $to);
+
+
+        $portfolioCount = $getCount(Portfolio::class, $from, $to); // has user_id
+        $requestsCount  = $getCount(ModelsRequest::class, $from, $to, 'service');
+        $financesCount  = $getCount(Finance::class, $from, $to, 'request.service'); // via nested relation
+        $servicesCount  = $getCount(Service::class, $from, $to); // has user_id
+        $ticketsCount   = $getCount(Ticket::class, $from, $to); // has user_id
+
 
         // requests table with status filter
-        $requestsQuery = ModelsRequest::with(['service.user', 'user'])->latest();
+        $requestsQuery = ModelsRequest::with(['service.user', 'user'])
+            ->whereHas('service', function ($q) {
+                $q->where('user_id', Auth::id());
+            })
+            ->whereIn('status', ['pending', 'in_progress'])
+            ->latest();
 
         if ($status && $status != 'all') {
             $requestsQuery->where('status', $status);
@@ -67,31 +87,35 @@ class HomeController extends Controller
         $requests = $requestsQuery->limit(10)->get();
 
         // tickets table with ticket_status filter
-        $ticketsQuery = Ticket::with(['user'])->latest();
+        $ticketsQuery = Ticket::where('user_id', auth()->id())->whereIn('status', ['open'])->with(['user'])->latest();
 
         if ($ticketStatus && $ticketStatus != 'all') {
             $ticketsQuery->where('status', $ticketStatus);
         }
 
         $tickets = $ticketsQuery->limit(10)->get();
+
+        $freelancerCategoryIds = Auth::user()->categories->pluck('id')->toArray();
+
         $quotations = Quotation::with(['user'])
-            ->withCount('quotationComments')
+            ->whereHas('subCategory.category', function ($q) use ($freelancerCategoryIds) {
+                $q->whereIn('id', $freelancerCategoryIds);
+            })
+            ->whereDoesntHave('quotationComments', function ($q) {
+                $q->where('user_id', Auth::id());
+            })
             ->latest()
             ->limit(10)
             ->get();
-
 
         return view('pages-freelancer.welcome', compact(
             'filter',
             'from',
             'to',
-            'adminsCount',
-            'clientsCount',
-            'freelancersCount',
-            'rolesCount',
-            'categoriesCount',
-            'subCategoriesCount',
-            'tagsCount',
+            'requestsCount',
+            'financesCount',
+            'portfolioCount',
+            'ticketsCount',
             'servicesCount',
             'requests',
             'status',
@@ -111,6 +135,18 @@ class HomeController extends Controller
             Session::put('locale', $locale);
             App::setLocale($locale);
         }
+        return redirect()->back();
+    }
+
+
+    public function changeCurrency($currency)
+    {
+        $availableCurrencies = Currency::pluck('code')->toArray();
+
+        if (in_array($currency, $availableCurrencies)) {
+            Session::put('currency', $currency);
+        }
+
         return redirect()->back();
     }
 }

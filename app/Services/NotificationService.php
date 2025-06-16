@@ -24,12 +24,17 @@ class NotificationService
     /**
      * Mark a notification as read
      */
-    public function markNotificationAsRead($userId)
-    {
-        return $this->notificationRepository->markAsRead($userId);
-    }
+    // public function markNotificationAsRead($userId)
+    // {
+    //     return $this->notificationRepository->markAsRead($userId);
+    // }
     public function getUnreadNotifications()
     {
         return $this->notificationRepository->getUnreadNotifications();
+    }
+
+    public function markNotificationAsRead($userId)
+    {
+        return $this->notificationRepository->markAsRead($userId);
     }
 }

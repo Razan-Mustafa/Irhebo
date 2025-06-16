@@ -105,7 +105,9 @@
                                             <option value="">{{ __('select_currency') }}</option>
                                             @foreach ($currencies as $currency)
                                                 <option value="{{ $currency->id }}"
-                                                    {{ $service->currency_id == $currency->id ? 'selected' : '' }}>
+                                                    @if (old('currency_id', $service->currency_id) == $currency->id) selected
+                                                    @elseif (empty($service->currency_id) && $currency->code == 'USD')
+                                                        selected @endif>
                                                     {{ $currency->name }} ({{ $currency->symbol }})
                                                 </option>
                                             @endforeach

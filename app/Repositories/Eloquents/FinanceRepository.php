@@ -27,8 +27,7 @@ class FinanceRepository implements FinanceRepositoryInterface
                 $query->where('user_id', $userId);
             })
             ->with(['request.user', 'request.service.user'])  // note: 'services' plural
-            ->orderBy('id', 'DESC')
-            ->get();
+            ->orderBy('id', 'DESC');
     }
 
     public function markAsPaid(array $ids)
