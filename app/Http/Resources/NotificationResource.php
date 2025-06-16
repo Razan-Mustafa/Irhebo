@@ -23,14 +23,14 @@ class NotificationResource extends JsonResource
 
         return [
             'id'                => $this->id,
-            'user_id'           => $this->user_id,
+            // 'user_id'           => $this->user_id,
             'title'             => $title,
             'body'              => $body,
             'type'              => $this->type,
             'type_id'           => $this->type_id,
             'is_read'           => $this->is_read,
-            'onesignal_id'      => $this->onesignal_id,
-            'response_onesignal' => $this->response_onesignal,
+            // 'onesignal_id'      => $this->onesignal_id,
+            // 'response_onesignal' => $this->response_onesignal,
             'created_at'        => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }
