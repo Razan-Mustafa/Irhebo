@@ -57,7 +57,6 @@ final class Builder
         'coverage-xml=',
         'path-coverage',
         'disallow-test-output',
-        'display-all-issues',
         'display-incomplete',
         'display-skipped',
         'display-deprecations',
@@ -107,7 +106,6 @@ final class Builder
         'reverse-list',
         'static-backup',
         'stderr',
-        'fail-on-all-issues',
         'fail-on-deprecation',
         'fail-on-phpunit-deprecation',
         'fail-on-empty-test-suite',
@@ -196,7 +194,6 @@ final class Builder
         $defaultTimeLimit                  = null;
         $disableCodeCoverageIgnore         = null;
         $disallowTestOutput                = null;
-        $displayAllIssues                  = null;
         $displayIncomplete                 = null;
         $displaySkipped                    = null;
         $displayDeprecations               = null;
@@ -208,7 +205,6 @@ final class Builder
         $excludeGroups                     = null;
         $executionOrder                    = null;
         $executionOrderDefects             = null;
-        $failOnAllIssues                   = null;
         $failOnDeprecation                 = null;
         $failOnPhpunitDeprecation          = null;
         $failOnEmptyTestSuite              = null;
@@ -459,7 +455,7 @@ final class Builder
 
                 case '--group':
                     if (str_contains($option[1], ',')) {
-                        EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
+                        EventFacade::emitter()->testRunnerTriggeredWarning(
                             'Using comma-separated values with --group is deprecated and will no longer work in PHPUnit 12. You can use --group multiple times instead.',
                         );
                     }
@@ -476,7 +472,7 @@ final class Builder
 
                 case '--exclude-group':
                     if (str_contains($option[1], ',')) {
-                        EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
+                        EventFacade::emitter()->testRunnerTriggeredWarning(
                             'Using comma-separated values with --exclude-group is deprecated and will no longer work in PHPUnit 12. You can use --exclude-group multiple times instead.',
                         );
                     }
@@ -493,7 +489,7 @@ final class Builder
 
                 case '--covers':
                     if (str_contains($option[1], ',')) {
-                        EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
+                        EventFacade::emitter()->testRunnerTriggeredWarning(
                             'Using comma-separated values with --covers is deprecated and will no longer work in PHPUnit 12. You can use --covers multiple times instead.',
                         );
                     }
@@ -510,7 +506,7 @@ final class Builder
 
                 case '--uses':
                     if (str_contains($option[1], ',')) {
-                        EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
+                        EventFacade::emitter()->testRunnerTriggeredWarning(
                             'Using comma-separated values with --uses is deprecated and will no longer work in PHPUnit 12. You can use --uses multiple times instead.',
                         );
                     }
@@ -538,7 +534,7 @@ final class Builder
 
                 case '--test-suffix':
                     if (str_contains($option[1], ',')) {
-                        EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
+                        EventFacade::emitter()->testRunnerTriggeredWarning(
                             'Using comma-separated values with --test-suffix is deprecated and will no longer work in PHPUnit 12. You can use --test-suffix multiple times instead.',
                         );
                     }
@@ -657,11 +653,6 @@ final class Builder
 
                 case '--stderr':
                     $stderr = true;
-
-                    break;
-
-                case '--fail-on-all-issues':
-                    $failOnAllIssues = true;
 
                     break;
 
@@ -859,11 +850,6 @@ final class Builder
 
                     break;
 
-                case '--display-all-issues':
-                    $displayAllIssues = true;
-
-                    break;
-
                 case '--display-incomplete':
                     $displayIncomplete = true;
 
@@ -1044,7 +1030,6 @@ final class Builder
             $excludeGroups,
             $executionOrder,
             $executionOrderDefects,
-            $failOnAllIssues,
             $failOnDeprecation,
             $failOnPhpunitDeprecation,
             $failOnEmptyTestSuite,
@@ -1103,7 +1088,6 @@ final class Builder
             $testSuite,
             $excludeTestSuite,
             $useDefaultConfiguration,
-            $displayAllIssues,
             $displayIncomplete,
             $displaySkipped,
             $displayDeprecations,
@@ -1137,7 +1121,7 @@ final class Builder
         $this->processed[$option]++;
 
         if ($this->processed[$option] === 2) {
-            EventFacade::emitter()->testRunnerTriggeredPhpunitWarning(
+            EventFacade::emitter()->testRunnerTriggeredWarning(
                 sprintf(
                     'Option %s cannot be used more than once',
                     $option,

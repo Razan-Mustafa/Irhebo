@@ -11,7 +11,12 @@ use App\Http\Requests\Api\LoginRequest;
 use App\Http\Requests\Api\ResetPasswordRequest;
 use App\Http\Requests\Api\VerifyCodeRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Notification;
+use App\Models\PlayerId;
+use App\Models\User;
+use App\Services\OneSignalService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -41,6 +46,77 @@ class AuthController extends Controller
     {
         try {
             $result = $this->authService->login($request->validated());
+            // dd($result);
+
+
+
+
+            // onesignal notification **************//
+            $user = $result['user'];
+            if ($user) {
+
+
+                // $playerIdRecord = PlayerId::where('user_id', $user->id)
+                //     ->where('is_notifiable', 1)
+                //     ->first();
+
+                $playerIdRecord = PlayerId::where('user_id', $user->id)
+                    ->where('is_notifiable', 1)
+                    ->pluck('player_id')->toArray();
+
+                // dd($playerIdRecord);
+
+                if ($playerIdRecord) {
+                    $titles = [
+                        'en' => __('notifications.item_added_title', [], 'en'),
+                        'ar' => __('notifications.item_added_title', [], 'ar'),
+                    ];
+
+                    $messages = [
+                        'en' => __('notifications.item_added_message', [], 'en'),
+                        'ar' => __('notifications.item_added_message', [], 'ar'),
+                    ];
+
+                    $response = app(OneSignalService::class)->sendNotificationToUser(
+                        $playerIdRecord, // نرسل player_id من جدول player_ids
+                        $titles,
+                        $messages
+                    );
+
+                    Notification::create([
+                        'user_id'           => $user->id,
+                        'title'             => json_encode($titles),
+                        'body'              => json_encode($messages),
+                        'type'              => 'login',
+                        'type_id'           => 1,
+                        'is_read'           => false,
+                        'onesignal_id'      => $response['id'] ?? null,
+                        'response_onesignal' => json_encode($response),
+                    ]);
+                }
+            }
+            // *********************************************//
+
+
+
+
+
+            if ($request->input('player_id')) {
+                // Check if this player_id already exists for this user
+                $exists = PlayerId::where('user_id', $user->id)
+                    ->where('player_id', $request->player_id)
+                    ->where('platform', $request->platform)
+                    ->exists();
+
+                if (!$exists) {
+                    PlayerId::create([
+                        'user_id'   => $user->id,
+                        'player_id' => $request->player_id,
+                        'platform'  => $request->platform,  // e.g. 'web'
+                    ]);
+                }
+            }
+
             return $this->successResponse(__('login_successful'), [
                 'user' => new UserResource($result['user']),
                 'token' => $result['token']
@@ -114,13 +190,37 @@ class AuthController extends Controller
             return $this->exceptionResponse($e);
         }
     }
-    public function logout()
+    // public function logout()
+    // {
+    //     try {
+    //         $token = auth()->user()->token();
+    //         if ($token) {
+    //             $token->revoke();
+    //         }
+    //         return $this->successResponse(__('logout_successful'));
+    //     } catch (Exception $e) {
+    //         return $this->exceptionResponse($e);
+    //     }
+    // }
+
+    public function logout(Request $request)
     {
         try {
-            $token = auth()->user()->token();
+            $user = auth()->user();
+
+            // Revoke the current token (if using Passport)
+            $token = $user->token();
             if ($token) {
                 $token->revoke();
             }
+
+            // Delete player_id for this device if provided
+            if ($request->filled('player_id')) {
+                PlayerId::where('user_id', $user->id)
+                    ->where('player_id', $request->player_id)
+                    ->delete();
+            }
+
             return $this->successResponse(__('logout_successful'));
         } catch (Exception $e) {
             return $this->exceptionResponse($e);

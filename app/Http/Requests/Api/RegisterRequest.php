@@ -45,6 +45,8 @@ class RegisterRequest extends FormRequest
             'country_id' => 'required|exists:countries,id',
             'password' => 'required|string|min:8',
             'avatar' => 'nullable',
+            'player_id' => 'nullable',
+            'platform' => 'nullable',
             'languages' => 'nullable|array',
             'languages.*' => 'integer|exists:languages,id',
         ];

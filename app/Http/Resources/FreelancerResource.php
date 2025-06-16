@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use App\Enums\FreelancerStatusEnum;
+use App\Models\PlayerId;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class FreelancerResource extends JsonResource
@@ -17,6 +18,9 @@ class FreelancerResource extends JsonResource
     {
         $langCode = request()->header('Accept-Language', 'en'); // default 'en'
         $titleField = 'title_' . $langCode;
+
+        $is_notifiable = PlayerId::where('user_id',$this->id)->where('player_id',$request->player_id)->value('is_notifiable');
+        // dd($is_notifiable);
         // dd($this->categories->translation);
         return [
             'id' => $this->id,
@@ -26,6 +30,7 @@ class FreelancerResource extends JsonResource
             'prefix' => $this->prefix,
             'phone' => $this->phone,
             'gender' => $this->gender_label,
+            'is_notifiable' => $is_notifiable,
             'profession' => $this->profession->translation->title ?? null,
             'categories' => $this->categories
                 ->unique('id')   // عشان يفلتر على حسب الـ id ويشيل التكرار

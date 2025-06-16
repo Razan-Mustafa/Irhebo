@@ -123,9 +123,11 @@ class AppServiceProvider extends ServiceProvider
                     'symbol' => app()->getLocale() == 'ar' ? $item->symbol_ar : $item->symbol_en,
                 ];
             });
+            $logo = General::where('key', 'platform_logo')->value('value');
 
             $view->with('allcurrencies', $currencies)
-                ->with('whatsappNumber', $whatsappNumber);
+                ->with('whatsappNumber', $whatsappNumber)
+                ->with('logo', $logo);
         });
     }
 }

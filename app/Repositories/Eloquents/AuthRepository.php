@@ -2,11 +2,13 @@
 
 namespace App\Repositories\Eloquents;
 
+use App\Models\PlayerId;
 use App\Models\User;
 use App\Models\UserLanguage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\Interfaces\AuthRepositoryInterface;
+use App\Utilities\GenerateCode;
 use Carbon\Carbon;
 
 class AuthRepository implements AuthRepositoryInterface
@@ -30,6 +32,7 @@ class AuthRepository implements AuthRepositoryInterface
                 'country_id' => $data['country_id'] ?? null,
                 'password' => Hash::make($data['password']),
                 'avatar' => $data['avatar'] ?? null,
+                'code' => GenerateCode::generate()
             ]);
             if (!empty($data['languages'])) {
                 foreach ($data['languages'] as $languageId) {
@@ -39,6 +42,24 @@ class AuthRepository implements AuthRepositoryInterface
                     ]);
                 }
             }
+            // dd($data,$data['platform']);
+
+            if (!empty($data['player_id'])) {
+                // Check if this player_id already exists for this user
+                $exists = PlayerId::where('user_id', $user->id)
+                    ->where('player_id', $data['player_id'])
+                    ->where('platform', $data['platform'])
+                    ->exists();
+
+                if (!$exists) {
+                    PlayerId::create([
+                        'user_id'   => $user->id,
+                        'player_id' => $data['player_id'],
+                        'platform'  => $data['platform'],  // e.g. 'web'
+                    ]);
+                }
+            }
+
             return $user->load(['profession', 'country', 'languages.language']);
         });
     }
@@ -50,7 +71,7 @@ class AuthRepository implements AuthRepositoryInterface
      */
     public function login(array $data)
     {
-        $user = User::with(['profession', 'country','languages.language'])
+        $user = User::with(['profession', 'country', 'languages.language'])
             ->where('prefix', $data['prefix'])
             ->where('phone', $data['phone'])
             ->first();
@@ -62,14 +83,14 @@ class AuthRepository implements AuthRepositoryInterface
         return $user;
     }
 
-    public function findByPhoneAndPrefix($phone,$prefix)
+    public function findByPhoneAndPrefix($phone, $prefix)
     {
         return User::where('phone', $phone)
             ->where('prefix', $prefix)
             ->first();
     }
 
-    public function updateCode($user,$code): User
+    public function updateCode($user, $code): User
     {
         $user->update(['code' => $code]);
         return $user->fresh();
@@ -79,11 +100,11 @@ class AuthRepository implements AuthRepositoryInterface
     {
         $user->update([
             'code' => null,
-            'verified_at'=>Carbon::now()
+            'verified_at' => Carbon::now()
         ]);
         return $user->load(['profession', 'country', 'languages.language']);
     }
-    public function updatePassword($user,$password): User
+    public function updatePassword($user, $password): User
     {
         $user->update([
             'password' => Hash::make($password)

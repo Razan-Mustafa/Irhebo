@@ -37,7 +37,8 @@ class User extends Authenticatable
         'google_id',
         'linkedin_id',
         'avatar',
-        'verified_at'
+        'verified_at',
+        'player_id'
     ];
 
     /**
@@ -48,7 +49,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
-
+    public function playerIds()
+    {
+        return $this->hasMany(PlayerId::class);
+    }
     /**
      * The attributes that should be cast.
      *
@@ -97,10 +101,10 @@ class User extends Authenticatable
     /**
      * Get the user notifications for the user.
      */
-    public function userNotifications(): HasMany
-    {
-        return $this->hasMany(UserNotification::class);
-    }
+    // public function userNotifications(): HasMany
+    // {
+    //     return $this->hasMany(UserNotification::class);
+    // }
 
     public function userWishlist(): HasMany
     {

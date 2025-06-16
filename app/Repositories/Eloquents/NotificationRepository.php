@@ -19,6 +19,7 @@ class NotificationRepository implements NotificationRepositoryInterface
     }
     public function getNotificationsForUser($userId = null, $perPage = null)
     {
+
         $query = $this->model->where('user_id', $userId)->orderBy('created_at', 'desc');;
 
         return $this->paginate($query, $perPage);

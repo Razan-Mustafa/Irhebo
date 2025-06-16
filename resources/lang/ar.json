@@ -441,5 +441,6 @@
     "filter_payment_status": "تصفية حسب حالة الدفع",
     "all": "الكل",
     "paid": "مدفوع",
-    "unpaid": "غير مدفوع"
+    "unpaid": "غير مدفوع",
+    "notification_status_updated": "تم تحديث حالة الإشعارات بنجاح."
 }

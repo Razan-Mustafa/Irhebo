@@ -8,7 +8,8 @@
                 <div class="xxl:col-span-4 xl:col-span-6 lg:col-span-8 md:col-span-12 col-span-12">
                     <!-- Logo -->
                     <div class="my-10 py-10 flex justify-center">
-                        <img src="build/assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo w-full">
+                        <img src="{{ asset($logo) }}" alt="logo"
+                            class="desktop-logo w-[520px] sm:w-[150px] md:w-[300px] lg:w-[350px] h-auto mb-5">
                     </div>
                     <!-- Sign In Box -->
                     <div class="box max-w-3xl mx-auto shadow-lg rounded-lg">

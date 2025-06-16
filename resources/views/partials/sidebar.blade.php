@@ -1,5 +1,5 @@
 <aside class="app-sidebar" id="sidebar">
-    <div class="main-sidebar-header">
+    {{-- <div class="main-sidebar-header">
         <a href="{{ route('home.index') }}" class="header-logo">
             <img src="{{ asset('build/assets/images/media/temp-logo.png') }}" alt="logo" class="desktop-logo">
             <img src="{{ asset('build/assets/images/media/temp-logo.png') }}" alt="logo" class="toggle-logo">
@@ -8,8 +8,23 @@
             <img src="{{ asset('build/assets/images/media/temp-logo.png') }}" alt="logo" class="desktop-white">
             <img src="{{ asset('build/assets/images/media/temp-logo.png') }}" alt="logo" class="toggle-white">
         </a>
+    </div> --}}
+
+    <div class="flex justify-center my-4" >
+        @if (auth()->guard('freelancer')->check())
+            <a href="{{ route('home.index') }}" class="logo">
+                <img src="{{ asset($logo) }}" alt="logo"
+                    class="desktop-logo w-[150px] sm:w-[150px] md:w-[300px] lg:w-[350px] h-auto ">
+            </a>
+        @elseif (auth()->guard('admin')->check())
+            <a href="{{ route('freelancer.home.index') }}" class="logo">
+                <img src="{{ asset($logo) }}" alt="logo"
+                    class="desktop-logo w-[150px] sm:w-[150px] md:w-[300px] lg:w-[350px] h-auto ">
+            </a>
+        @endif
     </div>
-    <div class="main-sidebar" id="sidebar-scroll">
+
+    <div style="margin-top: 0" class="main-sidebar" id="sidebar-scroll">
         <nav class="main-menu-container nav nav-pills flex-column">
 
             @if (auth()->guard('freelancer')->check())

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use App\Http\Resources\NotificationResource;
+use App\Models\PlayerId;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
@@ -33,6 +34,8 @@ class NotificationController extends Controller
         ]);
     }
 
+
+
     /**
      * Mark a notification as read.
      */
@@ -49,6 +52,36 @@ class NotificationController extends Controller
     {
         $result = $this->notificationService->markNotificationAsRead($notificationId);
 
-            return $this->successResponse(__('notification_marked_as_read'));
+        return $this->successResponse(__('notification_marked_as_read'));
+    }
+
+    public function changeNotifiable(Request $request)
+    {
+        $request->validate([
+            'player_id'     => 'required|string',
+        ]);
+
+        $userId = Auth::guard('api')->id();
+
+        // تأكيد وجود player_id مرتبط بالمستخدم الحالي
+        $player = PlayerId::where('user_id', $userId)
+            ->where('player_id', $request->player_id)
+            ->first();
+
+        if (!$player) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Player ID not found for this user.',
+            ], 404);
+        }
+
+        // تحديث الحالة
+        $player->update([
+            'is_notifiable' => $player->is_notifiable ? 0 : 1,
+        ]);
+
+        return $this->successResponse(__('notification_status_updated'), [
+            'player' => $player,
+        ]);
     }
 }

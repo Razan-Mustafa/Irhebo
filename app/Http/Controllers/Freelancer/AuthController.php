@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Freelancer\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Country;
+use App\Models\General;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,11 +15,12 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         $countries = Country::all();
+        $logo = General::where('key', 'platform_logo')->value('value');
 
         if (Auth::guard('freelancer')->check()) {
-            return redirect()->route('freelancer.home.index');
+            return redirect()->route('freelancer.home.index',compact('logo'));
         }
-        return view('pages-freelancer.auth.login', compact('countries'));
+        return view('pages-freelancer.auth.login', compact('countries','logo'));
     }
 
     public function login(LoginRequest $request)

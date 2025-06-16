@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('linkedin_id')->nullable()->unique();
             $table->string('avatar')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->text('player_id')->nullable();
             $table->softDeletes();
             $table->timestamps();
             $table->unique(['prefix', 'phone']);

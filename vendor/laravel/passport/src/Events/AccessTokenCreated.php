@@ -14,7 +14,7 @@ class AccessTokenCreated
     /**
      * The ID of the user associated with the token.
      *
-     * @var string|int|null
+     * @var string
      */
     public $userId;
 

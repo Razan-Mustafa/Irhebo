@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Requests\Admin\LoginRequest;
 use App\Http\Controllers\Controller;
+use App\Models\General;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,10 +13,13 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
+        $logo = General::where('key', 'platform_logo')->value('value');
+
+
         if (Auth::guard('admin')->check()) {
-            return redirect()->route('home.index');
+            return redirect()->route('home.index', compact('logo'));
         }
-        return view('pages.auth.login');
+        return view('pages.auth.login', compact('logo'));
     }
     public function login(LoginRequest $request)
     {
@@ -26,7 +30,7 @@ class AuthController extends Controller
 
             return redirect()
                 ->intended(route('home.index'))
-                ->with('success',__('welcome_back'));
+                ->with('success', __('welcome_back'));
         }
 
         return back()

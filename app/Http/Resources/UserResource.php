@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use App\Enums\FreelancerStatusEnum;
+use App\Models\PlayerId;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -16,9 +17,10 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-    $langCode = request()->header('Accept-Language', 'en'); // default 'en'
+        $langCode = request()->header('Accept-Language', 'en'); // default 'en'
+        $is_notifiable = PlayerId::where('user_id', $this->id)->where('player_id', $request->player_id)->value('is_notifiable');
 
-    $titleField = 'title_' . $langCode;
+        $titleField = 'title_' . $langCode;
         $data = [
             'id' => $this->id,
             'name' => $this->username,
@@ -27,6 +29,7 @@ class UserResource extends JsonResource
             'prefix' => $this->prefix,
             'phone' => $this->phone,
             'gender' => $this->gender_label,
+            'is_notifiable' => $is_notifiable,
             'profession' => $this->profession->translation->title ?? null,
             'profession_object' => [
                 'id' => $this->profession->id ?? null,

@@ -498,5 +498,6 @@
     "filter_payment_status": "Filter by Payment Status",
     "all": "All",
     "paid": "Paid",
-    "unpaid": "Unpaid"
+    "unpaid": "Unpaid",
+    "notification_status_updated": "Notification status updated successfully."
 }
