@@ -29,6 +29,7 @@ use App\Http\Middleware\CurrencyMiddleware;
 // Auth Routes
 Route::controller(AuthController::class)->group(function ($route) {
     $route->post('login', 'login');
+    $route->post('send-notification/{userId}', 'SendNotification');
     $route->post('register', 'register');
     $route->post('generate-code', 'generateCode');
     $route->post('verify-code', 'verifyCode');
@@ -38,6 +39,8 @@ Route::controller(SocialAuthController::class)->prefix('auth')->group(function($
    $route->get('{provider}', [SocialAuthController::class, 'redirectToProvider']);
    $route->get('{provider}/callback', [SocialAuthController::class, 'handleProviderCallback']);
 });
+
+
 // Public Routes
 Route::controller(HomeController::class)->group(function ($route) {
     $route->get('sliders', 'sliders');

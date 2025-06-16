@@ -47,15 +47,38 @@ class AuthController extends Controller
         try {
             $result = $this->authService->login($request->validated());
             // dd($result);
-
-
-
-
-            // onesignal notification **************//
             $user = $result['user'];
+
+            if ($request->input('player_id')) {
+                // Check if this player_id already exists for this user
+                $exists = PlayerId::where('user_id', $user->id)
+                    ->where('player_id', $request->player_id)
+                    ->where('platform', $request->platform)
+                    ->exists();
+
+                if (!$exists) {
+                    PlayerId::create([
+                        'user_id'   => $user->id,
+                        'player_id' => $request->player_id,
+                        'platform'  => $request->platform,  // e.g. 'web'
+                    ]);
+                }
+            }
+
+            return $this->successResponse(__('login_successful'), [
+                'user' => new UserResource($result['user']),
+                'token' => $result['token']
+            ]);
+        } catch (Exception $e) {
+            return $this->exceptionResponse($e);
+        }
+    }
+
+
+    public function SendNotification($userId){
+            $user = User::where('id',$userId)->first();
+
             if ($user) {
-
-
                 // $playerIdRecord = PlayerId::where('user_id', $user->id)
                 //     ->where('is_notifiable', 1)
                 //     ->first();
@@ -95,36 +118,12 @@ class AuthController extends Controller
                     ]);
                 }
             }
-            // *********************************************//
+                // *********************************************//
 
-
-
-
-
-            if ($request->input('player_id')) {
-                // Check if this player_id already exists for this user
-                $exists = PlayerId::where('user_id', $user->id)
-                    ->where('player_id', $request->player_id)
-                    ->where('platform', $request->platform)
-                    ->exists();
-
-                if (!$exists) {
-                    PlayerId::create([
-                        'user_id'   => $user->id,
-                        'player_id' => $request->player_id,
-                        'platform'  => $request->platform,  // e.g. 'web'
-                    ]);
-                }
-            }
-
-            return $this->successResponse(__('login_successful'), [
-                'user' => new UserResource($result['user']),
-                'token' => $result['token']
-            ]);
-        } catch (Exception $e) {
-            return $this->exceptionResponse($e);
-        }
+                return $this->successResponse('sent');
     }
+
+
     public function generateCode(GenerateCodeRequest $request)
     {
         try {
