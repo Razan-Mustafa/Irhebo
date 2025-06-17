@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ServiceRequest;
 use App\Http\Requests\Admin\UpdateServiceRequest;
 use App\Models\Currency;
+use App\Models\Notification;
 use App\Models\Plan;
+use App\Models\PlayerId;
 use App\Models\Service;
 use App\Services\CategoryService;
 use App\Services\FreelancerService;
+use App\Services\OneSignalService;
 use App\Services\PlanService;
 use App\Services\ServiceService;
 use App\Services\TagService;
@@ -66,6 +69,47 @@ class ServiceController extends Controller
 
         $service = $this->serviceService->create($data);
         $service->tags()->sync($data['tags'] ?? []);
+
+
+        // one signal notification
+        // dd($service->user);
+        $user = $service->user;
+        if ($user) {
+            $playerIdRecord = PlayerId::where('user_id', $user->id)
+                ->where('is_notifiable', 1)
+                ->pluck('player_id')->toArray();
+
+
+            if ($playerIdRecord) {
+                $titles = [
+                    'en' => __('new_service_added_title', [], 'en'),
+                    'ar' => __('new_service_added_title', [], 'ar'),
+                ];
+
+                $messages = [
+                    'en' => __('new_service_added_message', [], 'en'),
+                    'ar' => __('new_service_added_message', [], 'ar'),
+                ];
+
+                $response = app(OneSignalService::class)->sendNotificationToUser(
+                    $playerIdRecord, // نرسل player_id من جدول player_ids
+                    $titles,
+                    $messages
+                );
+
+                Notification::create([
+                    'user_id'           => $user->id,
+                    'title'             => json_encode($titles),
+                    'body'              => json_encode($messages),
+                    'type'              => 'service',
+                    'type_id'           => $service->id,
+                    'is_read'           => false,
+                    'onesignal_id'      => $response['id'] ?? null,
+                    'response_onesignal' => json_encode($response),
+                ]);
+            }
+        }
+        // *********************************************//
         return redirect()->route('services.index')->with('success', __('service_created_successfully'));
     }
     public function edit($id)

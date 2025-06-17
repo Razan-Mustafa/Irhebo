@@ -21,7 +21,10 @@ use App\Http\Requests\Api\UpdateProfileRequest;
 use App\Http\Requests\Api\BecomeFreelancerRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Freelancer;
+use App\Models\Notification;
+use App\Models\PlayerId;
 use App\Services\CategoryService;
+use App\Services\OneSignalService;
 
 class UserController extends Controller
 {
@@ -31,7 +34,7 @@ class UserController extends Controller
     protected $portfolioService;
     protected $serviceService;
     protected $categoryService;
-    public function __construct(FreelancerService $freelancerService, ClientService $clientService, ReviewService $reviewService, PortfolioService $portfolioService, ServiceService $serviceService,CategoryService $categoryService)
+    public function __construct(FreelancerService $freelancerService, ClientService $clientService, ReviewService $reviewService, PortfolioService $portfolioService, ServiceService $serviceService, CategoryService $categoryService)
     {
         $this->freelancerService = $freelancerService;
         $this->clientService = $clientService;
@@ -144,6 +147,45 @@ class UserController extends Controller
     {
         try {
             $freelancer = $this->freelancerService->completeProfile($request->validated());
+
+            $user =$freelancer;
+            // one signal notification*****************************************
+            if ($user) {
+                $playerIdRecord = PlayerId::where('user_id', $user->id)
+                    ->where('is_notifiable', 1)
+                    ->pluck('player_id')->toArray();
+
+
+                if ($playerIdRecord) {
+                    $titles = [
+                        'en' => __('messages.welcome_freelancer_title', [], 'en'),
+                        'ar' => __('messages.welcome_freelancer_title', [], 'ar'),
+                    ];
+
+                    $messages = [
+                        'en' => __('messages.welcome_freelancer_message', [], 'en'),
+                        'ar' => __('messages.welcome_freelancer_message', [], 'ar'),
+                    ];
+
+                    $response = app(OneSignalService::class)->sendNotificationToUser(
+                        $playerIdRecord, // نرسل player_id من جدول player_ids
+                        $titles,
+                        $messages
+                    );
+
+                    Notification::create([
+                        'user_id'           => $user->id,
+                        'title'             => json_encode($titles),
+                        'body'              => json_encode($messages),
+                        'type'              => 'new_freelancer',
+                        'type_id'           => null,
+                        'is_read'           => false,
+                        'onesignal_id'      => $response['id'] ?? null,
+                        'response_onesignal' => json_encode($response),
+                    ]);
+                }
+            }
+            // *********************************************//
             return $this->successResponse(__('freelancer_created'), new UserResource($freelancer));
         } catch (Exception $e) {
             return $this->exceptionResponse($e);

@@ -15,12 +15,16 @@ use Illuminate\Support\Facades\Auth;
 use App\Utilities\CurrencyConverter;
 use App\Models\Currency;
 use App\Models\Freelancer;
+use App\Models\Notification;
 use App\Models\Plan;
 use App\Models\PlanFeature;
+use App\Models\PlayerId;
 use App\Models\Quotation;
 use App\Models\Quotation_Comments;
 use App\Models\Request;
 use App\Models\Service;
+use App\Models\User;
+use App\Services\OneSignalService;
 use App\Services\RequestService;
 
 class QuotationController extends Controller
@@ -78,6 +82,52 @@ class QuotationController extends Controller
             : null;
         // dd($data , $data['price']);
         $quotation = $this->quotationService->store($data);
+
+        $categoryId = $quotation->subcategory->category_id;
+
+        // get all freelancers related to that category
+        $users = User::whereHas('categories', function ($q) use ($categoryId) {
+            $q->where('categories.id', $categoryId);
+        })->get();
+        // one signal notification*****************************************
+        // dd($users);
+        if ($users) {
+            $playerIdRecord = PlayerId::whereIn('user_id', $users->pluck('id')->toArray())
+                ->where('is_notifiable', 1)
+                ->pluck('player_id')->toArray();
+
+
+            if ($playerIdRecord) {
+                $titles = [
+                    'en' => __('messages.new_job_quotation_title', [], 'en'),
+                    'ar' => __('messages.new_job_quotation_title', [], 'ar'),
+                ];
+
+                $messages = [
+                    'en' => __('messages.new_job_quotation_message', ['quotation_title' => $quotation->title], 'en'),
+                    'ar' => __('messages.new_job_quotation_message', ['quotation_title' => $quotation->title], 'ar'),
+                ];
+
+                $response = app(OneSignalService::class)->sendNotificationToUser(
+                    $playerIdRecord, // نرسل player_id من جدول player_ids
+                    $titles,
+                    $messages
+                );
+                foreach ($users as $user) {
+                    Notification::create([
+                        'user_id'           => $user->id,
+                        'title'             => json_encode($titles),
+                        'body'              => json_encode($messages),
+                        'type'              => 'quotation',
+                        'type_id'           => $quotation->id,
+                        'is_read'           => false,
+                        'onesignal_id'      => $response['id'] ?? null,
+                        'response_onesignal' => json_encode($response),
+                    ]);
+                }
+            }
+        }
+        // *********************************************//
         return $this->successResponse(__('success'), new QuotationResource($quotation));
     }
 
@@ -104,7 +154,44 @@ class QuotationController extends Controller
         $data = array_merge($request->validated(), ['user_id' => $userId]);
 
         $comment = $this->quotationService->createQuotationComment($data);
+        $user = $comment->quotation->user;
+                    // one signal notification*****************************************
+            if ($user) {
+                $playerIdRecord = PlayerId::where('user_id', $user->id)
+                    ->where('is_notifiable', 1)
+                    ->pluck('player_id')->toArray();
 
+
+                if ($playerIdRecord) {
+                    $titles = [
+                        'en' => __('messages.new_comment_title', [], 'en'),
+                        'ar' => __('messages.new_comment_title', [], 'ar'),
+                    ];
+
+                    $messages = [
+                        'en' => __('messages.new_comment_message', ['freelancer_name' => $comment->user->username], 'en'),
+                        'ar' => __('messages.new_comment_message', ['freelancer_name' => $comment->user->username], 'ar'),
+                    ];
+
+                    $response = app(OneSignalService::class)->sendNotificationToUser(
+                        $playerIdRecord, // نرسل player_id من جدول player_ids
+                        $titles,
+                        $messages
+                    );
+
+                    Notification::create([
+                        'user_id'           => $user->id,
+                        'title'             => json_encode($titles),
+                        'body'              => json_encode($messages),
+                        'type'              => 'quotation',
+                        'type_id'           => $comment['quotation->id'],
+                        'is_read'           => false,
+                        'onesignal_id'      => $response['id'] ?? null,
+                        'response_onesignal' => json_encode($response),
+                    ]);
+                }
+            }
+            // *********************************************//
         return $this->successResponse(__('success'), new QuotationCommentResource($comment));
     }
 
@@ -200,7 +287,7 @@ class QuotationController extends Controller
 
             // dd($freelancer, $this->quotationService->getAllQuotations($perPage));
 
-// dd($freelancerCategoryIds, $quotations);
+            // dd($freelancerCategoryIds, $quotations);
 
             return $this->successResponse(__('quotations_retrieved_successfully'), [
                 'quotations' => QuotationResource::collection($quotations),

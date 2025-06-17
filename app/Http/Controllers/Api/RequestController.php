@@ -12,7 +12,10 @@ use App\Http\Resources\RequestCommentResource;
 use App\Http\Resources\RequestDetailsResource;
 use App\Http\Requests\Api\RequestCreateRequest;
 use App\Http\Requests\Api\AddRequestCommentRequest;
+use App\Models\Notification;
 use App\Models\PlanFeature;
+use App\Models\PlayerId;
+use App\Services\OneSignalService;
 
 class RequestController extends Controller
 {
@@ -55,7 +58,7 @@ class RequestController extends Controller
         try {
             // dd($request);
             $request = $this->requestService->createRequest($request->validated());
-           return $this->successResponse(__('success'), new RequestResource($request));
+            return $this->successResponse(__('success'), new RequestResource($request));
         } catch (\Exception $e) {
             return $this->exceptionResponse($e);
         }

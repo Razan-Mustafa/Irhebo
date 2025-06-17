@@ -10,7 +10,7 @@
         </a>
     </div> --}}
 
-    <div class="flex justify-center my-4" >
+    <div class="flex justify-center my-4">
         @if (auth()->guard('freelancer')->check())
             <a href="{{ route('home.index') }}" class="logo">
                 <img src="{{ asset($logo) }}" alt="logo"
@@ -212,6 +212,13 @@
                             <span class="side-menu__label">{{ __('Reviews') }}</span>
                         </a>
                     </li>
+                    <li class="slide">
+                        <a href="{{ route('notifications.create') }}" class="side-menu__item">
+                            <i class="bx bx-bell side-menu__icon"></i>
+                            <span class="side-menu__label">{{ __('send_notifications') }}</span>
+                        </a>
+                    </li>
+
                     {{-- <li class="slide">
                     <a href="{{ route('filters.index') }}" class="side-menu__item">
                         <i class="bx bx-filter side-menu__icon"></i>

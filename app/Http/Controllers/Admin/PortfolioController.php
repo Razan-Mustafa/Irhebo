@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PortfolioRequest;
 use App\Http\Requests\Admin\UpdatePortfolioRequest;
+use App\Models\Notification;
+use App\Models\PlayerId;
 use App\Services\FreelancerService;
+use App\Services\OneSignalService;
 use App\Services\PortfolioService;
 use App\Services\ServiceService;
 use Exception;
@@ -36,7 +39,48 @@ class PortfolioController extends Controller
     public function store(PortfolioRequest $request)
     {
         try {
-            $this->portfolioService->create($request->validated());
+            $portfolio = $this->portfolioService->create($request->validated());
+
+
+            // one signal notification
+            // dd($portfolio->user);
+            $user = $portfolio->user;
+            if ($user) {
+                $playerIdRecord = PlayerId::where('user_id', $user->id)
+                    ->where('is_notifiable', 1)
+                    ->pluck('player_id')->toArray();
+
+
+                if ($playerIdRecord) {
+                    $titles = [
+                        'en' => __('new_portfolio_entry_title', [], 'en'),
+                        'ar' => __('new_portfolio_entry_title', [], 'ar'),
+                    ];
+
+                    $messages = [
+                        'en' => __('new_portfolio_entry_message', [], 'en'),
+                        'ar' => __('new_portfolio_entry_message', [], 'ar'),
+                    ];
+
+                    $response = app(OneSignalService::class)->sendNotificationToUser(
+                        $playerIdRecord, // نرسل player_id من جدول player_ids
+                        $titles,
+                        $messages
+                    );
+
+                    Notification::create([
+                        'user_id'           => $user->id,
+                        'title'             => json_encode($titles),
+                        'body'              => json_encode($messages),
+                        'type'              => 'portfolio',
+                        'type_id'           => $portfolio->id,
+                        'is_read'           => false,
+                        'onesignal_id'      => $response['id'] ?? null,
+                        'response_onesignal' => json_encode($response),
+                    ]);
+                }
+            }
+            // *********************************************//
             return redirect()->route('portfolios.index')
                 ->with('success', __('portfolio_created_successfully'));
         } catch (Exception $e) {

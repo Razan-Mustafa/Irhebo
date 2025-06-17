@@ -76,18 +76,13 @@ class AuthController extends Controller
 
 
     public function SendNotification($userId){
+        // one signal notification
             $user = User::where('id',$userId)->first();
-
             if ($user) {
-                // $playerIdRecord = PlayerId::where('user_id', $user->id)
-                //     ->where('is_notifiable', 1)
-                //     ->first();
-
                 $playerIdRecord = PlayerId::where('user_id', $user->id)
                     ->where('is_notifiable', 1)
                     ->pluck('player_id')->toArray();
 
-                // dd($playerIdRecord);
 
                 if ($playerIdRecord) {
                     $titles = [
@@ -118,9 +113,9 @@ class AuthController extends Controller
                     ]);
                 }
             }
-                // *********************************************//
+        // *********************************************//
 
-                return $this->successResponse('sent');
+        return $this->successResponse('sent');
     }
 
 

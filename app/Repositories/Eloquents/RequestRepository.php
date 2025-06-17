@@ -2,14 +2,19 @@
 
 namespace App\Repositories\Eloquents;
 
+use App\Models\Notification;
+use App\Models\PlayerId;
 use App\Models\Request;
 use App\Models\RequestLog;
 use App\Traits\PaginateTrait;
 use App\Utilities\FileManager;
 use App\Models\RequestLogAttachment;
+use App\Models\User;
 use App\Repositories\Interfaces\RequestRepositoryInterface;
+use App\Services\OneSignalService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Termwind\Components\Dd;
 
 class RequestRepository implements RequestRepositoryInterface
 {
@@ -76,13 +81,103 @@ class RequestRepository implements RequestRepositoryInterface
             'status' => $new_status,
             'need_action' => true
         ]);
+
+        $userId = auth()->id();
+
+        if ($userId == $request->user_id) {
+            $user = $request->service->user;
+            $senderUser = $request->user;
+        } else {
+            $user = $request->user;
+            $senderUser = $request->service->user;
+        }
+            // dd($user);
+
         if ($current_status != $new_status) {
             $requestLog = RequestLog::create([
                 'user_id' => $data['user_id'],
                 'request_id' => $request->id,
                 'action' => Auth::user()->username . ' has updated the request status to ' . $new_status
             ]);
+
+            // one signal notification*****************************************
+            if ($user) {
+                $playerIdRecord = PlayerId::where('user_id', $user->id)
+                    ->where('is_notifiable', 1)
+                    ->pluck('player_id')->toArray();
+
+
+                if ($playerIdRecord) {
+                    $titles = [
+                        'en' => __('messages.request_updated_title', [], 'en'),
+                        'ar' => __('messages.request_updated_title', [], 'ar'),
+                    ];
+
+                    $messages = [
+                        'en' => __('messages.request_updated_message', ['status' => $new_status], 'en'),
+                        'ar' => __('messages.request_updated_message', ['status' => $new_status], 'ar'),
+                    ];
+
+                    $response = app(OneSignalService::class)->sendNotificationToUser(
+                        $playerIdRecord, // نرسل player_id من جدول player_ids
+                        $titles,
+                        $messages
+                    );
+
+                    Notification::create([
+                        'user_id'           => $user->id,
+                        'title'             => json_encode($titles),
+                        'body'              => json_encode($messages),
+                        'type'              => 'request',
+                        'type_id'           => $data['request_id'],
+                        'is_read'           => false,
+                        'onesignal_id'      => $response['id'] ?? null,
+                        'response_onesignal' => json_encode($response),
+                    ]);
+                }
+            }
+            // *********************************************//
+        } else {
+            // one signal notification*****************************************
+            if ($user) {
+                $playerIdRecord = PlayerId::where('user_id', $user->id)
+                    ->where('is_notifiable', 1)
+                    ->pluck('player_id')->toArray();
+
+                // dd($playerIdRecord);
+                if ($playerIdRecord) {
+                    $titles = [
+                        'en' => __('messages.new_request_update_title', [], 'en'),
+                        'ar' => __('messages.new_request_update_title', [], 'ar'),
+                    ];
+
+                    $messages = [
+                        'en' => __('messages.new_request_update_message', ['sender' => $senderUser->username], 'en'),
+                        'ar' => __('messages.new_request_update_message', ['sender' => $senderUser->username], 'ar'),
+                    ];
+
+                    $response = app(OneSignalService::class)->sendNotificationToUser(
+                        $playerIdRecord, // نرسل player_id من جدول player_ids
+                        $titles,
+                        $messages
+                    );
+
+                    Notification::create([
+                        'user_id'           => $user->id,
+                        'title'             => json_encode($titles),
+                        'body'              => json_encode($messages),
+                        'type'              => 'request_log',
+                        'type_id'           => $data['request_id'],
+                        'is_read'           => false,
+                        'onesignal_id'      => $response['id'] ?? null,
+                        'response_onesignal' => json_encode($response),
+                    ]);
+                }
+            }
+            // *********************************************//
         }
+
+
         $requestLog = RequestLog::create([
             'user_id' => $data['user_id'],
             'request_id' => $request->id,

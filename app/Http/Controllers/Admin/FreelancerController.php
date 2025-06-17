@@ -11,7 +11,10 @@ use App\Services\ProfessionService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\FreelancerRequest;
 use App\Models\Freelancer;
+use App\Models\Notification;
+use App\Models\PlayerId;
 use App\Services\CategoryService;
+use App\Services\OneSignalService;
 
 class FreelancerController extends Controller
 {
@@ -76,6 +79,47 @@ class FreelancerController extends Controller
     {
         try {
             $freelancer = $this->freelancerService->updateVerification($request->id);
+
+            // one signal notification*****************************************
+            // dd($freelancer->user);
+            $user = $freelancer->user;
+            if ($user) {
+                $playerIdRecord = PlayerId::where('user_id', $user->id)
+                    ->where('is_notifiable', 1)
+                    ->pluck('player_id')->toArray();
+
+
+                if ($playerIdRecord) {
+                    $titles = [
+                        'en' => __('account_verified_title', [], 'en'),
+                        'ar' => __('account_verified_title', [], 'ar'),
+                    ];
+
+                    $messages = [
+                        'en' => __('account_verified_message', [], 'en'),
+                        'ar' => __('account_verified_message', [], 'ar'),
+                    ];
+
+                    $response = app(OneSignalService::class)->sendNotificationToUser(
+                        $playerIdRecord, // نرسل player_id من جدول player_ids
+                        $titles,
+                        $messages
+                    );
+
+                    Notification::create([
+                        'user_id'           => $user->id,
+                        'title'             => json_encode($titles),
+                        'body'              => json_encode($messages),
+                        'type'              => 'verified',
+                        'type_id'           => null,
+                        'is_read'           => false,
+                        'onesignal_id'      => $response['id'] ?? null,
+                        'response_onesignal' => json_encode($response),
+                    ]);
+                }
+            }
+            // *********************************************//
+
             return $this->successResponse('success');
         } catch (Exception $e) {
             return $this->ErrorResponse($e->getMessage());
