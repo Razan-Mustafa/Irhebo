@@ -167,4 +167,19 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Category::class, 'freelancer_cateogries');
     }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(ChatMessage::class, 'sender_id');
+    }
+
+    public function chatsAsUserOne()
+    {
+        return $this->hasMany(Chat::class, 'user_id_one');
+    }
+
+    public function chatsAsUserTwo()
+    {
+        return $this->hasMany(Chat::class, 'user_id_two');
+    }
 }

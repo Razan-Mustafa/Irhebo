@@ -166,7 +166,7 @@
 
                       {{-- notification --}}
                       <div class="header-element header-theme-mode !items-center sm:block">
-                          <a href="#" class="relative inline-flex items-center" aria-label="Notification">
+                          <a href="{{ route('freelancer.chat.index') }}" class="relative inline-flex items-center" aria-label="Notification">
                               <img src="{{ asset('build/assets/images/icons/bell.png') }}" alt="Notification Icon"
                                   class="h-[1.25rem] w-[1.25rem]">
 

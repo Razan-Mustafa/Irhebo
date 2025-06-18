@@ -52,6 +52,7 @@ Route::controller(SubCategoryController::class)->group(function ($route) {
 });
 Route::controller(TagController::class)->prefix('tags')->group(function($route){
     $route->get('','getAllTags');
+    $route->get('by_sub_category/{id}','getTagBySubCategory');
 });
 Route::prefix('filters')->controller(FilterController::class)->group(function ($route) {
     $route->get('', 'getFiltersByCategoryId');
@@ -177,4 +178,10 @@ Route::middleware('auth:api')->group(function () {
         $route->post('update-status/{id}', 'updateStatus');
         $route->post('get-voice-call-token', 'getVoiceCallToken');
     });
+});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/chat/get-or-create', [ChatController::class, 'getOrCreateChat']);
+    Route::post('/chat/send-message', [ChatController::class, 'sendMessage']);
+    Route::get('/chat/{chatId}/messages', [ChatController::class, 'getMessages']);
+    Route::post('/chat/{chatId}/read', [ChatController::class, 'markAsRead']);
 });

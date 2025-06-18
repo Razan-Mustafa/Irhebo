@@ -2,74 +2,79 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Library\Agora;
-use Illuminate\Http\Request;
-use App\Services\ChatService;
+use App\Events\NewMessageEvent;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\ConversationResource;
-use App\Http\Resources\ConversationMessagesResource;
+use App\Models\Chat;
+use App\Models\ChatMessage;
+use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
-    protected $chatService;
-    public function __construct(ChatService $chatService)
+    public function getOrCreateChat(Request $request)
     {
-        $this->chatService = $chatService;
+        $userOne = auth()->id();
+        $userTwo = $request->user_id;
+
+        $chat = Chat::where(function ($q) use ($userOne, $userTwo) {
+            $q->where('user_id_one', $userOne)->where('user_id_two', $userTwo);
+        })
+            ->orWhere(function ($q) use ($userOne, $userTwo) {
+                $q->where('user_id_one', $userTwo)->where('user_id_two', $userOne);
+            })
+            ->first();
+
+        if (!$chat) {
+            $chat = Chat::create([
+                'user_id_one' => $userOne,
+                'user_id_two' => $userTwo
+            ]);
+        }
+
+        return response()->json($chat);
     }
-    public function startConversation(Request $request)
-    {
-        $request->validate([
-            'receiver_id' => 'required|exists:users,id',
-        ]);
-        $conversation = $this->chatService->startConversation($request->receiver_id);
-        return $this->successResponse(__('success'), new ConversationMessagesResource($conversation));
-    }
+
+    // إرسال رسالة
     public function sendMessage(Request $request)
     {
-        $data = $request->validate([
-            'conversation_id' => 'required|exists:conversations,id',
-            'message' => 'required',
-            'message_type' => 'required'
-        ]);
-        $message = $this->chatService->sendMessage($data);
-        return $this->successResponse(__('success'));
-    }
-    public function getMessages($conversationId)
-    {
-        $authUserId = Auth::id();
-        $messages = $this->chatService->getMessagesByConversation($conversationId, $authUserId);
-        return $this->successResponse(__('success'), $messages);
-    }
-    public function getConversations()
-    {
-        $authUserId = Auth::id();
-        $conversations = $this->chatService->getConversations($authUserId);
-        return $this->successResponse('success', ConversationResource::collection($conversations));
-    }
-    public function updateStatus(Request $request, $id)
-    {
-        $data = $request->validate([
-            'status' => 'required|in:spam,starred'
-        ]);
-        $this->chatService->updateStatus($data, $id);
-        return $this->successResponse(__('success'));
-    }
-    public function getVoiceCallToken(Request $request){
         $request->validate([
-            'channel_name' => 'required|string',
-            'uid' => 'required|integer',
+            'chat_id' => 'required|exists:chats,id',
+            'message' => 'nullable|string',
+            'attachment_url' => 'nullable|string',
+            'attachment_type' => 'nullable|in:image,video,file,audio'
         ]);
 
-        try {
-            $token = Agora::generateToken($request->channel_name, $request->uid);
-            return $this->successResponse(__('success'),[
-                'token' => $token,
-                'channel' => $request->channel_name,
-                'uid' => $request->uid
-            ]);
-        } catch (\Exception $e) {
-            return $this->exceptionResponse($e);
-        }
+        $message = ChatMessage::create([
+            'chat_id'        => $request->chat_id,
+            'sender_id'      => auth()->id(),
+            'message'        => $request->message,
+            'attachment_url' => $request->attachment_url,
+            'attachment_type' => $request->attachment_type,
+        ]);
+
+        broadcast(new NewMessageEvent($message))->toOthers();
+
+        return response()->json(['status' => 'Message Sent!', 'message' => $message]);
+    }
+
+    // جلب الرسائل داخل شات
+    public function getMessages($chatId)
+    {
+        $messages = ChatMessage::where('chat_id', $chatId)
+            ->with('sender:id,name')
+            ->orderBy('created_at')
+            ->get();
+
+        return response()->json($messages);
+    }
+
+
+    // تحديث الرسائل لمقروءة
+    public function markAsRead($chatId)
+    {
+        ChatMessage::where('chat_id', $chatId)
+            ->where('sender_id', '!=', auth()->id())
+            ->update(['is_read' => true]);
+
+        return response()->json(['status' => 'messages marked as read']);
     }
 }

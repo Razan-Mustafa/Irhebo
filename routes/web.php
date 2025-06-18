@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\QuotationController;
 use App\Http\Controllers\Admin\RequestController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Freelancer\AuthController as FreelancerAuthController;
+use App\Http\Controllers\Freelancer\ChatController;
 use App\Http\Controllers\Freelancer\FaqController as FreelancerFaqController;
 use App\Http\Controllers\Freelancer\FinanceController as FreelancerFinanceController;
 use App\Http\Controllers\Freelancer\HomeController as FreelancerHomeController;
@@ -295,6 +296,13 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
     $route->controller(FreelancerHomeController::class)->name('home.')->group(function ($route) {
         $route->get('home', 'index')->name('index');
     });
+
+    $route->controller(ChatController::class)->name('chat.')->prefix('chat')->group(function ($route) {
+        $route->get('', 'index')->name('index');
+        $route->get('show-chat/{chatId}', 'showChat')->name('showChat');
+        $route->post('send-message', 'sendMessage')->name('sendMessage');
+    });
+
 
     $route->controller(ProfessionController::class)->name('professions.')->prefix('professions')->group(function ($route) {
         $route->get('', 'index')->name('index');

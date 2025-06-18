@@ -62,7 +62,7 @@ class TagService
         return $this->tagRepository->getTagsByCategoryId($categoryId);
     }
 
-    public function getTagsBySubcategoryId(int $subcategoryId)
+    public function getTagsBySubcategoryId($subcategoryId)
     {
         return $this->tagRepository->getTagsBySubcategoryId($subcategoryId);
     }
