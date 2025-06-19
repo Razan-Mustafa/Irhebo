@@ -25,7 +25,8 @@ use App\Http\Controllers\Api\{
     TicketController,
 };
 use App\Http\Middleware\CurrencyMiddleware;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 // Auth Routes
 Route::controller(AuthController::class)->group(function ($route) {
     $route->post('login', 'login');
@@ -35,9 +36,9 @@ Route::controller(AuthController::class)->group(function ($route) {
     $route->post('verify-code', 'verifyCode');
     $route->post('reset-password', 'resetPassword');
 });
-Route::controller(SocialAuthController::class)->prefix('auth')->group(function($route){
-   $route->get('{provider}', [SocialAuthController::class, 'redirectToProvider']);
-   $route->get('{provider}/callback', [SocialAuthController::class, 'handleProviderCallback']);
+Route::controller(SocialAuthController::class)->prefix('auth')->group(function ($route) {
+    $route->get('{provider}', [SocialAuthController::class, 'redirectToProvider']);
+    $route->get('{provider}/callback', [SocialAuthController::class, 'handleProviderCallback']);
 });
 
 
@@ -50,13 +51,13 @@ Route::controller(HomeController::class)->group(function ($route) {
 Route::controller(SubCategoryController::class)->group(function ($route) {
     $route->get('sub-categories', 'getByCategoryId');
 });
-Route::controller(TagController::class)->prefix('tags')->group(function($route){
-    $route->get('','getAllTags');
-    $route->get('by_sub_category/{id}','getTagBySubCategory');
+Route::controller(TagController::class)->prefix('tags')->group(function ($route) {
+    $route->get('', 'getAllTags');
+    $route->get('by_sub_category/{id}', 'getTagBySubCategory');
 });
 Route::prefix('filters')->controller(FilterController::class)->group(function ($route) {
     $route->get('', 'getFiltersByCategoryId');
-    $route->post('apply','applyFilters');
+    $route->post('apply', 'applyFilters');
 });
 Route::prefix('portfolio')->controller(PortfolioController::class)->group(function ($route) {
     $route->get('', 'getPortfolioByUserId');
@@ -72,7 +73,7 @@ Route::prefix('shared')->controller(SharedController::class)->group(function ($r
 });
 Route::prefix('categories')->controller(CategoryController::class)->group(function ($route) {
     $route->get('', 'index');
-    $route->get('details/{id}','details');
+    $route->get('details/{id}', 'details');
 });
 Route::prefix('services')->controller(ServiceController::class)->group(function ($route) {
     $route->get('', 'getBySubCategory');
@@ -92,8 +93,8 @@ Route::prefix('notifications')->controller(NotificationController::class)->group
 Route::prefix('currencies')->controller(CurrencyController::class)->group(function ($route) {
     $route->get('', 'index');
 });
-Route::prefix('faqs')->controller(FaqController::class)->group(function($route){
-    $route->get('','index');
+Route::prefix('faqs')->controller(FaqController::class)->group(function ($route) {
+    $route->get('', 'index');
 });
 Route::prefix('users')->controller(UserController::class)->group(function ($route) {
     $route->get('freelancer-profile/{userId}', 'getFreelancerProfileByUserId');
@@ -138,11 +139,11 @@ Route::middleware('auth:api')->group(function () {
         $route->get('by-freelancer', 'getByFreelancer');
         $route->post('confirm-request/{id}', 'confirmRequest');
     });
-    Route::prefix('tickets')->controller(TicketController::class)->group(function($route){
+    Route::prefix('tickets')->controller(TicketController::class)->group(function ($route) {
         $route->get('', 'userTickets');
-        $route->post('submit-ticket','store');
-        $route->post('add-response','addMessage');
-        $route->get('{id}','show');
+        $route->post('submit-ticket', 'store');
+        $route->post('add-response', 'addMessage');
+        $route->get('{id}', 'show');
         $route->post('close-ticket/{id}', 'closeTicket');
     });
     Route::prefix('quotations')->controller(QuotationController::class)->group(function ($route) {
@@ -167,21 +168,26 @@ Route::middleware('auth:api')->group(function () {
         $route->delete('delete/{id}', 'delete');
         $route->delete('delete-media/{id}', 'deleteMedia');
     });
-    Route::prefix('checkout')->controller(CheckoutController::class)->group(function($route){
-        $route->post('proceed','proceedCheckout');
+    Route::prefix('checkout')->controller(CheckoutController::class)->group(function ($route) {
+        $route->post('proceed', 'proceedCheckout');
     });
-    Route::prefix('chat')->controller(ChatController::class)->group(function($route){
-        $route->post('start-conversation', 'startConversation');
+    Route::prefix('chat')->controller(ChatController::class)->group(function ($route) {
+        $route->post('start-chat', 'startChat');
         $route->post('send-message', 'sendMessage');
-        $route->get('messages/{id}', 'getMessages');
-        $route->get('get-conversations', 'getConversations');
-        $route->post('update-status/{id}', 'updateStatus');
-        $route->post('get-voice-call-token', 'getVoiceCallToken');
+        $route->get('get-messages/{chatId}', 'getMessages');
+        $route->get('unread-count/{chatId}', 'unreadCount');
+        $route->get('mark-read/{chatId}', 'markAsRead');
+        $route->get('get-chat', 'getAllChats');
+        // $route->post('update-status/{id}', 'updateStatus');
+        // $route->post('get-voice-call-token', 'getVoiceCallToken');
     });
+
+    // Route::get('/test-broadcast', function () {
+    //     broadcast(new \App\Events\PusherNewMessage(\App\Models\ChatMessage::latest()->first()));
+    //     return 'broadcasted!';
+    // });
 });
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/chat/get-or-create', [ChatController::class, 'getOrCreateChat']);
-    Route::post('/chat/send-message', [ChatController::class, 'sendMessage']);
-    Route::get('/chat/{chatId}/messages', [ChatController::class, 'getMessages']);
-    Route::post('/chat/{chatId}/read', [ChatController::class, 'markAsRead']);
-});
+
+// Route::post('/broadcasting/auth', function (Request $request) {
+//     return Broadcast::auth($request);
+// })->middleware('auth:sanctum');

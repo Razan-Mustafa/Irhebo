@@ -87,6 +87,8 @@
                                         <th>{{ __('title') }}</th>
                                         <th>{{ __('category') }}</th>
                                         {{-- <th>{{ __('freelancer') }}</th> --}}
+                                        {{-- <th>{{ __('recommended') }}</th> --}}
+
                                         <th>{{ __('actions') }}</th>
                                     </tr>
                                 </thead>
@@ -96,10 +98,21 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $service->translation->title }}</td>
                                             <td>{{ $service->subCategory->translation->title }}</td>
+                                             {{-- <td>
+                                                <div class="flex items-center justify-center">
+                                                    <input type="checkbox" id="hs-small-switch-{{ $service->id }}"
+                                                        class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                        data-item-id="{{ $service->id }}"
+                                                        data-route="{{ route('freelancer.services.toggleRecommended') }}"
+                                                        {{ $service->is_recommended ? 'checked' : '' }}>
+                                                </div>
+                                            </td> --}}
+
                                             {{-- <td>{{ $service->user->username }}</td> --}}
                                             <td>
 
-                                                <a aria-label="anchor" href="{{ route('freelancer.services.edit', $service->id) }}"
+                                                <a aria-label="anchor"
+                                                    href="{{ route('freelancer.services.edit', $service->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
                                                     <i class="las la-edit"></i>
                                                 </a>
@@ -109,8 +122,8 @@
                                                     <i class="las la-trash"></i>
                                                 </a>
                                                 <form id="delete-form-{{ $service->id }}"
-                                                    action="{{ route('freelancer.services.destroy', $service->id) }}" method="POST"
-                                                    class="hidden">
+                                                    action="{{ route('freelancer.services.destroy', $service->id) }}"
+                                                    method="POST" class="hidden">
                                                     @csrf
                                                     @method('DELETE')
                                                 </form>
@@ -173,5 +186,29 @@
             });
 
         });
+    </script>
+
+    <script>
+        function toggleRecommended(serviceId, status) {
+            fetch(`/freelancer/services/toggle-recommended/${serviceId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: status ? 1 : 0
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
     </script>
 @endpush

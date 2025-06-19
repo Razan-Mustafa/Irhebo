@@ -4,6 +4,7 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -19,9 +20,11 @@ class PusherNewMessage implements ShouldBroadcast
         $this->message = $message;
     }
 
+
     public function broadcastOn()
     {
-        return new Channel('chat-channel');
+        \Log::info('Broadcasting on channel: chat.' . $this->message->chat_id);
+        return new PrivateChannel('chat.' . $this->message->chat_id);
     }
 
     public function broadcastAs()

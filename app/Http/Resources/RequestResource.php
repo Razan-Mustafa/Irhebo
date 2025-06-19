@@ -16,6 +16,7 @@ class RequestResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // dd($request->all());
         $startDate = Carbon::parse($this->start_date);
         $endDate = Carbon::parse($this->end_date);
         $currentDate = Carbon::now();

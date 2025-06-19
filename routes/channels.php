@@ -10,5 +10,5 @@ use Illuminate\Support\Facades\Broadcast;
 //         })->exists();
 // });
 Broadcast::channel('chat.{chatId}', function ($user, $chatId) {
-    return true; // لو حابب تحط شرط تحقق إن المستخدم ضمن الشات
+    return true; 
 });

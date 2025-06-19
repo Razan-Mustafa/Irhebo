@@ -27,4 +27,12 @@ class ChatMessage extends Model
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
+
+
+    public function getAttachmentUrlAttribute($value)
+    {
+        return $value
+            ? url($value)
+            : null;
+    }
 }

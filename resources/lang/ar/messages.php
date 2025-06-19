@@ -28,4 +28,12 @@ return [
     'incoming_call_title' => 'مكالمة واردة',
     'incoming_call_message' => 'لديك مكالمة واردة من :caller_name. انضم الآن للتواصل المباشر.',
 
+
+    'chats_retrived'         => 'تم استرجاع المحادثات بنجاح.',
+    'chat_started'           => 'تم بدء المحادثة بنجاح.',
+    'message_sent'           => 'تم إرسال الرسالة بنجاح.',
+    'message_retrived'       => 'تم استرجاع الرسائل بنجاح.',
+    'mark_as_read_message'   => 'تم تحديد الرسائل كمقروءة.',
+    'count_message'          => 'تم استرجاع عدد الرسائل غير المقروءة.',
+
 ];

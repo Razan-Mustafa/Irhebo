@@ -14,14 +14,15 @@ class ChatController extends Controller
 
     public function index()
     {
-        $userId = auth()->id();
-        $users = User::all();
-        $chats = Chat::where('user_id_one', $userId)
-            ->orWhere('user_id_two', $userId)
-            ->with(['userOne:id,name', 'userTwo:id,name'])
-            ->get();
+        // $userId = auth()->id();
+        // $users = User::all();
+        // $chats = Chat::where('user_id_one', $userId)
+        //     ->orWhere('user_id_two', $userId)
+        //     ->with(['userOne:id,name', 'userTwo:id,name'])
+        //     ->get();
 
-        return view('pages-freelancer.chat.index', compact('chats','users'));
+        // return view('pages-freelancer.chat.index', compact('chats','users'));
+        return view('pages-freelancer.chat.index');
     }
 
 

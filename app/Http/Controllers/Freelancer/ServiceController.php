@@ -114,4 +114,23 @@ class ServiceController extends Controller
         $this->serviceService->delete($id);
         return redirect()->route('freelancer.services.index')->with('success', __('service_deleted_successfully'));
     }
+
+
+    public function toggleRecommended(Request $request)
+    {
+
+        $request->validate([
+            'id' => 'required|exists:services,id',
+        ]);
+
+        $service = Service::findOrFail($request->id);
+        $service->is_recommended = !$service->is_recommended;
+        $service->save();
+
+        // بدل redirect، نرجع JSON response
+        return response()->json([
+            'success' => true,
+            'message' => __('service_updated_successfully'),
+        ]);
+    }
 }

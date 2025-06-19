@@ -38,7 +38,7 @@ class RequestService
         $data['user_id'] = auth()->guard('api')->user()->id;
         $data['order_number'] = '#' . mt_rand(100000, 999999);
         $data['title'] = $service->translation->title;
-        $data['image'] = $service->media->where('is_cover', true)->first()->media_path??  null;
+        $data['image'] = $service->media->where('is_cover', true)->first()->media_path ??  null;
         $plan = Plan::where('id', $data['plan_id'])
             ->with(['features' => function ($query) use ($data) {
                 $query->where('type', 'delivery_days')->where('service_id', $data['service_id']);
@@ -69,10 +69,8 @@ class RequestService
         $discount = 0;
         $total = $amount + $feesAmount + $commissionAmount - $discount;
 
-        // Create request
         $request = $this->requestRepository->createRequest($data);
 
-        // Create finance record
         Finance::create([
             'request_id'     => $request->id,
             'amount'         => $amount,
@@ -84,8 +82,8 @@ class RequestService
             'payment_method' => 'credit_card',
             'paid_at'        => null,
         ]);
-        // dd($price->value);
-        return $this->requestRepository->createRequest($data);
+
+        return $request;
     }
     public function getRequestDetails($id)
     {

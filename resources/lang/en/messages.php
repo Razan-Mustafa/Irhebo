@@ -28,4 +28,11 @@ return [
     'incoming_call_title' => 'Incoming Call',
     'incoming_call_message' => 'You have an incoming call from :caller_name. Join now to connect in real time.',
 
+    'chats_retrived'         => 'Chats retrieved successfully.',
+    'chat_started'           => 'Chat started successfully.',
+    'message_sent'           => 'Message sent successfully.',
+    'message_retrived'       => 'Messages retrieved successfully.',
+    'mark_as_read_message'   => 'Messages marked as read.',
+    'count_message'          => 'Unread messages count retrieved successfully.',
+
 ];

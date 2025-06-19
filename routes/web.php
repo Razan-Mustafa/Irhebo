@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\ProfessionController;
 use App\Http\Controllers\Admin\QuotationController;
 use App\Http\Controllers\Admin\RequestController;
 use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\Api\ChatController as ApiChatController;
 use App\Http\Controllers\Freelancer\AuthController as FreelancerAuthController;
 use App\Http\Controllers\Freelancer\ChatController;
 use App\Http\Controllers\Freelancer\FaqController as FreelancerFaqController;
@@ -184,6 +185,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
         $route->get('edit/{id}', 'edit')->name('edit');
         $route->put('update/{id}', 'update')->name('update');
         $route->delete('destroy/{id}', 'destroy')->name('destroy');
+        $route->post('toggle-recommended', 'toggleRecommended')->name('toggleRecommended');
     });
     $route->controller(PortfolioController::class)->name('portfolios.')->prefix('portfolios')->group(function ($route) {
         $route->get('', 'index')->name('index');
@@ -322,6 +324,7 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
         $route->get('edit/{id}', 'edit')->name('edit');
         $route->put('update/{id}', 'update')->name('update');
         $route->delete('destroy/{id}', 'destroy')->name('destroy');
+        $route->post('toggle-recommended', 'toggleRecommended')->name('toggleRecommended');
     });
     $route->controller(FreelancerPortfolioController::class)->name('portfolios.')->prefix('portfolios')->group(function ($route) {
         $route->get('', 'index')->name('index');

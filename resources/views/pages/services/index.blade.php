@@ -87,6 +87,7 @@
                                         <th>{{ __('title') }}</th>
                                         <th>{{ __('category') }}</th>
                                         <th>{{ __('freelancer') }}</th>
+                                        <th>{{ __('recommended') }}</th>
                                         <th>{{ __('actions') }}</th>
                                     </tr>
                                 </thead>
@@ -96,7 +97,20 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $service->translation->title }}</td>
                                             <td>{{ $service->subCategory->translation->title }}</td>
+
+
+
                                             <td>{{ $service->user->username }}</td>
+                                            <td>
+                                                <div class="flex items-center justify-center">
+                                                    <input type="checkbox" id="hs-small-switch-{{ $service->id }}"
+                                                        class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                        data-item-id="{{ $service->id }}"
+                                                        data-route="{{ route('services.toggleRecommended') }}"
+                                                        {{ $service->is_recommended ? 'checked' : '' }}>
+                                                </div>
+                                            </td>
+
                                             <td>
 
                                                 <a aria-label="anchor" href="{{ route('services.edit', $service->id) }}"
@@ -174,4 +188,36 @@
 
         });
     </script>
+
+    {{-- <script>
+        document.querySelectorAll('input.ti-switch').forEach(switchEl => {
+            switchEl.addEventListener('change', function() {
+                const serviceId = this.dataset.itemId;
+                const route = this.dataset.route;
+                const is_recommended = this.checked ? 1 : 0;
+
+                fetch(route, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content'),
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: serviceId,
+                            is_recommended: is_recommended
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Updated successfully');
+                        } else {
+                            console.error('Update failed');
+                        }
+                    })
+                    .catch(err => console.error('Error:', err));
+            });
+        });
+    </script> --}}
 @endpush
