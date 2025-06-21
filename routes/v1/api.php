@@ -178,12 +178,12 @@ Route::middleware('auth:api')->group(function () {
         $route->get('unread-count/{chatId}', 'unreadCount');
         $route->get('mark-read/{chatId}', 'markAsRead');
         $route->get('get-chat', 'getAllChats');
+        $route->post('toggle-flag', 'toggleFlag');
         // $route->post('update-status/{id}', 'updateStatus');
         // $route->post('get-voice-call-token', 'getVoiceCallToken');
     });
-
 });
 
-Route::post('/broadcasting/auth', function (Request $request) {
+Route::middleware('auth:api')->post('/broadcasting/auth', function (Request $request) {
     return Broadcast::auth($request);
-})->middleware('auth:api');
+});

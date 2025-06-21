@@ -464,5 +464,8 @@
     "new_service_added_message": "قامت الإدارة بإنشاء خدمة جديدة لك. راجعها وعدّلها إن لزم الأمر.",
     "new_portfolio_entry_title": "إضافة جديدة إلى معرض أعمالك",
     "new_portfolio_entry_message": "قامت الإدارة بإضافة عنصر جديد إلى معرض أعمالك. تحقق منه وعدّله إذا أردت.",
-    "either_message_or_attachment_required": "يجب إدخال رسالة أو إرفاق ملف."
+    "either_message_or_attachment_required": "يجب إدخال رسالة أو إرفاق ملف.",
+    "flag_updated_user_one": "تم تحديث العلامة للمستخدم الأول.",
+    "flag_updated_user_two": "تم تحديث العلامة للمستخدم الثاني.",
+    "unauthorized_action": "غير مصرح."
 }

@@ -47,6 +47,7 @@ class RegisterRequest extends FormRequest
             'avatar' => 'nullable',
             'player_id' => 'nullable',
             'platform' => 'nullable',
+            'google_id' => 'nullable',
             'languages' => 'nullable|array',
             'languages.*' => 'integer|exists:languages,id',
         ];

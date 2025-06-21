@@ -35,7 +35,8 @@ class AuthRepository implements AuthRepositoryInterface
                 'country_id' => $data['country_id'] ?? null,
                 'password' => Hash::make($data['password']),
                 'avatar' => $data['avatar'] ?? null,
-                'code' => $code
+                'code' => $code,
+                'google_id' => $data['google_id']
             ]);
             if (!empty($data['languages'])) {
                 foreach ($data['languages'] as $languageId) {

@@ -72,6 +72,7 @@ class ChatController extends Controller
         $chat = Chat::firstOrCreate([
             'user_id_one' => $ids[0],
             'user_id_two' => $ids[1],
+        ], [
             'user_one_flag' => 'normal',
             'user_two_flag' => 'normal',
         ]);
@@ -138,8 +139,8 @@ class ChatController extends Controller
                 ];
 
                 $messages = [
-                    'en' => __('messages.new_message_message', ['sender_name'=>$user->username], 'en'),
-                    'ar' => __('messages.new_message_message', ['sender_name'=>$user->username], 'ar'),
+                    'en' => __('messages.new_message_message', ['sender_name' => $user->username], 'en'),
+                    'ar' => __('messages.new_message_message', ['sender_name' => $user->username], 'ar'),
                 ];
 
                 $response = app(OneSignalService::class)->sendNotificationToUser(
@@ -199,5 +200,31 @@ class ChatController extends Controller
 
 
         return $this->successResponse(_('messages.count_message'), $count);
+    }
+
+    public function toggleFlag(Request $request)
+    {
+        $userId = auth()->id();
+
+        $request->validate([
+            'flag' => 'required',
+            'chat_id' => 'required',
+        ]);
+
+        $chat = Chat::where('id', $request->chat_id)->first();
+
+        // dd($chat->user_id_two, $userId);
+        if ($chat->user_id_one == $userId) {
+            $chat->user_one_flag = $request->flag;
+            $chat->save();
+            return $this->successResponse(__('flag_updated_user_one'));
+        }
+
+        if ($chat->user_id_two == $userId) {
+            $chat->user_two_flag = $request->flag;
+            $chat->save();
+            return $this->successResponse(__('flag_updated_user_two'));
+        }
+        return $this->errorResponse(__('unauthorized_action'));
     }
 }

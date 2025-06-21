@@ -521,5 +521,8 @@
     "new_service_added_message": "A new service has been created on your behalf by the admin. Review and update it if needed.",
     "new_portfolio_entry_title": "New Portfolio Entry Added",
     "new_portfolio_entry_message": "The admin has added a new portfolio item to your profile. Check it out and make any adjustments if necessary.",
-    "either_message_or_attachment_required": "Either a message or an attachment must be provided."
+    "either_message_or_attachment_required": "Either a message or an attachment must be provided.",
+    "flag_updated_user_one": "Flag updated for user one.",
+    "flag_updated_user_two": "Flag updated for user two.",
+    "unauthorized_action": "Unauthorized."
 }
