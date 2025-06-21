@@ -8,6 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ChatMessageResource;
 use App\Models\Chat;
 use App\Models\ChatMessage;
+use App\Models\Notification;
+use App\Models\PlayerId;
+use App\Models\User;
+use App\Services\OneSignalService;
 use App\Utilities\FileManager;
 use Illuminate\Http\Request;
 
@@ -27,26 +31,29 @@ class ChatController extends Controller
             ->map(function ($chat) use ($userId) {
                 $otherUser = $chat->user_id_one == $userId ? $chat->userTwo : $chat->userOne;
 
-                // احسب عدد الرسائل غير المقروءة
                 $unreadCount = ChatMessage::where('chat_id', $chat->id)
                     ->where('sender_id', '!=', $userId)
                     ->where('is_read', false)
                     ->count();
 
+                $lastMessage = ChatMessage::where('chat_id', $chat->id)
+                    ->latest('created_at')
+                    ->first();
                 return [
                     'chat_id'       => $chat->id,
+                    'chat_status' => $chat->user_id_one == $userId ? $chat->user_one_flag : $chat->user_two_flag,
                     'receiver'      => [
                         'id'       => $otherUser->id,
                         'username' => $otherUser->username,
                         'image'    => url($otherUser->avatar),
                     ],
+                    'last_message'  => $lastMessage ? new ChatMessageResource($lastMessage) : null,
                     'unread_count'  => $unreadCount,
                 ];
             });
 
         return $this->successResponse(__('messages.chats_retrived'), $chats->values());
     }
-
 
 
 
@@ -65,7 +72,10 @@ class ChatController extends Controller
         $chat = Chat::firstOrCreate([
             'user_id_one' => $ids[0],
             'user_id_two' => $ids[1],
+            'user_one_flag' => 'normal',
+            'user_two_flag' => 'normal',
         ]);
+
         return $this->successResponse(__('messages.chat_started'), $chat);
     }
 
@@ -100,6 +110,57 @@ class ChatController extends Controller
 
         broadcast(new PusherNewMessage($message))->toOthers();
 
+        $chat = Chat::where('id', $request->chat_id)->first();
+
+        if (!$chat) {
+            return $this->errorResponse('Chat not found.', 404);
+        }
+
+        $authId = auth()->id();
+
+        // Check which one is the other user
+        $otherUserId = $chat->user_id_one == $authId ? $chat->user_id_two : $chat->user_id_one;
+
+        // get the user details
+        $user = User::find($otherUserId);
+
+        // one signal notification*****************************************
+        if ($user) {
+            $playerIdRecord = PlayerId::where('user_id', $user->id)
+                ->where('is_notifiable', 1)
+                ->pluck('player_id')->toArray();
+
+
+            if ($playerIdRecord) {
+                $titles = [
+                    'en' => __('messages.new_message_title', [], 'en'),
+                    'ar' => __('messages.new_message_title', [], 'ar'),
+                ];
+
+                $messages = [
+                    'en' => __('messages.new_message_message', ['sender_name'=>$user->username], 'en'),
+                    'ar' => __('messages.new_message_message', ['sender_name'=>$user->username], 'ar'),
+                ];
+
+                $response = app(OneSignalService::class)->sendNotificationToUser(
+                    $playerIdRecord,
+                    $titles,
+                    $messages
+                );
+
+                Notification::create([
+                    'user_id'           => $user->id,
+                    'title'             => json_encode($titles),
+                    'body'              => json_encode($messages),
+                    'type'              => 'chat',
+                    'type_id'           => $request->chat_id,
+                    'is_read'           => false,
+                    'onesignal_id'      => $response['id'] ?? null,
+                    'response_onesignal' => json_encode($response),
+                ]);
+            }
+        }
+        // *********************************************//
         return $this->successResponse(__('messages.message_sent'), $message);
     }
 
@@ -107,9 +168,9 @@ class ChatController extends Controller
     {
         $messages = ChatMessage::where('chat_id', $chatId)
             ->with([
-                'sender:id,username',
-                'chat.userOne:id,username',
-                'chat.userTwo:id,username'
+                'sender:id,username,avatar',
+                'chat.userOne:id,username,avatar',
+                'chat.userTwo:id,username,avatar'
             ])
             ->orderBy('created_at')
             ->get();

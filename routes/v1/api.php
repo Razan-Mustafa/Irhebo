@@ -182,12 +182,8 @@ Route::middleware('auth:api')->group(function () {
         // $route->post('get-voice-call-token', 'getVoiceCallToken');
     });
 
-    // Route::get('/test-broadcast', function () {
-    //     broadcast(new \App\Events\PusherNewMessage(\App\Models\ChatMessage::latest()->first()));
-    //     return 'broadcasted!';
-    // });
 });
 
-// Route::post('/broadcasting/auth', function (Request $request) {
-//     return Broadcast::auth($request);
-// })->middleware('auth:sanctum');
+Route::post('/broadcasting/auth', function (Request $request) {
+    return Broadcast::auth($request);
+})->middleware('auth:api');

@@ -34,7 +34,7 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-    
+
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
@@ -45,5 +45,11 @@ return [
         'client_secret' => env('LINKEDIN_CLIENT_SECRET'),
         'redirect' => env('LINKEDIN_REDIRECT_URI'),
     ],
+    'whatsapp' => [
+        'token'            => env('WHATSAPP_TOKEN'),
+        'phone_number_id'  => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'template_name'    => env('WA_TEMPLATE_NAME'),
 
+
+    ],
 ];

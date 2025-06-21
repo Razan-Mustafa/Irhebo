@@ -11,6 +11,8 @@ class Chat extends Model
     protected $fillable = [
         'user_id_one',
         'user_id_two',
+        'user_one_flag',
+        'user_two_flag',
     ];
 
     // علاقة المستخدم الأول

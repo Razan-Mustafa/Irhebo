@@ -27,10 +27,12 @@ class ChatMessageResource extends JsonResource
             'sender' => [
                 'id' => $this->sender->id,
                 'username' => $this->sender->username,
+                'avatar' => url($this->sender->avatar),
             ],
             'receiver' => [
                 'id'       => $receiver->id,
                 'username' => $receiver->username,
+                'avatar' => url($receiver->avatar),
             ],
         ];
     }

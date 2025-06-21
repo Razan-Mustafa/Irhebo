@@ -8,6 +8,7 @@ use App\Models\UserLanguage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\Interfaces\AuthRepositoryInterface;
+use App\Services\WhatsAppService;
 use App\Utilities\GenerateCode;
 use Carbon\Carbon;
 
@@ -22,6 +23,8 @@ class AuthRepository implements AuthRepositoryInterface
     public function register(array $data)
     {
         return DB::transaction(function () use ($data) {
+
+            $code = GenerateCode::generate();
             $user = User::create([
                 'username' => $data['username'],
                 'email' => $data['email'],
@@ -32,7 +35,7 @@ class AuthRepository implements AuthRepositoryInterface
                 'country_id' => $data['country_id'] ?? null,
                 'password' => Hash::make($data['password']),
                 'avatar' => $data['avatar'] ?? null,
-                'code' => GenerateCode::generate()
+                'code' => $code
             ]);
             if (!empty($data['languages'])) {
                 foreach ($data['languages'] as $languageId) {
@@ -59,6 +62,12 @@ class AuthRepository implements AuthRepositoryInterface
                     ]);
                 }
             }
+            $fullPhoneNumber = $data['prefix'] . $data['phone'];
+
+            $whatsApp = new WhatsAppService();
+            $response = $whatsApp->sendTemplateMessage($fullPhoneNumber, $code);
+
+            // dd($response);
 
             return $user->load(['profession', 'country', 'languages.language']);
         });
@@ -93,6 +102,9 @@ class AuthRepository implements AuthRepositoryInterface
     public function updateCode($user, $code): User
     {
         $user->update(['code' => $code]);
+        $whatsApp = new WhatsAppService();
+        $fullPhoneNumber = $user->prefix.$user->phone;
+        $response = $whatsApp->sendTemplateMessage($fullPhoneNumber, $code);
         return $user->fresh();
     }
 

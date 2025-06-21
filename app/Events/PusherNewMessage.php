@@ -23,7 +23,7 @@ class PusherNewMessage implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        \Log::info('Broadcasting on channel: chat.' . $this->message->chat_id);
+        // \Log::info('Broadcasting on channel: chat.' . $th/is->message->chat_id);
         return new PrivateChannel('chat.' . $this->message->chat_id);
     }
 
