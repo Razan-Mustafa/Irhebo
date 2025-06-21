@@ -74,45 +74,84 @@ class AuthController extends Controller
         }
     }
 
+    public function socialLogin(Request $request)
+    {
+        $request->validate([
+            'google_id' => 'required|string',
+            'player_id' => 'nullable|string',
+            'platform'  => 'nullable|string',
+        ]);
 
-    public function SendNotification($userId){
-        // one signal notification
-            $user = User::where('id',$userId)->first();
+        try {
+            $user = User::with(['languages.language'])->where('google_id', $request->google_id)->first();
             if ($user) {
-                $playerIdRecord = PlayerId::where('user_id', $user->id)
-                    ->where('is_notifiable', 1)
-                    ->pluck('player_id')->toArray();
+                if ($request->input('player_id')) {
+                    $exists = PlayerId::where('user_id', $user->id)
+                        ->where('player_id', $request->player_id)
+                        ->where('platform', $request->platform)
+                        ->exists();
 
-
-                if ($playerIdRecord) {
-                    $titles = [
-                        'en' => __('notifications.item_added_title', [], 'en'),
-                        'ar' => __('notifications.item_added_title', [], 'ar'),
-                    ];
-
-                    $messages = [
-                        'en' => __('notifications.item_added_message', [], 'en'),
-                        'ar' => __('notifications.item_added_message', [], 'ar'),
-                    ];
-
-                    $response = app(OneSignalService::class)->sendNotificationToUser(
-                        $playerIdRecord, // نرسل player_id من جدول player_ids
-                        $titles,
-                        $messages
-                    );
-
-                    Notification::create([
-                        'user_id'           => $user->id,
-                        'title'             => json_encode($titles),
-                        'body'              => json_encode($messages),
-                        'type'              => 'login',
-                        'type_id'           => 1,
-                        'is_read'           => false,
-                        'onesignal_id'      => $response['id'] ?? null,
-                        'response_onesignal' => json_encode($response),
-                    ]);
+                    if (!$exists) {
+                        PlayerId::create([
+                            'user_id'   => $user->id,
+                            'player_id' => $request->player_id,
+                            'platform'  => $request->platform,
+                        ]);
+                    }
                 }
+                $token = $user->createToken('User Token')->accessToken;
+
+                return $this->successResponse(__('login_successful'), [
+                    'user'  => new UserResource($user),
+                    'token' => $token
+                ]);
+            } else {
+                return $this->successResponse(__('user_not_found'));
             }
+        } catch (Exception $e) {
+            return $this->exceptionResponse($e);
+        }
+    }
+
+    public function SendNotification($userId)
+    {
+        // one signal notification
+        $user = User::where('id', $userId)->first();
+        if ($user) {
+            $playerIdRecord = PlayerId::where('user_id', $user->id)
+                ->where('is_notifiable', 1)
+                ->pluck('player_id')->toArray();
+
+
+            if ($playerIdRecord) {
+                $titles = [
+                    'en' => __('notifications.item_added_title', [], 'en'),
+                    'ar' => __('notifications.item_added_title', [], 'ar'),
+                ];
+
+                $messages = [
+                    'en' => __('notifications.item_added_message', [], 'en'),
+                    'ar' => __('notifications.item_added_message', [], 'ar'),
+                ];
+
+                $response = app(OneSignalService::class)->sendNotificationToUser(
+                    $playerIdRecord, // نرسل player_id من جدول player_ids
+                    $titles,
+                    $messages
+                );
+
+                Notification::create([
+                    'user_id'           => $user->id,
+                    'title'             => json_encode($titles),
+                    'body'              => json_encode($messages),
+                    'type'              => 'login',
+                    'type_id'           => 1,
+                    'is_read'           => false,
+                    'onesignal_id'      => $response['id'] ?? null,
+                    'response_onesignal' => json_encode($response),
+                ]);
+            }
+        }
         // *********************************************//
 
         return $this->successResponse('sent');

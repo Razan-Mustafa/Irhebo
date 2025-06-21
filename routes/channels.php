@@ -10,5 +10,5 @@ use Illuminate\Support\Facades\Broadcast;
 //         })->exists();
 // });
 Broadcast::channel('chat.{chatId}', function ($user, $chatId) {
-    return true; 
+    return true;
 });

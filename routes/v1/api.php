@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Broadcast;
 // Auth Routes
 Route::controller(AuthController::class)->group(function ($route) {
     $route->post('login', 'login');
+    $route->post('social-login', 'socialLogin');
     $route->post('send-notification/{userId}', 'SendNotification');
     $route->post('register', 'register');
     $route->post('generate-code', 'generateCode');
