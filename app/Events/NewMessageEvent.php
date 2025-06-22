@@ -11,6 +11,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
+
 class NewMessageEvent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -24,7 +25,10 @@ class NewMessageEvent implements ShouldBroadcastNow
 
     public function broadcastOn()
     {
-        return new PrivateChannel('private-conversation.' . $this->message->conversation_id);
+        // return new PrivateChannel('private-conversation.' . $this->message->conversation_id);
+            return new Channel('chat.' . $this->chatId);
+
+        
     }
 
     public function broadcastAs()
