@@ -24,9 +24,10 @@ use App\Http\Controllers\Api\{
     TagController,
     TicketController,
 };
-use App\Http\Middleware\CurrencyMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
+
+
 // Auth Routes
 Route::controller(AuthController::class)->group(function ($route) {
     $route->post('login', 'login');
@@ -185,6 +186,14 @@ Route::middleware('auth:api')->group(function () {
     });
 });
 
+// Route::middleware('auth:api')->post('/broadcasting/auth', function (Request $request) {
+//     return Broadcast::auth($request);
+// });
 Route::middleware('auth:api')->post('/broadcasting/auth', function (Request $request) {
-    return Broadcast::auth($request);
+    Log::info('Broadcasting auth request:', $request->all());
+    Log::info('Authenticated User:', ['user' => auth()->user()]);
+    $response = Broadcast::auth($request);
+    Log::info('Broadcasting auth response:', ['response' => $response]);
+
+    return $response;
 });
