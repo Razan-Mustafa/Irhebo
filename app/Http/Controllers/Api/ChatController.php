@@ -88,7 +88,7 @@ class ChatController extends Controller
         $request->validate([
             'chat_id' => 'required|exists:chats,id',
             'message' => 'nullable|string',
-            'attachment_file' => 'nullable|file|mimes:jpg,jpeg,png,mp4,mp3,pdf',
+            'attachment_file' => 'nullable|file|mimes:jpg,jpeg,png,mp4,mp3,pdf,m4a',
             'attachment_type' => 'nullable|in:image,video,file,audio|required_with:attachment_file',
         ]);
         if (is_null($request->message) && is_null($request->file('attachment_file'))) {
