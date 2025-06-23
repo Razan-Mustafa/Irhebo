@@ -34,7 +34,7 @@ class ServiceResource extends JsonResource
             'is_recommended' => boolval($this->is_recommended),
             'is_wishlist' => boolval($isWishlist),
             'rating' => $this->rating,
-            'start_service_from' => $convertedPrice ? number_format($convertedPrice, 2) . $symbol  : null,
+            'start_service_from' => $convertedPrice ? number_format((float)$convertedPrice, 2) . $symbol: null,
             'user' => $this->user ? [
                 'id' => $this->user->id,
                 'username' => $this->user->username,
