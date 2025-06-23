@@ -35,5 +35,7 @@ return [
     'message_retrived'       => 'تم استرجاع الرسائل بنجاح.',
     'mark_as_read_message'   => 'تم تحديد الرسائل كمقروءة.',
     'count_message'          => 'تم استرجاع عدد الرسائل غير المقروءة.',
+    'call_start_title' => 'مكالمة واردة',
+    'call_start_message' => ':caller_name يتصل بك.',
 
 ];

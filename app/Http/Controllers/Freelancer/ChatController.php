@@ -14,32 +14,49 @@ class ChatController extends Controller
 
     public function index()
     {
-        // $userId = auth()->id();
+        $userId = auth()->id();
         // $users = User::all();
-        // $chats = Chat::where('user_id_one', $userId)
-        //     ->orWhere('user_id_two', $userId)
-        //     ->with(['userOne:id,name', 'userTwo:id,name'])
-        //     ->get();
+        $chats = Chat::where('user_id_one', $userId)
+            ->orWhere('user_id_two', $userId)
+            ->get();
 
-        // return view('pages-freelancer.chat.index', compact('chats','users'));
-        return view('pages-freelancer.chat.index');
+        return view('pages-freelancer.chat.index', compact('chats'));
     }
 
 
 
-    public function showChat($chatId)
+    public function showChat($id)
     {
-        return view('pages-freelancer.chat.showChat', compact('chatId'));
+        $chat = Chat::with('messages')->findOrFail($id);
+
+        $otherUser = $chat->user_id_one === auth()->id()
+            ? $chat->userTwo
+            : $chat->userOne;
+
+        $messages = $chat->messages()->orderBy('created_at')->get();
+
+        return view('pages-freelancer.chat.showChat', compact('chat', 'messages', 'otherUser'));
+        // return view('pages-freelancer.chat.showChat', compact('chatId'));
     }
 
-    public function sendMessage(Request $request)
+    public function sendMessage(Request $request, $chatId)
     {
-        $message = $request->input('message');
+        $request->validate([
+            'message' => 'required|string|max:1000',
+        ]);
 
+        $chat = Chat::findOrFail($chatId);
+
+        // Create message
+        $message = $chat->messages()->create([
+            'sender_id' => auth()->id(),
+            'message' => $request->message,
+            'is_read' => 0,
+        ]);
+
+        // Broadcast to others
         broadcast(new PusherNewMessage($message))->toOthers();
 
-        // \Log::info('Message broadcasted:', ['message' => $message]);
-
-        return response()->json(['status' => 'Message Sent!']);
+        return back()->with('success', 'Message sent successfully.');
     }
 }

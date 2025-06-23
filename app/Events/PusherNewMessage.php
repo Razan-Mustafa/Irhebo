@@ -4,10 +4,10 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+
 
 class PusherNewMessage implements ShouldBroadcast
 {
@@ -24,14 +24,22 @@ class PusherNewMessage implements ShouldBroadcast
     public function broadcastOn()
     {
         // \Log::info('Broadcasting on channel: chat.' . $th/is->message->chat_id);
-        return new PrivateChannel('chat.' . $this->message->chat_id);
+        return new Channel('chat.' . $this->message->chat_id);
     }
 
     public function broadcastAs()
     {
         return 'message.sent';
     }
-
+    // public function broadcastWith()
+    // {
+    //     return [
+    //         'id' => $this->message->id,
+    //         'sender_id' => $this->message->sender_id,
+    //         'message' => $this->message->message,
+    //         'created_at' => $this->message->created_at->format('H:i'),
+    //     ];
+    // }
     // public function broadcastOn()
     // {
     //     // \Log::info('Broadcasting on channel: chat.' . $th/is->message->chat_id);

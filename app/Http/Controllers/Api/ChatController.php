@@ -162,7 +162,11 @@ class ChatController extends Controller
             }
         }
         // *********************************************//
-        return $this->successResponse(__('messages.message_sent'), $message);
+
+        return $this->successResponse(_('messages.message_retrived'),new ChatMessageResource($message));
+
+
+        // return $this->successResponse(__('messages.message_sent'), $message);
     }
 
     public function getMessages($chatId)

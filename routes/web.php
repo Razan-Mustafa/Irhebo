@@ -40,6 +40,7 @@ use App\Http\Controllers\Freelancer\ReviewController as FreelancerReviewControll
 use App\Http\Controllers\Freelancer\ServiceController as FreelancerServiceController;
 use App\Http\Controllers\Freelancer\TicketController as FreelancerTicketController;
 use App\Models\Currency;
+use Illuminate\Support\Facades\Broadcast;
 
 Route::get('language/{locale}', [HomeController::class, 'changeLocale'])
     ->name('locale.change')
@@ -301,8 +302,8 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
 
     $route->controller(ChatController::class)->name('chat.')->prefix('chat')->group(function ($route) {
         $route->get('', 'index')->name('index');
-        $route->get('show-chat/{chatId}', 'showChat')->name('showChat');
-        $route->post('send-message', 'sendMessage')->name('sendMessage');
+        $route->get('show-chat/{chatId}', 'showChat')->name('show');
+        $route->post('send-message/{chatId}', 'sendMessage')->name('sendMessage');
     });
 
 
@@ -392,3 +393,6 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
         $route->get('', 'index')->name('index');
     });
 });
+
+
+Broadcast::routes(['middleware' => ['auth:freelancer']]);

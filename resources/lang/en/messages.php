@@ -35,4 +35,8 @@ return [
     'mark_as_read_message'   => 'Messages marked as read.',
     'count_message'          => 'Unread messages count retrieved successfully.',
 
+
+    'call_start_title' => 'Incoming Call',
+    'call_start_message' => ':caller_name is calling you.',
+
 ];

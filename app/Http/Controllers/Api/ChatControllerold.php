@@ -55,7 +55,8 @@ class ChatControllerold extends Controller
         $this->chatService->updateStatus($data, $id);
         return $this->successResponse(__('success'));
     }
-    public function getVoiceCallToken(Request $request){
+    public function getVoiceCallToken(Request $request)
+    {
         $request->validate([
             'channel_name' => 'required|string',
             'uid' => 'required|integer',
@@ -63,7 +64,7 @@ class ChatControllerold extends Controller
 
         try {
             $token = Agora::generateToken($request->channel_name, $request->uid);
-            return $this->successResponse(__('success'),[
+            return $this->successResponse(__('success'), [
                 'token' => $token,
                 'channel' => $request->channel_name,
                 'uid' => $request->uid
@@ -71,5 +72,28 @@ class ChatControllerold extends Controller
         } catch (\Exception $e) {
             return $this->exceptionResponse($e);
         }
+    }
+
+
+
+    function generateAgoraToken($channelName, $uid = 0)
+    {
+        $appID = config('services.agora.app_id');
+        $appCertificate = config('services.agora.certificate');
+        $expirationTimeInSeconds = 3600;
+        $role = RtcTokenBuilder2::ROLE_PUBLISHER;
+
+        $currentTimestamp = now()->timestamp;
+        $privilegeExpiredTs = $currentTimestamp + $expirationTimeInSeconds;
+
+        return RtcTokenBuilder2::buildTokenWithUid(
+            $appID,
+            $appCertificate,
+            $channelName,
+            $uid,
+            $role,
+            $privilegeExpiredTs,
+            $privilegeExpiredTs
+        );
     }
 }

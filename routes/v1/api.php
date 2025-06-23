@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\{
     AuthController,
+    CallController,
     HomeController,
     UserController,
     FilterController,
@@ -184,16 +185,23 @@ Route::middleware('auth:api')->group(function () {
         // $route->post('update-status/{id}', 'updateStatus');
         // $route->post('get-voice-call-token', 'getVoiceCallToken');
     });
+
+    Route::prefix('chat')->controller(CallController::class)->group(function ($route) {
+        // $route->post('update-status/{id}', 'updateStatus');
+        $route->post('start-call', 'startCall');
+        $route->post('answer-call', 'answerCall');
+        $route->post('end-call', 'endCall');
+    });
 });
 
 // Route::middleware('auth:api')->post('/broadcasting/auth', function (Request $request) {
 //     return Broadcast::auth($request);
 // });
 Route::middleware('auth:api')->post('/broadcasting/auth', function (Request $request) {
-    Log::info('Broadcasting auth request:', $request->all());
-    Log::info('Authenticated User:', ['user' => auth()->user()]);
+    // Log::info('Broadcasting auth request:', $request->all());
+    // Log::info('Authenticated User:', ['user' => auth()->user()]);
     $response = Broadcast::auth($request);
-    Log::info('Broadcasting auth response:', ['response' => $response]);
+    // Log::info('Broadcasting auth response:', ['response' => $response]);
 
     return $response;
 });

@@ -32,4 +32,9 @@ class Chat extends Model
     {
         return $this->hasMany(ChatMessage::class);
     }
+
+    public function lastMessage()
+    {
+        return $this->hasOne(ChatMessage::class)->latest();
+    }
 }
