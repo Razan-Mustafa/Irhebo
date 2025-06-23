@@ -109,7 +109,8 @@ class ChatController extends Controller
             'is_read' => false,
         ]);
 
-        broadcast(new PusherNewMessage($message))->toOthers();
+        $m = new ChatMessageResource($message);
+        broadcast(new PusherNewMessage($m))->toOthers();
 
         $chat = Chat::where('id', $request->chat_id)->first();
 

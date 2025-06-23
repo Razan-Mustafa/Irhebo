@@ -32,24 +32,5 @@ class PusherNewMessage implements ShouldBroadcast
     {
         return 'message.sent';
     }
-    // public function broadcastWith()
-    // {
-    //     return [
-    //         'id' => $this->message->id,
-    //         'sender_id' => $this->message->sender_id,
-    //         'message' => $this->message->message,
-    //         'created_at' => $this->message->created_at->format('H:i'),
-    //     ];
-    // }
-    // public function broadcastOn()
-    // {
-    //     // \Log::info('Broadcasting on channel: chat.' . $th/is->message->chat_id);
-    //     return new Channel('test-channel');
-    // }
-
-    // public function broadcastAs()
-    // {
-    //     return 'test.event';
-    // }
 
 }
