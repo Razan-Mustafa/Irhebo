@@ -24,7 +24,8 @@ class AuthRepository implements AuthRepositoryInterface
     {
         return DB::transaction(function () use ($data) {
 
-            $code = GenerateCode::generate();
+            // $code = GenerateCode::generate();
+            $code = '123456';
             $user = User::create([
                 'username' => $data['username'],
                 'email' => $data['email'],

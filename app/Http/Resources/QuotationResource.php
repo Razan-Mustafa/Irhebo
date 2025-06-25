@@ -32,7 +32,7 @@ class QuotationResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'price' => $convertedPrice ? number_format($convertedPrice, 2) . $symbol  : null,
+            'price' => $convertedPrice ? number_format((float)$convertedPrice, 2) . $symbol  : null,
 
             'delivery_day' => $this->delivery_day,
             'revisions' => $this->revisions,

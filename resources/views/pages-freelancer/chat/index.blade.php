@@ -1,46 +1,58 @@
 @extends('layouts.master')
 @section('title', 'Chats')
+@push('styles')
+    <style>
+        .list-group-item {
+            border: none;
+            border-bottom: 1px solid #f1f1f1;
+            transition: background-color 0.2s ease;
+        }
 
+        .list-group-item:hover {
+            background-color: #f7f7f7;
+        }
+
+        h6 {
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+    </style>
+@endpush
 @section('content')
-    <div class="max-w-4xl mx-auto p-4">
-        <h2 class="text-2xl font-semibold mb-6 text-gray-800">My Chats</h2>
-
-        <div class="bg-white shadow rounded-lg overflow-hidden">
-            @forelse($chats as $chat)
+    <div class="container">
+        <h3 class="mb-4">Chats</h3>
+        <div class="list-group">
+            @foreach ($chats as $chat)
                 @php
-                    $otherUser = $chat->user_id_one === auth()->id() ? $chat->userTwo : $chat->userOne;
+                    $otherUser = $chat->user_id_one == auth()->id() ? $chat->userTwo : $chat->userOne;
+                    $lastMessage = $chat->lastMessage;
                 @endphp
 
                 <a href="{{ route('freelancer.chat.show', $chat->id) }}"
-                    class="flex items-center px-4 py-3 border-b hover:bg-gray-50 transition">
+                    class="list-group-item list-group-item-action d-flex align-items-center">
+                    <img src="{{ $otherUser->profile_image ?? asset('default-avatar.png') }}" alt="Avatar"
+                        class="rounded-circle me-3" width="50" height="50">
 
-                    <div class="flex-shrink-0">
-                        <img src="{{ $otherUser->profile_image_url ?? asset('images/default-avatar.png') }}" alt="Avatar"
-                            class="w-12 h-12 rounded-full object-cover">
-                    </div>
-
-                    <div class="flex-1 ml-4">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-lg font-medium text-gray-800">{{ $otherUser->name }}</h4>
-                            <span class="text-sm text-gray-500">
-                                {{ $chat->updated_at->diffForHumans() }}
-                            </span>
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-1">{{ $otherUser->name }}</h6>
+                            @if ($lastMessage)
+                                <small class="text-muted">{{ $lastMessage->created_at->diffForHumans() }}</small>
+                            @endif
                         </div>
-                        <p class="text-sm text-gray-600 truncate">
-                            {{ optional($chat->lastMessage)->message ?? 'Start your conversation' }}
+                        <p class="mb-0 text-muted">
+                            {{ $lastMessage ? \Illuminate\Support\Str::limit($lastMessage->body, 50) : 'No messages yet' }}
                         </p>
                     </div>
-
-                    @if ($chat->messages->where('is_read', 0)->where('receiver_id', auth()->id())->count())
-                        <span
-                            class="ml-3 flex items-center justify-center w-6 h-6 text-xs font-bold bg-green-500 text-white rounded-full">
-                            {{ $chat->messages->where('is_read', 0)->where('receiver_id', auth()->id())->count() }}
-                        </span>
-                    @endif
                 </a>
-            @empty
-                <p class="p-6 text-center text-gray-600">No chats yet.</p>
-            @endforelse
+            @endforeach
+
+            @if ($chats->isEmpty())
+                <div class="text-center p-5 text-muted">No chats yet.</div>
+            @endif
         </div>
     </div>
 @endsection

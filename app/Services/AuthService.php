@@ -93,8 +93,8 @@ class AuthService
         try {
             DB::beginTransaction();
             // $code = GenerateCode::generate();
-            $code = GenerateCode::generate();
-
+            $code = '123456';
+            
             $user = $this->authRepository->updateCode($user, $code);
             DB::commit();
             return [

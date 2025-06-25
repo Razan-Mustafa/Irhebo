@@ -24,10 +24,10 @@ class ReviewRepository implements ReviewRepositoryInterface
     }
 
 
-    public function getForFreelancer()
+    public function getForFreelancer($userId)
     {
-        $userId = auth()->id();
-
+        // $userId = auth()->id();
+        // dd($userId);
         return $this->model
             ->whereHas('service', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
@@ -83,6 +83,6 @@ class ReviewRepository implements ReviewRepositoryInterface
     }
     public function getAverageRatingByUser($userId)
     {
-        return number_format($this->model->where('user_id', $userId)->avg('rating'));
+        return number_format((float)$this->model->where('user_id', $userId)->avg('rating'));
     }
 }

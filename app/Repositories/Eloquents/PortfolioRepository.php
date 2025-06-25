@@ -86,6 +86,8 @@ class PortfolioRepository implements PortfolioRepositoryInterface
             if (!empty($data['service_ids'])) {
                 $portfolio->services()->attach($data['service_ids']);
             }
+
+            $portfolio->load(['media', 'services.media', 'services.user']);
             return $portfolio;
         } catch (Exception $e) {
             throw $e;

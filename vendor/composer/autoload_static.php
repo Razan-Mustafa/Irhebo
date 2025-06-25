@@ -771,6 +771,7 @@ class ComposerStaticInitd7870ba97fe74825611b3b697f78ad06
         'App\\Http\\Requests\\Api\\VerifyCodeRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Api/VerifyCodeRequest.php',
         'App\\Http\\Requests\\Api\\WishlistToggleRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Api/WishlistToggleRequest.php',
         'App\\Http\\Requests\\Freelancer\\LoginRequest' => __DIR__ . '/../..' . '/app/Http/Requests/Freelancer/LoginRequest.php',
+        'App\\Http\\Resources\\CallResource' => __DIR__ . '/../..' . '/app/Http/Resources/CallResource.php',
         'App\\Http\\Resources\\CategoryResource' => __DIR__ . '/../..' . '/app/Http/Resources/CategoryResource.php',
         'App\\Http\\Resources\\ChatMessageResource' => __DIR__ . '/../..' . '/app/Http/Resources/ChatMessageResource.php',
         'App\\Http\\Resources\\ConversationMessagesResource' => __DIR__ . '/../..' . '/app/Http/Resources/ConversationMessagesResource.php',

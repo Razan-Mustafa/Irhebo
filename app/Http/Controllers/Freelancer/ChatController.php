@@ -15,7 +15,6 @@ class ChatController extends Controller
     public function index()
     {
         $userId = auth()->id();
-        // $users = User::all();
         $chats = Chat::where('user_id_one', $userId)
             ->orWhere('user_id_two', $userId)
             ->get();
@@ -27,7 +26,7 @@ class ChatController extends Controller
 
     public function showChat($id)
     {
-        $chat = Chat::with('messages')->findOrFail($id);
+        $chat = Chat::with(['messages.sender'])->findOrFail($id);
 
         $otherUser = $chat->user_id_one === auth()->id()
             ? $chat->userTwo
@@ -36,8 +35,8 @@ class ChatController extends Controller
         $messages = $chat->messages()->orderBy('created_at')->get();
 
         return view('pages-freelancer.chat.showChat', compact('chat', 'messages', 'otherUser'));
-        // return view('pages-freelancer.chat.showChat', compact('chatId'));
     }
+
 
     public function sendMessage(Request $request, $chatId)
     {
@@ -56,7 +55,8 @@ class ChatController extends Controller
 
         // Broadcast to others
         broadcast(new PusherNewMessage($message))->toOthers();
-
-        return back()->with('success', 'Message sent successfully.');
+        return response()->json([
+            'message' => $message
+        ]);
     }
 }

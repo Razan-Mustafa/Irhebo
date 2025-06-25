@@ -1,76 +1,62 @@
 import axios from 'axios';
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
 
-// إعداد axios بشكل افتراضي
-window.axios = axios;
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+document.addEventListener('DOMContentLoaded', function () {
+    const chatId = document.getElementById('chatBody').dataset.chatId;
+    const currentUserId = document.getElementById('chatBody').dataset.currentUser;
 
-// إعداد Pusher و Echo
-window.Pusher = Pusher;
+    // Listen for events on the chat channel
+    window.Echo.channel(`chat.${chatId}`)
+        .listen('.message.sent', (e) => {
+            console.log('New message received:', e);
+            appendMessage(e.message, e.message.sender_id == currentUserId);
+        });
 
-const echo = new Echo({
-  broadcaster: 'pusher',
-  key: import.meta.env.VITE_PUSHER_APP_KEY,
-  cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-  forceTLS: true,
-});
+    // Message send form handler
+    const sendMessageForm = document.getElementById('sendMessageForm');
+    if (sendMessageForm) {
+        sendMessageForm.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-document.addEventListener('DOMContentLoaded', () => {
-  const chatBody = document.getElementById('chatBody');
-  const sendMessageForm = document.getElementById('sendMessageForm');
-  const messageInput = document.getElementById('messageInput');
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            if (message === '') return;
 
-  if (!chatBody || !sendMessageForm || !messageInput) {
-    console.warn('Chat elements missing in DOM');
-    return;
-  }
+            axios.post(sendMessageForm.action, { message })
+                .then(response => {
+                    messageInput.value = '';
+                    appendMessage(response.data.message, true);
+                })
+                .catch(error => {
+                    console.error('Send message error:', error);
+                    alert('Failed to send message.');
+                });
+        });
+    }
 
-  // Scroll to bottom initially
-  chatBody.scrollTop = chatBody.scrollHeight;
+    function appendMessage(message, isSender) {
+        const chatBody = document.getElementById('chatBody');
+        if (!chatBody) return;
 
-  // متغير chatId لازم توصله من صفحة Blade ديناميكياً
-  // مثلاً: window.chatId = {{ $chat->id }};
-  if (!window.chatId) {
-    console.error('chatId is not defined on window object!');
-    return;
-  }
+        const bubble = document.createElement('div');
+        bubble.classList.add('flex', isSender ? 'justify-end' : 'justify-start');
 
-  // الاستماع للرسائل الجديدة من البث
-  echo.channel('chat.' + window.chatId)
-    .listen('.message.sent', (e) => {
-      const bubble = document.createElement('div');
-      bubble.classList.add('flex', e.message.sender_id == window.LaravelUserId ? 'justify-end' : 'justify-start');
+        const content = `
+            <div class="max-w-xs p-3 rounded-lg ${isSender ? 'bg-primary text-white' : 'bg-white border'}">
+                <p class="text-sm">${message.message}</p>
+                <span class="block text-xs text-gray-400 mt-1">
+                    ${new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+            </div>
+        `;
 
-      const content = `
-        <div class="max-w-xs p-3 rounded-lg ${
-          e.message.sender_id == window.LaravelUserId ? 'bg-primary text-white' : 'bg-white border'
-        }">
-          <p class="text-sm">${e.message.message}</p>
-          <span class="block text-xs text-gray-400 mt-1">${new Date(e.message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-        </div>
-      `;
-
-      bubble.innerHTML = content;
-      chatBody.appendChild(bubble);
-      chatBody.scrollTop = chatBody.scrollHeight;
-    });
-
-  // إرسال الرسالة عبر Axios و AJAX
-  sendMessageForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const message = messageInput.value.trim();
-    if (message === '') return;
-
-    axios.post(`/freelancer/chat/send-message/${window.chatId}`, { message })
-      .then(response => {
-        messageInput.value = '';
+        bubble.innerHTML = content;
+        chatBody.appendChild(bubble);
         chatBody.scrollTop = chatBody.scrollHeight;
-      })
-      .catch(error => {
-        console.error(error);
-        alert('Failed to send message.');
-      });
-  });
+    }
+
+    // Scroll to bottom on page load
+    window.addEventListener('load', () => {
+        const chatBody = document.getElementById('chatBody');
+        if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
+    });
 });

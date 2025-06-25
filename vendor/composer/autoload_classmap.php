@@ -146,6 +146,7 @@ return array(
     'App\\Http\\Requests\\Api\\VerifyCodeRequest' => $baseDir . '/app/Http/Requests/Api/VerifyCodeRequest.php',
     'App\\Http\\Requests\\Api\\WishlistToggleRequest' => $baseDir . '/app/Http/Requests/Api/WishlistToggleRequest.php',
     'App\\Http\\Requests\\Freelancer\\LoginRequest' => $baseDir . '/app/Http/Requests/Freelancer/LoginRequest.php',
+    'App\\Http\\Resources\\CallResource' => $baseDir . '/app/Http/Resources/CallResource.php',
     'App\\Http\\Resources\\CategoryResource' => $baseDir . '/app/Http/Resources/CategoryResource.php',
     'App\\Http\\Resources\\ChatMessageResource' => $baseDir . '/app/Http/Resources/ChatMessageResource.php',
     'App\\Http\\Resources\\ConversationMessagesResource' => $baseDir . '/app/Http/Resources/ConversationMessagesResource.php',

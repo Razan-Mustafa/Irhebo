@@ -80,7 +80,7 @@ class UserController extends Controller
             }
             $averageRating = $this->reviewService->getAverageRatingByUser($userId);
             $user = $this->freelancerService->getUserProfile($userId);
-            $reviews = $this->reviewService->getReviewsByUser($userId);
+            $reviews = $this->reviewService->getForFreelancer($userId);
             $portfolio = $this->portfolioService->getPortfolioByUserId($userId);
             $services = $this->serviceService->getServicesByUserId($userId, $perPage = 10);
 
@@ -116,7 +116,8 @@ class UserController extends Controller
                 return $this->errorResponse(__('user_not_found'));
             }
             $averageRating = $this->reviewService->getAverageRatingByUser($userId);
-            $reviews = $this->reviewService->getReviewsByUser($userId);
+            $reviews = $this->reviewService->getForFreelancer($userId);
+            // dd($reviews);
             $portfolio = $this->portfolioService->getPortfolioByUserId($userId);
             $services = $this->serviceService->getServicesByUserId($userId, $perPage);
 
@@ -126,8 +127,7 @@ class UserController extends Controller
                     'freelancer' => new FreelancerResource($user),
                     'average_rating' => $averageRating,
                     'reviews' =>   [
-                        'data' => ReviewResource::collection($reviews['data']),
-                        'meta' => $reviews['meta']
+                        'data' => ReviewResource::collection($reviews),
                     ],
                     'portfolio' => [
                         'data' => PortfolioResource::collection($portfolio['data']),

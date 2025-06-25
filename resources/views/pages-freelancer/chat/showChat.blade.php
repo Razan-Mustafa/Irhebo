@@ -83,7 +83,6 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Pusher and Echo
             window.Pusher = Pusher;
 
             window.Echo = new Echo({
@@ -92,12 +91,12 @@
                 cluster: '{{ env('VITE_PUSHER_APP_CLUSTER') }}',
                 forceTLS: true,
                 encrypted: true,
-                authEndpoint: '/broadcasting/auth',
-                auth: {
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                }
+                // authEndpoint: '/broadcasting/auth',
+                // auth: {
+                //     headers: {
+                //         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                //     }
+                // }
             });
 
             console.log('DOM ready');
@@ -155,6 +154,7 @@
                         message: message
                     }).then(response => {
                         console.log('Message sent successfully');
+
                         messageInput.value = '';
 
                         const chatBody = document.getElementById('chatBody');
@@ -163,16 +163,14 @@
                         const bubble = document.createElement('div');
                         bubble.classList.add('flex', 'justify-end');
 
-                        const now = new Date();
-
                         const content = `
-        <div class="max-w-xs p-3 rounded-lg bg-primary text-white">
-            <p class="text-sm">${message}</p>
-            <span class="block text-xs text-gray-400 mt-1">
-                ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
-        </div>
-    `;
+                    <div class="max-w-xs p-3 rounded-lg bg-primary text-white">
+                        <p class="text-sm">${message}</p>
+                        <span class="block text-xs text-gray-400 mt-1">
+                            ${response.data.message.created_at.substring(11, 16)}
+                        </span>
+                    </div>
+                `;
 
                         bubble.innerHTML = content;
                         chatBody.appendChild(bubble);
@@ -182,6 +180,7 @@
                         console.error('Error sending message:', error);
                         alert('Failed to send message.');
                     });
+
 
                 });
             }

@@ -33,9 +33,7 @@ class PlanResource extends JsonResource
                         ? CurrencyConverter::convert($feature->value, 'USD', $currencyCode)
                         : null;
 
-                    $value = $convertedPrice !== null
-                        ? number_format($convertedPrice, 2) . $symbol
-                        : null;
+                    $value = $convertedPrice !== null ? number_format((float)$convertedPrice, 2) . $symbol : null;
                 }
 
                 return [

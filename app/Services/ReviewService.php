@@ -17,8 +17,8 @@ class ReviewService
     public function index(){
         return $this->reviewRepository->index();
     }
-    public function getForFreelancer(){
-        return $this->reviewRepository->getForFreelancer();
+    public function getForFreelancer($userId){
+        return $this->reviewRepository->getForFreelancer($userId);
     }
     public function submitReview(array $data)
     {

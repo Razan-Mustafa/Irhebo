@@ -60,7 +60,7 @@ class AuthController extends Controller
                     PlayerId::create([
                         'user_id'   => $user->id,
                         'player_id' => $request->player_id,
-                        'platform'  => $request->platform,  // e.g. 'web'
+                        'platform'  => $request->platform, 
                     ]);
                 }
             }
@@ -78,33 +78,41 @@ class AuthController extends Controller
     {
         $request->validate([
             'google_id' => 'required|string',
+            'email' => 'required|string',
             'player_id' => 'nullable|string',
             'platform'  => 'nullable|string',
         ]);
 
         try {
-            $user = User::with(['languages.language'])->where('google_id', $request->google_id)->first();
+            $user = User::with(['languages.language'])->where('email', $request->email)->first();
             if ($user) {
-                if ($request->input('player_id')) {
-                    $exists = PlayerId::where('user_id', $user->id)
-                        ->where('player_id', $request->player_id)
-                        ->where('platform', $request->platform)
-                        ->exists();
+                if ($user->google_id == null || $user->google_id == $request->google_id) {
+                    $user->google_id = $request->google_id;
+                    $user->save();
 
-                    if (!$exists) {
-                        PlayerId::create([
-                            'user_id'   => $user->id,
-                            'player_id' => $request->player_id,
-                            'platform'  => $request->platform,
-                        ]);
+                    if ($request->input('player_id')) {
+                        $exists = PlayerId::where('user_id', $user->id)
+                            ->where('player_id', $request->player_id)
+                            ->where('platform', $request->platform)
+                            ->exists();
+
+                        if (!$exists) {
+                            PlayerId::create([
+                                'user_id'   => $user->id,
+                                'player_id' => $request->player_id,
+                                'platform'  => $request->platform,
+                            ]);
+                        }
                     }
-                }
-                $token = $user->createToken('User Token')->accessToken;
+                    $token = $user->createToken('User Token')->accessToken;
 
-                return $this->successResponse(__('login_successful'), [
-                    'user'  => new UserResource($user),
-                    'token' => $token
-                ]);
+                    return $this->successResponse(__('login_successful'), [
+                        'user'  => new UserResource($user),
+                        'token' => $token
+                    ]);
+                } else {
+                    return $this->successResponse(__('user_not_found'));
+                };
             } else {
                 return $this->successResponse(__('user_not_found'));
             }
@@ -179,6 +187,8 @@ class AuthController extends Controller
      * @param VerifyCodeRequest $request
      * @return JsonResponse
      */
+
+
     public function verifyCode(VerifyCodeRequest $request)
     {
         try {
@@ -206,6 +216,8 @@ class AuthController extends Controller
      * @param ResetPasswordRequest $request
      * @return JsonResponse
      */
+
+
     public function resetPassword(ResetPasswordRequest $request)
     {
         try {
@@ -223,6 +235,8 @@ class AuthController extends Controller
             return $this->exceptionResponse($e);
         }
     }
+
+
     // public function logout()
     // {
     //     try {

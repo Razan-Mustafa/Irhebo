@@ -54,10 +54,10 @@ class CheckoutController extends Controller
                 'title' => $service->translation->title,
                 'description' => $service->translation->description,
                 'plan_title' => $plan->translation->title,
-                'sub_total' => $planPriceConverted ? number_format($planPriceConverted, 2) . $symbol  : null,
-                'fees' => $feesConverted ? number_format($feesConverted, 2) . $symbol  : null,
-                'commission' => $commissionConverted ? number_format($commissionConverted, 2) . $symbol  : null,
-                'total' => $total ? number_format($total, 2) . $symbol  : null,
+                'sub_total' => $planPriceConverted ? number_format((float)$planPriceConverted, 2) . $symbol  : null,
+                'fees' => $feesConverted ? number_format((float)$feesConverted, 2) . $symbol  : null,
+                'commission' => $commissionConverted ? number_format((float)$commissionConverted, 2) . $symbol  : null,
+                'total' => $total ? number_format((float)$total, 2) . $symbol  : null,
 
             ],
         ]);

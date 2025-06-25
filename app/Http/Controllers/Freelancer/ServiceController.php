@@ -60,7 +60,7 @@ class ServiceController extends Controller
         foreach ($data['plans'] as &$plan) {
             foreach ($plan['features'] as &$feature) {
                 if ($feature['type'] === 'price') {
-                    $feature['value'] = number_format($feature['value'] / $exchangeRate, 2, '.', '');
+                    $feature['value'] = number_format((float)$feature['value'] / $exchangeRate, 2, '.', '');
                 }
             }
         }
@@ -94,7 +94,7 @@ class ServiceController extends Controller
         foreach ($data['plans'] as &$plan) {
             foreach ($plan['features'] as &$feature) {
                 if ($feature['type'] === 'price') {
-                    $feature['value'] = number_format($feature['value'] / $exchangeRate, 2, '.', '');
+                    $feature['value'] = number_format((float)$feature['value'] / $exchangeRate, 2, '.', '');
                 }
             }
         }

@@ -70,8 +70,8 @@ class ChatController extends Controller
         sort($ids);
 
         $chat = Chat::firstOrCreate([
-            'user_id_one' => $ids[0],
-            'user_id_two' => $ids[1],
+            'user_id_one' => (int)$ids[0],
+            'user_id_two' => (int)$ids[1],
         ], [
             'user_one_flag' => 'normal',
             'user_two_flag' => 'normal',
@@ -88,7 +88,7 @@ class ChatController extends Controller
         $request->validate([
             'chat_id' => 'required|exists:chats,id',
             'message' => 'nullable|string',
-            'attachment_file' => 'nullable|file|mimes:jpg,jpeg,png,mp4,mp3,pdf',
+            'attachment_file' => 'nullable|file|mimes:jpg,jpeg,png,mp4,mp3,pdf,m4a',
             'attachment_type' => 'nullable|in:image,video,file,audio|required_with:attachment_file',
         ]);
         if (is_null($request->message) && is_null($request->file('attachment_file'))) {
@@ -164,7 +164,7 @@ class ChatController extends Controller
         }
         // *********************************************//
 
-        return $this->successResponse(_('messages.message_retrived'),new ChatMessageResource($message));
+        return $this->successResponse(_('messages.message_retrived'), new ChatMessageResource($message));
 
 
         // return $this->successResponse(__('messages.message_sent'), $message);
@@ -180,8 +180,26 @@ class ChatController extends Controller
             ])
             ->orderBy('created_at')
             ->get();
+        $chat = Chat::with(['userOne:id,username,avatar', 'userTwo:id,username,avatar'])
+            ->findOrFail($chatId);
 
-        return $this->successResponse(_('messages.message_retrived'), ChatMessageResource::collection($messages));
+        $currentUserId = auth()->user()->id;
+        $sender = $chat->user_id_one == $currentUserId ? $chat->userOne : $chat->userTwo;
+        $receiver = $chat->user_id_one == $currentUserId ? $chat->userTwo : $chat->userOne;
+
+        return $this->successResponse(__('messages.message_retrived'), [
+            'sender' => [
+                'id'       => $sender->id,
+                'username' => $sender->username,
+                'avatar'   => url($sender->avatar),
+            ],
+            'receiver' => [
+                'id'       => $receiver->id,
+                'username' => $receiver->username,
+                'avatar'   => url($receiver->avatar),
+            ],
+            'messages' => ChatMessageResource::collection($messages),
+        ]);
     }
 
 
