@@ -156,6 +156,8 @@ class QuotationController extends Controller
         $data = array_merge($request->validated(), ['user_id' => $userId]);
 
         $comment = $this->quotationService->createQuotationComment($data);
+
+        // dd($comment);
         $user = $comment->quotation->user;
         // one signal notification*****************************************
         if ($user) {
@@ -180,7 +182,7 @@ class QuotationController extends Controller
                     $titles,
                     $messages,
                     'quotation',
-                    $comment['quotation->id']
+                    $comment['quotation_id']
                 );
 
                 Notification::create([
@@ -188,7 +190,7 @@ class QuotationController extends Controller
                     'title'             => json_encode($titles),
                     'body'              => json_encode($messages),
                     'type'              => 'quotation',
-                    'type_id'           => $comment['quotation->id'],
+                    'type_id'           => $comment['quotation_id'],
                     'is_read'           => false,
                     'onesignal_id'      => $response['id'] ?? null,
                     'response_onesignal' => json_encode($response),

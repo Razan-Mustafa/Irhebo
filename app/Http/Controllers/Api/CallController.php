@@ -157,7 +157,8 @@ class CallController extends Controller
             'ended_at' => now(),
         ]);
 
-        $durationInSeconds = $call->started_at->diffInSeconds($call->ended_at);
+        $startedAt = $call->started_at ?? $call->ended_at;
+        $durationInSeconds = $startedAt->diffInSeconds($call->ended_at);
 
         $minutes = floor($durationInSeconds / 60);
         $seconds = $durationInSeconds % 60;
