@@ -95,7 +95,7 @@ class CallController extends Controller
                     $titles,
                     $messages,
                     'call',
-                    $request->call_id
+                    $call->id
                 );
 
                 Notification::create([
@@ -103,7 +103,7 @@ class CallController extends Controller
                     'title'             => json_encode($titles),
                     'body'              => json_encode($messages),
                     'type'              => 'call',
-                    'type_id'           => $request->call_id,
+                    'type_id'           => $call->id,
                     'is_read'           => false,
                     'onesignal_id'      => $response['id'] ?? null,
                     'response_onesignal' => json_encode($response),
