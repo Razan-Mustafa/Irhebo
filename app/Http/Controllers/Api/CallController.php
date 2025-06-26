@@ -129,9 +129,18 @@ class CallController extends Controller
             'started_at' => now(),
         ]);
 
+        $channelName = $call->channel_name;
+        $token = $this->generateAgoraToken($channelName, auth()->user()->id);
+
+        $data = [
+            'token' => $token,
+            'call'  => new CallResource($call),
+        ];
+
+
         return $this->successResponse(
             __('Call accepted'),
-            $call
+            $data
         );
     }
 
