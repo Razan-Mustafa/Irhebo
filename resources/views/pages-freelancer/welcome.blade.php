@@ -302,7 +302,10 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
                                             {{ Str::limit($quotation->description, 50) }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
-                                            £{{ number_format($quotation->price, 2) }}</td>
+                                            {{ $currencySymbol }}
+                                            {{ \App\Utilities\CurrencyConverter::convert($quotation->price, 'USD', $currentCurrency) }}
+
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">
                                             {{ $quotation->user->username ?? '-' }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-defaulttextcolor dark:text-white">

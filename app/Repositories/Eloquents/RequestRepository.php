@@ -91,7 +91,7 @@ class RequestRepository implements RequestRepositoryInterface
             $user = $request->user;
             $senderUser = $request->service->user;
         }
-            // dd($user);
+        // dd($user);
 
         if ($current_status != $new_status) {
             $requestLog = RequestLog::create([
@@ -121,7 +121,9 @@ class RequestRepository implements RequestRepositoryInterface
                     $response = app(OneSignalService::class)->sendNotificationToUser(
                         $playerIdRecord, // نرسل player_id من جدول player_ids
                         $titles,
-                        $messages
+                        $messages,
+                        'request',
+                        $data['request_id']
                     );
 
                     Notification::create([
@@ -159,7 +161,9 @@ class RequestRepository implements RequestRepositoryInterface
                     $response = app(OneSignalService::class)->sendNotificationToUser(
                         $playerIdRecord, // نرسل player_id من جدول player_ids
                         $titles,
-                        $messages
+                        $messages,
+                        'request_log',
+                        $data['request_id']
                     );
 
                     Notification::create([

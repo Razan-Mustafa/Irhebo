@@ -30,7 +30,7 @@ class ReviewController extends Controller
             if (isset($review['error']) && $review['error']) {
                 return $this->errorResponse($review['message']);
             }
-            $user=$review->service->user;
+            $user = $review->service->user;
             // one signal notification*****************************************
             if ($user) {
                 $playerIdRecord = PlayerId::where('user_id', $user->id)
@@ -52,7 +52,9 @@ class ReviewController extends Controller
                     $response = app(OneSignalService::class)->sendNotificationToUser(
                         $playerIdRecord, // نرسل player_id من جدول player_ids
                         $titles,
-                        $messages
+                        $messages,
+                        'rate',
+                        $review['service_id']
                     );
 
                     Notification::create([

@@ -46,7 +46,7 @@ class TicketController extends Controller
 
 
         // one signal notification
-        $user =$ticket->user;
+        $user = $ticket->user;
         if ($user) {
             $playerIdRecord = PlayerId::where('user_id', $user->id)
                 ->where('is_notifiable', 1)
@@ -67,7 +67,9 @@ class TicketController extends Controller
                 $response = app(OneSignalService::class)->sendNotificationToUser(
                     $playerIdRecord, // نرسل player_id من جدول player_ids
                     $titles,
-                    $messages
+                    $messages,
+                    'support',
+                    $ticket->id
                 );
 
                 Notification::create([

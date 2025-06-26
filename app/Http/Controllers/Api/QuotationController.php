@@ -111,7 +111,9 @@ class QuotationController extends Controller
                 $response = app(OneSignalService::class)->sendNotificationToUser(
                     $playerIdRecord, // نرسل player_id من جدول player_ids
                     $titles,
-                    $messages
+                    $messages,
+                    'quotation',
+                    $quotation->id
                 );
                 foreach ($users as $user) {
                     Notification::create([
@@ -155,43 +157,45 @@ class QuotationController extends Controller
 
         $comment = $this->quotationService->createQuotationComment($data);
         $user = $comment->quotation->user;
-                    // one signal notification*****************************************
-            if ($user) {
-                $playerIdRecord = PlayerId::where('user_id', $user->id)
-                    ->where('is_notifiable', 1)
-                    ->pluck('player_id')->toArray();
+        // one signal notification*****************************************
+        if ($user) {
+            $playerIdRecord = PlayerId::where('user_id', $user->id)
+                ->where('is_notifiable', 1)
+                ->pluck('player_id')->toArray();
 
 
-                if ($playerIdRecord) {
-                    $titles = [
-                        'en' => __('messages.new_comment_title', [], 'en'),
-                        'ar' => __('messages.new_comment_title', [], 'ar'),
-                    ];
+            if ($playerIdRecord) {
+                $titles = [
+                    'en' => __('messages.new_comment_title', [], 'en'),
+                    'ar' => __('messages.new_comment_title', [], 'ar'),
+                ];
 
-                    $messages = [
-                        'en' => __('messages.new_comment_message', ['freelancer_name' => $comment->user->username], 'en'),
-                        'ar' => __('messages.new_comment_message', ['freelancer_name' => $comment->user->username], 'ar'),
-                    ];
+                $messages = [
+                    'en' => __('messages.new_comment_message', ['freelancer_name' => $comment->user->username], 'en'),
+                    'ar' => __('messages.new_comment_message', ['freelancer_name' => $comment->user->username], 'ar'),
+                ];
 
-                    $response = app(OneSignalService::class)->sendNotificationToUser(
-                        $playerIdRecord, // نرسل player_id من جدول player_ids
-                        $titles,
-                        $messages
-                    );
+                $response = app(OneSignalService::class)->sendNotificationToUser(
+                    $playerIdRecord, // نرسل player_id من جدول player_ids
+                    $titles,
+                    $messages,
+                    'quotation',
+                    $comment['quotation->id']
+                );
 
-                    Notification::create([
-                        'user_id'           => $user->id,
-                        'title'             => json_encode($titles),
-                        'body'              => json_encode($messages),
-                        'type'              => 'quotation',
-                        'type_id'           => $comment['quotation->id'],
-                        'is_read'           => false,
-                        'onesignal_id'      => $response['id'] ?? null,
-                        'response_onesignal' => json_encode($response),
-                    ]);
-                }
+                Notification::create([
+                    'user_id'           => $user->id,
+                    'title'             => json_encode($titles),
+                    'body'              => json_encode($messages),
+                    'type'              => 'quotation',
+                    'type_id'           => $comment['quotation->id'],
+                    'is_read'           => false,
+                    'onesignal_id'      => $response['id'] ?? null,
+                    'response_onesignal' => json_encode($response),
+                ]);
             }
-            // *********************************************//
+        }
+        // *********************************************//
         return $this->successResponse(__('success'), new QuotationCommentResource($comment));
     }
 

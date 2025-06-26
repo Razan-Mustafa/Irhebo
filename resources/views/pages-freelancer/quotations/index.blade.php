@@ -48,7 +48,9 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $quotation->title }}</td>
                                             <td>{{ $quotation->description }}</td>
-                                            <td>{{ $quotation->price }}</td>
+                                            <td>{{ $currencySymbol }}
+                                                {{ \App\Utilities\CurrencyConverter::convert($quotation->price , 'USD', $currentCurrency) }}
+                                            </td>
                                             <td>
                                                 {!! \App\Enums\QuotationStatusEnum::tryFrom($quotation->status)?->badge() !!}
                                             </td>

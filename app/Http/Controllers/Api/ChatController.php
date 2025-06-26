@@ -147,7 +147,9 @@ class ChatController extends Controller
                 $response = app(OneSignalService::class)->sendNotificationToUser(
                     $playerIdRecord,
                     $titles,
-                    $messages
+                    $messages,
+                    'chat',
+                    $request->chat_id
                 );
 
                 Notification::create([

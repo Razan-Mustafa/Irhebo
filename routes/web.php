@@ -33,6 +33,7 @@ use App\Http\Controllers\Freelancer\ChatController;
 use App\Http\Controllers\Freelancer\FaqController as FreelancerFaqController;
 use App\Http\Controllers\Freelancer\FinanceController as FreelancerFinanceController;
 use App\Http\Controllers\Freelancer\HomeController as FreelancerHomeController;
+use App\Http\Controllers\Freelancer\NotificationController as FreelancerNotificationController;
 use App\Http\Controllers\Freelancer\PortfolioController as FreelancerPortfolioController;
 use App\Http\Controllers\Freelancer\QuotationController as FreelancerQuotationController;
 use App\Http\Controllers\Freelancer\RequestController as FreelancerRequestController;
@@ -304,6 +305,10 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
         $route->get('', 'index')->name('index');
         $route->get('show-chat/{chatId}', 'showChat')->name('show');
         $route->post('send-message/{chatId}', 'sendMessage')->name('sendMessage');
+    });
+    $route->controller(FreelancerNotificationController::class)->name('notification.')->prefix('notification')->group(function ($route) {
+        $route->get('', 'index')->name('index');
+        $route->post('read/{id}', 'markAsRead')->name('read');
     });
 
 

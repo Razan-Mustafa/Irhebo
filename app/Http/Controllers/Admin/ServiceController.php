@@ -94,7 +94,9 @@ class ServiceController extends Controller
                 $response = app(OneSignalService::class)->sendNotificationToUser(
                     $playerIdRecord, // نرسل player_id من جدول player_ids
                     $titles,
-                    $messages
+                    $messages,
+                    'service',
+                    $service->id
                 );
 
                 Notification::create([
@@ -159,7 +161,8 @@ class ServiceController extends Controller
     }
 
     public function toggleRecommended(Request $request)
-    {    \Log::info('Request Data:', $request->all());
+    {
+        // \Log::info('Request Data:', $request->all());
 
         $request->validate([
             'id' => 'required|exists:services,id',

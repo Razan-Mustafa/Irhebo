@@ -170,7 +170,9 @@ class UserController extends Controller
                     $response = app(OneSignalService::class)->sendNotificationToUser(
                         $playerIdRecord, // نرسل player_id من جدول player_ids
                         $titles,
-                        $messages
+                        $messages,
+                        'new_freelancer',
+                        null
                     );
 
                     Notification::create([

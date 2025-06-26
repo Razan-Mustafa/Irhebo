@@ -103,17 +103,25 @@
                                     <div class="col-span-12">
                                         <label
                                             class="block text-sm font-medium text-gray-700">{{ __('select_currency') }}</label>
+                                        @php
+                                            $selectedCurrencyId =
+                                                old('currency_id') ??
+                                                ($service->currency_id ??
+                                                    \App\Models\Currency::where(
+                                                        'code',
+                                                        session('currency', 'USD'),
+                                                    )->value('id'));
+                                        @endphp
+
                                         <select name="currency_id" id="currency-filter" class="form-control" required>
                                             <option value="">{{ __('select_currency') }}</option>
                                             @foreach ($currencies as $currency)
                                                 <option value="{{ $currency->id }}"
-                                                    @if (old('currency_id', $service->currency_id) == $currency->id) selected
-                                                    @elseif (empty($service->currency_id) && $currency->code == 'USD')
-                                                        selected @endif>
-                                                    {{ $currency->name }} ({{ $currency->symbol }})
+                                                    {{ $selectedCurrencyId == $currency->id ? 'selected' : '' }}>
+                                                    {{ $currency->name }}
+                                                    ({{ app()->getLocale() == 'ar' ? $currency->symbol_ar : $currency->symbol_en }})
                                                 </option>
                                             @endforeach
-
                                         </select>
                                     </div>
 
@@ -171,6 +179,22 @@
                                                             <input type="hidden"
                                                                 name="plans[{{ $index }}][features][{{ $fIndex }}][type]"
                                                                 value="{{ $feature->type }}" />
+                                                        @elseif ($feature->type == 'price')
+                                                            <div class="col-span-5">
+                                                                <input readonly type="text"
+                                                                    name="plans[{{ $index }}][features][{{ $fIndex }}][title]"
+                                                                    value="{{ $feature->translation->title ?? '' }}"
+                                                                    placeholder="{{ __('Title') }}"
+                                                                    class="form-control w-full" />
+                                                            </div>
+                                                            <div class="col-span-5">
+                                                                <input type="number"
+                                                                    name="plans[{{ $index }}][features][{{ $fIndex }}][value]"
+                                                                    value="{{ \App\Utilities\CurrencyConverter::convert($feature->value, 'USD', $currentCurrency) }}"
+                                                                    placeholder="{{ __('Value') }}"
+                                                                    class="form-control w-full" />
+                                                                
+                                                            </div>
                                                         @else
                                                             <div class="col-span-5">
                                                                 <input readonly type="text"

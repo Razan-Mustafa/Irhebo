@@ -19,6 +19,7 @@ class CallController extends Controller
 {
     private const ROLE_PUBLISHER = 1;
     private const ROLE_SUBSCRIBER = 2;
+
     private function generateAgoraToken($channelName, $uid, $role = 'publisher', $expireTimeInSeconds = 3600)
     {
         $appId = config('agora.app_id');
@@ -33,7 +34,9 @@ class CallController extends Controller
             : self::ROLE_SUBSCRIBER;
 
         $currentTimestamp = now()->timestamp;
+
         $privilegeExpireTs = $currentTimestamp + $expireTimeInSeconds;
+        // dd(date("Y-m-d H:i:s" ,now()->timestamp ) , $privilegeExpireTs);
 
         return RtcTokenBuilder::buildTokenWithUid(
             $appId,
@@ -57,7 +60,7 @@ class CallController extends Controller
         ]);
 
         $channelName = 'Call_' . Str::slug(auth()->user()->username, '_');
-        $token = $this->generateAgoraToken($channelName, $request->receiver_id);
+        $token = $this->generateAgoraToken($channelName, auth()->user()->id);
 
         $call = Call::create([
             'caller_id' => auth()->id(),
@@ -87,10 +90,12 @@ class CallController extends Controller
                     'ar' => __('messages.call_start_message', ['caller_name' => auth()->user()->username], 'ar'),
                 ];
 
-                $response = app(OneSignalService::class)->sendNotificationToUser(
+                $response = app(OneSignalService::class)->sendNotificationToUserCall(
                     $playerIdRecord,
                     $titles,
-                    $messages
+                    $messages,
+                    'call',
+                    $request->call_id
                 );
 
                 Notification::create([

@@ -42,7 +42,7 @@
                             <form method="GET" action="{{ route('freelancer.finances.index') }}" class="mb-4">
                                 <label for="payment_status" class="me-2">{{ __('filter_payment_status') }}:</label>
                                 <select name="payment_status" id="payment_status" onchange="this.form.submit()"
-                                    class="border rounded p-1"  style="width: 220px;">
+                                    class="border rounded p-1" style="width: 220px;">
                                     <option value="">{{ __('all') }}</option>
                                     <option value="paid"
                                         {{ isset($statusFilter) && $statusFilter == 'paid' ? 'selected' : '' }}>
@@ -85,8 +85,11 @@
                                                     </a>
                                                 </td>
                                                 <td>{{ $finance->request->user->username }}</td>
-                                                {{-- <td>{{ $finance->request->service->user->username }}</td> --}}
-                                                <td>{{ number_format($finance->total, 2) }}</td>
+
+                                                <td>{{ $currencySymbol }}
+                                                    {{ \App\Utilities\CurrencyConverter::convert($finance->total, 'USD', $currentCurrency) }}
+                                                </td>
+
                                                 <td>{!! \App\Enums\PaymentStatusEnum::tryFrom($finance->payment_status)?->badge() !!}</td>
                                                 <td>{{ $finance->paid_at ?? '-' }}</td>
 

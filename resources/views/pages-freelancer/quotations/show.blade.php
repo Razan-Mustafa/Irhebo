@@ -45,7 +45,9 @@
                                             <div class="my-3"><strong>{{ __('title') }}:</strong>
                                                 {{ $quotation->title }}</div>
                                             <div class="my-3"><strong>{{ __('price') }}:</strong>
-                                                {{ number_format($quotation->price, 2) }}</div>
+                                                {{ $currencySymbol }}
+                                                {{ \App\Utilities\CurrencyConverter::convert($quotation->price, 'USD', $currentCurrency) }}
+                                            </div>
                                             <div class="my-3"><strong>{{ __('delivery_days') }}:</strong>
                                                 {{ $quotation->delivery_day }} {{ __('days') }}</div>
                                             <div class="my-3"><strong>{{ __('revisions') }}:</strong>

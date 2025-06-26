@@ -63,7 +63,10 @@ use App\Repositories\Interfaces\NotificationRepositoryInterface;
 use Illuminate\Support\Facades\View;
 use App\Models\Currency;
 use App\Models\General;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -125,8 +128,25 @@ class AppServiceProvider extends ServiceProvider
             });
             $logo = General::where('key', 'platform_logo')->value('value');
 
+            $notificationCount = 0;
+            if (Auth::check()) {
+                $notificationCount = Auth::user()->notification()->where('is_read', 0)->count();
+            }
+            $currentCurrency = Session::get('currency', 'USD');
+            $locale = App::getLocale(); // 'en' or 'ar'
+
+            $currency = Currency::where('code', $currentCurrency)->first();
+
+            $currencySymbol = $currency
+                ? ($locale === 'ar' ? $currency->symbol_ar : $currency->symbol_en)
+                : '$';
+
+
             $view->with('allcurrencies', $currencies)
                 ->with('whatsappNumber', $whatsappNumber)
+                ->with('notificationCount', $notificationCount)
+                ->with('currencySymbol', $currencySymbol)
+                ->with('currentCurrency', $currentCurrency)
                 ->with('logo', $logo);
         });
     }

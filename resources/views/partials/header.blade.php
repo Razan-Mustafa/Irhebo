@@ -147,7 +147,7 @@
                       <!-- chat Icon Button -->
 
                       <div class="header-element header-theme-mode  !items-center sm:block">
-                          <a href=""
+                          <a href="{{ route('freelancer.chat.index') }}"
                               class="sidemenu-toggle animated-arrow  hor-toggle horizontal-navtoggle inline-flex items-center"
                               aria-label="Chat">
                               <img src="{{ asset('build/assets/images/icons/chat.png') }}" alt="Chat Icon"
@@ -166,7 +166,8 @@
 
                       {{-- notification --}}
                       <div class="header-element header-theme-mode !items-center sm:block">
-                          <a href="{{ route('freelancer.chat.index') }}" class="relative inline-flex items-center" aria-label="Notification">
+                          <a href="{{ route('freelancer.notification.index') }}"
+                              class="relative inline-flex items-center" aria-label="Notification">
                               <img src="{{ asset('build/assets/images/icons/bell.png') }}" alt="Notification Icon"
                                   class="h-[1.25rem] w-[1.25rem]">
 

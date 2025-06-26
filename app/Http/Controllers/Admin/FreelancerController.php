@@ -103,7 +103,9 @@ class FreelancerController extends Controller
                     $response = app(OneSignalService::class)->sendNotificationToUser(
                         $playerIdRecord, // نرسل player_id من جدول player_ids
                         $titles,
-                        $messages
+                        $messages,
+                        'verified',
+                        null
                     );
 
                     Notification::create([

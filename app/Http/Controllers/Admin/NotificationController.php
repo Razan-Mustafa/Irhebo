@@ -75,7 +75,9 @@ class NotificationController extends Controller
         $response = app(OneSignalService::class)->sendNotificationToUser(
             $playerIds,
             $titles,
-            $messages
+            $messages,
+            'admin',
+            null
         );
 
         // Save notification to each user

@@ -65,7 +65,9 @@ class PortfolioController extends Controller
                     $response = app(OneSignalService::class)->sendNotificationToUser(
                         $playerIdRecord, // نرسل player_id من جدول player_ids
                         $titles,
-                        $messages
+                        $messages,
+                        'portfolio',
+                        $portfolio->id
                     );
 
                     Notification::create([

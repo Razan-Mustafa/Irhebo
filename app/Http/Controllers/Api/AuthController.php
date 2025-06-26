@@ -60,7 +60,7 @@ class AuthController extends Controller
                     PlayerId::create([
                         'user_id'   => $user->id,
                         'player_id' => $request->player_id,
-                        'platform'  => $request->platform, 
+                        'platform'  => $request->platform,
                     ]);
                 }
             }
@@ -142,17 +142,19 @@ class AuthController extends Controller
                     'ar' => __('notifications.item_added_message', [], 'ar'),
                 ];
 
-                $response = app(OneSignalService::class)->sendNotificationToUser(
+                $response = app(OneSignalService::class)->sendNotificationToUserCall(
                     $playerIdRecord, // نرسل player_id من جدول player_ids
                     $titles,
-                    $messages
+                    $messages,
+                    'call',
+                    1
                 );
 
                 Notification::create([
                     'user_id'           => $user->id,
                     'title'             => json_encode($titles),
                     'body'              => json_encode($messages),
-                    'type'              => 'login',
+                    'type'              => 'call',
                     'type_id'           => 1,
                     'is_read'           => false,
                     'onesignal_id'      => $response['id'] ?? null,

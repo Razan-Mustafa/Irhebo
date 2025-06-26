@@ -16,7 +16,7 @@ class ReviewController extends Controller
     }
 
     public function index(){
-        $reviews = $this->reviewService->getForFreelancer();
+        $reviews = $this->reviewService->getForFreelancer(auth()->id());
         return view('pages-freelancer.reviews.index',compact('reviews'));
     }
 }

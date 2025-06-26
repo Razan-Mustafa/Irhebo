@@ -298,7 +298,14 @@
                                         @foreach ($request->plan->features as $feature)
                                             <div class="flex justify-between bg-gray-200 px-4 py-2 rounded">
                                                 <span>{{ $feature->translation->title }}</span>
-                                                <span class="font-medium">{{ $feature->value }}</span>
+                                                @if ($feature->translation->title == 'Price')
+                                                    <span class="font-medium"> {{ $currencySymbol }}
+                                                        {{ \App\Utilities\CurrencyConverter::convert($feature->value, 'USD', $currentCurrency) }}
+                                                    </span>
+                                                @else
+                                                 {{-- {{ dd($feature->translation->title); }} --}}
+                                                    <span class="font-medium">{{ $feature->value }}</span>
+                                                @endif
                                             </div>
                                         @endforeach
                                     </div>

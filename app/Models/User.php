@@ -135,6 +135,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserLanguage::class);
     }
+    public function notification(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
