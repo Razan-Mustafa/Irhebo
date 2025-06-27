@@ -165,18 +165,20 @@ class CallController extends Controller
         $duration = $minutes . ' min ' . $seconds . ' sec';
 
 
-        $authId = auth()->id();
+        $callerId = $call->caller_id;
         $receiverId = $call->receiver_id;
 
-        $chat = Chat::where(function ($query) use ($authId, $receiverId) {
-            $query->where('user_id_one', $authId)
-                ->where('user_id_two', $receiverId);
-        })->orWhere(function ($query) use ($authId, $receiverId) {
-            $query->where('user_id_one', $receiverId)
-                ->where('user_id_two', $authId);
-        })->first();
-
-
+        [$userIdOne, $userIdTwo] = [$callerId, $receiverId];
+        
+        if ($userIdOne > $userIdTwo) {
+            [$userIdOne, $userIdTwo] = [$userIdTwo, $userIdOne];
+        }
+        
+        // Retrieve the chat
+        $chat = Chat::where('user_id_one', $userIdOne)
+                    ->where('user_id_two', $userIdTwo)
+                    ->first();
+            
         if (!$chat) {
             return $this->errorResponse('No chat found between users.', 404);
         }
@@ -199,4 +201,5 @@ class CallController extends Controller
             ['call' => $call, 'message' => $message]
         );
     }
+
 }
