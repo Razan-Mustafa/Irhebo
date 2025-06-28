@@ -179,11 +179,11 @@
                                                         : '#';
                                                     break;
 
-                                                case 'call':
-                                                    $url = $note->type_id
-                                                        ? route('freelancer.calls.show', ['agora' => $note->type_id])
-                                                        : '#';
-                                                    break;
+                                                // case 'call':
+                                                //     $url = $note->type_id
+                                                //         ? route('freelancer.calls.show', ['agora' => $note->type_id])
+                                                //         : '#';
+                                                //     break;
 
                                                 case 'verified':
                                                     $url = '#';

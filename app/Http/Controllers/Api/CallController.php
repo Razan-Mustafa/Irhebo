@@ -169,16 +169,16 @@ class CallController extends Controller
         $receiverId = $call->receiver_id;
 
         [$userIdOne, $userIdTwo] = [$callerId, $receiverId];
-        
+
         if ($userIdOne > $userIdTwo) {
             [$userIdOne, $userIdTwo] = [$userIdTwo, $userIdOne];
         }
-        
+
         // Retrieve the chat
         $chat = Chat::where('user_id_one', $userIdOne)
                     ->where('user_id_two', $userIdTwo)
                     ->first();
-            
+
         if (!$chat) {
             return $this->errorResponse('No chat found between users.', 404);
         }
@@ -188,7 +188,7 @@ class CallController extends Controller
 
         $message = ChatMessage::create([
             'chat_id'        => $chatId,
-            'sender_id'      => auth()->id(),
+            'sender_id'      => $callerId,
             'message'        => $duration,
             'attachment_url' => null,
             'attachment_type' => 'call',
