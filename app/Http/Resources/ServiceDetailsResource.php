@@ -8,6 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use App\Utilities\CurrencyConverter;
 use App\Models\Currency;
+use App\Http\Resources\TagResource;
 
 class ServiceDetailsResource extends JsonResource
 {
@@ -45,6 +46,7 @@ class ServiceDetailsResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'category_id' => $this->subCategory?->category_id, // 🆕 category_id
             'sub_category_id' => $this->sub_category_id,
             'title' => $this->translation?->title,
             'description' => $this->translation?->description,
@@ -65,6 +67,7 @@ class ServiceDetailsResource extends JsonResource
                 'avg_rate' =>(int) round($this->avgUserRate),
             ] : null,
             'media' => ServiceMediaResource::collection($this->media),
+            'tags' => TagResource::collection($this->tags),
         ];
     }
 }

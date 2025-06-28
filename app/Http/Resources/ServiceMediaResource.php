@@ -18,6 +18,7 @@ class ServiceMediaResource extends JsonResource
             'id' => $this->id,
             'media_path' => $this->media_path ? url($this->media_path) : null,
             'media_type' => $this->media_type,
+            'is_cover' => $this->is_cover,
         ];
     }
 }

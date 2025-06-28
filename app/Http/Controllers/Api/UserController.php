@@ -90,8 +90,7 @@ class UserController extends Controller
                     'freelancer' => new FreelancerResource($user),
                     'average_rating' => $averageRating,
                     'reviews' =>   [
-                        'data' => ReviewResource::collection($reviews['data']),
-                        'meta' => $reviews['meta']
+                        'data' => ReviewResource::collection($reviews),
                     ],
                     'portfolio' => [
                         'data' => PortfolioResource::collection($portfolio['data']),
