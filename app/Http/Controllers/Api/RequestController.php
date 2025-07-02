@@ -60,46 +60,46 @@ class RequestController extends Controller
 
             // 1. Create the request
             $createdRequest = $this->requestService->createRequest($validatedData);
-
             // 2. Prepare data for contract generation
             $contractData = [
-                '{[client_name]}'       => 'Hussam Amira',
-                '{[client_email]}'      => 'hussam.amira95@gmail.com',
-                '{[client_phone]}'      => '0792856567',
+                '{[client_name]}'       => $createdRequest['request']->user->username,
+                '{[client_email]}'      => $createdRequest['request']->user->email,
+                '{[client_phone]}'      => $createdRequest['request']->user->prefix . $createdRequest['request']->user->phone,
 
-                '{[freelancer_name]}'   => 'Hussam Freelancer',
-                '{[freelancer_email]}'  => 'hussam@gmail.com',
-                '{[freelancer_phone]}'  => '0792856568',
+                '{[freelancer_name]}'   => $createdRequest['request']->service->user->username,
+                '{[freelancer_email]}'  => $createdRequest['request']->service->user->email,
+                '{[freelancer_phone]}'  => $createdRequest['request']->service->user->prefix . $createdRequest['request']->service->user->phone,
 
-                '{[contract]}'   => $createdRequest->order_number,
-                '{[invoice]}'    => $createdRequest->invoice_number ?? 'INV-' . $createdRequest->id,
+                '{[contract]}'   => $createdRequest['request']->order_number,
+                '{[invoice]}'    => $createdRequest['request']->invoice_number ?? 'INV-' . $createdRequest['request']->id,
                 '{[date]}'              => now()->format('Y-m-d'),
 
-                '{[service_title]}'     => 'Test Service',
-                '{[delivery_date]}'     => now()->format('Y-m-d'),
+                '{[service_title]}'     => $createdRequest['request']->service->translations()->where('language', 'en')->first()->title,
+                '{[delivery_date]}'     => $createdRequest['delivery_date'],
 
-                '{[service_price]}'     => '2000 SAR',
-                '{[commission]}'        => '2000 SAR',
-                '{[tax]}'               => '2000 SAR',
-                '{[total_amount]}'      => '2000 SAR',
+                '{[service_price]}'     =>'$'. $createdRequest['finance']->amount,
+                '{[commission]}'        =>'$'. $createdRequest['finance']->commission,
+                '{[tax]}'               =>'$'. $createdRequest['finance']->fees,
+                '{[total_amount]}'      =>'$'. $createdRequest['finance']->total,
 
-                '{[revisions]}'         => '2',
+                '{[revisions]}'         => $createdRequest['revision'],
 
             ];
+            // dd(  $contractData);
 
 
             // 3. Generate PDF contract
-            $fileName = substr($createdRequest->order_number, 1);
+            $fileName = substr($createdRequest['request']->order_number, 1);
 
             // dd($fileName , $contractData ,$this->contractGenerator);
             $pdfUrl = $this->contractGenerator->generate($contractData, $fileName);
 
             // 4. Optionally save contract path to DB
-            $createdRequest->update([
+            $createdRequest['request']->update([
                 'contract_path' => $pdfUrl,
             ]);
 
-            return $this->successResponse(__('success'), new RequestResource($createdRequest));
+            return $this->successResponse(__('success'), new RequestResource($createdRequest['request']));
         } catch (\Exception $e) {
             return $this->exceptionResponse($e);
         }

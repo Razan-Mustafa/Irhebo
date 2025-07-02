@@ -61,6 +61,9 @@ class RequestService
         $priceFeature = $plan->features->where('type', 'price')->first();
         $amount = floatval(optional($priceFeature)->value ?? 0);
 
+
+        $revisionFeature = $plan->features->where('type', 'revisions')->first()->value;
+
         // ممكن تحسب عمولة أو رسوم أو خصم إذا بدك
         $feesValue = floatval(optional(General::where('key', 'fees')->first())->value ?? 0);
         $commissionValue = floatval(optional(General::where('key', 'commission')->first())->value ?? 0);
@@ -71,7 +74,7 @@ class RequestService
 
         $request = $this->requestRepository->createRequest($data);
 
-        Finance::create([
+        $finance = Finance::create([
             'request_id'     => $request->id,
             'amount'         => $amount,
             'fees'           => $feesAmount,
@@ -83,7 +86,13 @@ class RequestService
             'paid_at'        => null,
         ]);
 
-        return $request;
+        $data = [
+            'request'=>$request,
+            'finance'=>$finance,
+            'revision'=>$revisionFeature,
+            'delivery_date'=> $data['end_date']
+        ];
+        return  $data;
     }
     public function getRequestDetails($id)
     {
