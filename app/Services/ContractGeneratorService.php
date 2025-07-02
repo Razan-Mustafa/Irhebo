@@ -25,8 +25,8 @@ class ContractGeneratorService
         $pdf = Pdf::loadHTML($html)->setPaper('a4');
         $pdfOutput = $pdf->output();
 
-        Storage::disk('public')->put("contracts/{$fileName}.pdf", $pdfOutput); // ✅
+        Storage::disk('public')->put("contracts/{$fileName}.pdf", $pdfOutput);
 
-        return Storage::url("public/contracts/{$fileName}.pdf");
+        return Storage::url("contracts/{$fileName}.pdf");
     }
 }

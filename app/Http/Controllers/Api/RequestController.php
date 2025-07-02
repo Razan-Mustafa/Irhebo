@@ -19,7 +19,7 @@ class RequestController extends Controller
     protected $requestService;
     protected $contractGenerator;
 
-    public function __construct(RequestService $requestService ,ContractGeneratorService $contractGenerator)
+    public function __construct(RequestService $requestService, ContractGeneratorService $contractGenerator)
     {
         $this->requestService = $requestService;
         $this->contractGenerator = $contractGenerator;
@@ -89,11 +89,11 @@ class RequestController extends Controller
 
 
             // 3. Generate PDF contract
-            $fileName = $createdRequest->order_number;
+            $fileName = substr($createdRequest->order_number, 1);
 
             // dd($fileName , $contractData ,$this->contractGenerator);
             $pdfUrl = $this->contractGenerator->generate($contractData, $fileName);
-            
+
             // 4. Optionally save contract path to DB
             $createdRequest->update([
                 'contract_path' => $pdfUrl,
