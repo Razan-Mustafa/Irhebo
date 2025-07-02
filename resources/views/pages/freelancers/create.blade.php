@@ -106,10 +106,12 @@
                                     <select name="languages[]" id="languages"
                                         class="js-example-basic-multiple mt-1 block w-full rounded-lg  border-gray-300"
                                         multiple>
-
                                         @foreach ($languages as $language)
-                                            <option value="{{ $language['id'] }}">{{ $language['title'] }}</option>
+                                            <option value="{{ $language['id'] }}">
+                                                {{ app()->getLocale() == 'ar' ? $language['title_ar'] : $language['title_en'] }}
+                                            </option>
                                         @endforeach
+
                                     </select>
                                 </div>
 

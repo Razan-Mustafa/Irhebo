@@ -20,8 +20,11 @@ class ProfessionRepository implements ProfessionRepositoryInterface
     }
     public function getAllActive()
     {
-        return $this->model->where('is_active', true)->get();
+        return $this->model->where('is_active', true)
+            ->with('translations')
+            ->get();
     }
+
     public function find($id)
     {
         return $this->model->findOrFail($id);

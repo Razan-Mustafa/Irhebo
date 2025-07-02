@@ -67,6 +67,7 @@ class CallController extends Controller
             'receiver_id' => $request->receiver_id,
             'channel_name' => $channelName,
         ]);
+        
         $data = [
             'token' => $token,
             'call'  => new CallResource($call),

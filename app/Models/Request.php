@@ -18,7 +18,8 @@ class Request extends Model
         'image',
         'start_date',
         'end_date',
-        'need_action'
+        'need_action',
+        'contract_path'
     ];
 
     /**

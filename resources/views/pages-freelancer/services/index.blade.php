@@ -98,7 +98,7 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $service->translation->title }}</td>
                                             <td>{{ $service->subCategory->translation->title }}</td>
-                                             {{-- <td>
+                                            {{-- <td>
                                                 <div class="flex items-center justify-center">
                                                     <input type="checkbox" id="hs-small-switch-{{ $service->id }}"
                                                         class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
@@ -115,6 +115,10 @@
                                                     href="{{ route('freelancer.services.edit', $service->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
                                                     <i class="las la-edit"></i>
+                                                </a>
+                                                <a aria-label="anchor" href="{{ route('freelancer.services.show', $service->id) }}"
+                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill">
+                                                    <i class="las la-eye"></i>
                                                 </a>
                                                 <a aria-label="anchor" href="javascript:void(0);"
                                                     onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $service->id }})"

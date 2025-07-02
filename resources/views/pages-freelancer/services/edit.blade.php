@@ -193,7 +193,7 @@
                                                                     value="{{ \App\Utilities\CurrencyConverter::convert($feature->value, 'USD', $currentCurrency) }}"
                                                                     placeholder="{{ __('Value') }}"
                                                                     class="form-control w-full" />
-                                                                
+
                                                             </div>
                                                         @else
                                                             <div class="col-span-5">
@@ -408,7 +408,9 @@
     `;
                 if (planIndex < plansCount) {
                     $('.plans-wrapper').append(newPlanHTML);
-                    $('.add-plan').hide();
+                    if ($('.plan-item').length >= 3) {
+                        $('.add-plan').hide();
+                    }
                     updatePlanOptions();
                 }
             });

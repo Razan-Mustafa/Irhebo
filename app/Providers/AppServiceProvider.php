@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Events\MessageReadEvent;
+use App\Events\PusherNewMessage;
 use App\Listeners\UpdateMessageReadStatus;
 use App\Models\Category;
 use App\Models\User;
@@ -110,10 +111,10 @@ class AppServiceProvider extends ServiceProvider
         Category::observe(CategoryObserver::class);
         User::observe(UserObserver::class);
         Passport::enablePasswordGrant();
-        Event::listen(
-            MessageReadEvent::class,
-            UpdateMessageReadStatus::class,
-        );
+        // Event::listen(
+        //     PusherNewMessage::class,
+        //     // UpdateMessageReadStatus::class,
+        // );
 
         View::composer('*', function ($view) {
             // Retrieve the whatsapp number value where key='whatsapp'
@@ -129,9 +130,10 @@ class AppServiceProvider extends ServiceProvider
             $logo = General::where('key', 'platform_logo')->value('value');
 
             $notificationCount = 0;
-            // if (Auth::check()) {
-            //     $notificationCount = Auth::user()->notification()->where('is_read', 0)->count();
-            // }
+            if (Auth::check() && Auth::user() instanceof \App\Models\User) {
+                $notificationCount = Auth::user()->notification()->where('is_read', 0)->count();
+            }
+
             $currentCurrency = Session::get('currency', 'USD');
             $locale = App::getLocale(); // 'en' or 'ar'
 
@@ -144,7 +146,7 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('allcurrencies', $currencies)
                 ->with('whatsappNumber', $whatsappNumber)
-                // ->with('notificationCount', $notificationCount)
+                ->with('notificationCount', $notificationCount)
                 ->with('currencySymbol', $currencySymbol)
                 ->with('currentCurrency', $currentCurrency)
                 ->with('logo', $logo);

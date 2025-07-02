@@ -381,7 +381,9 @@
     `;
                 if (planIndex < plansCount) {
                     $('.plans-wrapper').append(newPlanHTML);
-                    $('.add-plan').hide();
+                    if ($('.plan-item').length >= 3) {
+                        $('.add-plan').hide();
+                    }
                     updatePlanOptions();
                 }
             });

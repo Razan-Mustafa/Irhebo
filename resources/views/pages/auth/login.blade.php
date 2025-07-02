@@ -45,13 +45,13 @@
                                                 <i class="ri-eye-off-line"></i>
                                             </button>
                                         </div>
-                                        <div class="form-check mt-2">
+                                        {{-- <div class="form-check mt-2">
                                             <input type="checkbox" id="remember-password" name="remember"
                                                 class="form-check-input">
                                             <label for="remember-password" class="form-check-label text-gray-500">
                                                 {{ __('remember_password') }}
                                             </label>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                     <!-- Sign In Button -->
                                     <div class="col-span-12">

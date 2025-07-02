@@ -117,6 +117,11 @@
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
                                                     <i class="las la-edit"></i>
                                                 </a>
+                                                <a aria-label="anchor"
+                                                     href="{{ route('services.show', $service->id) }}"
+                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill">
+                                                    <i class="las la-eye"></i>
+                                                </a>
                                                 <a aria-label="anchor" href="javascript:void(0);"
                                                     onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $service->id }})"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">

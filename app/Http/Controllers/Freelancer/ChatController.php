@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Freelancer;
 use App\Events\PusherNewMessage;
 use App\Http\Controllers\Controller;
 use App\Models\Chat;
+use App\Models\ChatMessage;
 use App\Models\User;
+use App\Utilities\FileManager;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
@@ -42,21 +44,48 @@ class ChatController extends Controller
     {
         $request->validate([
             'message' => 'required|string|max:1000',
+            'attachment' => 'nullable|file|max:51200', // 50MB max
+
         ]);
 
-        $chat = Chat::findOrFail($chatId);
+        // $chat = Chat::findOrFail($chatId);
 
         // Create message
-        $message = $chat->messages()->create([
-            'sender_id' => auth()->id(),
-            'message' => $request->message,
-            'is_read' => 0,
-        ]);
+        // $message = $chat->messages()->create([
+        //     'sender_id' => auth()->id(),
+        //     'message' => $request->message,
+        //     'is_read' => 0,
+        // ]);
+
+        $message = new ChatMessage();
+        $message->chat_id = $chatId;
+        $message->sender_id = auth()->id();
+        $message->message = $request->message;
+
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $path = FileManager::upload('chat_attachments', $file);
+
+            $message->attachment_path = $path;
+            $message->attachment_type = $file->getMimeType();
+        }
+
+
+        $message->save();
+
+
 
         // Broadcast to others
         broadcast(new PusherNewMessage($message))->toOthers();
         return response()->json([
-            'message' => $message
+            'message' => [
+                'id' => $message->id,
+                'message' => $message->message,
+                'attachment_url' => $message->attachment_path ? asset($message->attachment_path) : null,
+                'attachment_type' => $message->attachment_type,
+                'sender_id' => $message->sender_id,
+                'created_at' => $message->created_at->toDateTimeString()
+            ]
         ]);
     }
 }

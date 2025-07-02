@@ -85,7 +85,7 @@
                                 <div class="grid md:grid-cols-2 gap-6">
                                     <div class="space-y-4">
                                         <div class="grid grid-cols-2 gap-4">
-                                           
+
                                             <div class="font-semibold flex items-center"><i
                                                     class="ti ti-file-description me-2"></i>{{ __('description') }}:</div>
                                             <div>{{ $freelancer->freelancer->description }}</div>
@@ -106,14 +106,15 @@
                                                 @foreach ($freelancer->languages as $UserLanguage)
                                                     <div class="flex items-center bg-gray-100 px-3 py-2 rounded-md">
                                                         <img src="{{ $UserLanguage->language->flag }}"
-                                                            alt="{{ $UserLanguage->language->title }}"
+                                                            alt="{{ $UserLanguage->language->title_en }}"
                                                             class="w-5 h-5 rounded-sm me-2">
-                                                        <span
-                                                            class="text-gray-700">{{ $UserLanguage->language->title }}</span>
-                                                      
+                                                        <span class="text-gray-700">
+                                                            {{ App::getLocale() == 'ar' ? $UserLanguage->language->title_ar : $UserLanguage->language->title_en }}
+                                                        </span>
                                                     </div>
                                                 @endforeach
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>

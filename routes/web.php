@@ -35,10 +35,12 @@ use App\Http\Controllers\Freelancer\FinanceController as FreelancerFinanceContro
 use App\Http\Controllers\Freelancer\HomeController as FreelancerHomeController;
 use App\Http\Controllers\Freelancer\NotificationController as FreelancerNotificationController;
 use App\Http\Controllers\Freelancer\PortfolioController as FreelancerPortfolioController;
+use App\Http\Controllers\Freelancer\ProfileController;
 use App\Http\Controllers\Freelancer\QuotationController as FreelancerQuotationController;
 use App\Http\Controllers\Freelancer\RequestController as FreelancerRequestController;
 use App\Http\Controllers\Freelancer\ReviewController as FreelancerReviewController;
 use App\Http\Controllers\Freelancer\ServiceController as FreelancerServiceController;
+use App\Http\Controllers\Freelancer\SocialLoginController;
 use App\Http\Controllers\Freelancer\TicketController as FreelancerTicketController;
 use App\Models\Currency;
 use Illuminate\Support\Facades\Broadcast;
@@ -51,6 +53,8 @@ Route::get('language/{locale}', [HomeController::class, 'changeLocale'])
 Route::get('currency/{currency}', [FreelancerHomeController::class, 'changeCurrency'])
     ->name('currency.change');
 
+Route::get('auth/google', [SocialLoginController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('auth/google/callback', [SocialLoginController::class, 'handleGoogleCallback']);
 
 
 // Guest Routes
@@ -185,6 +189,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
         $route->get('create', 'create')->name('create');
         $route->post('store', 'store')->name('store');
         $route->get('edit/{id}', 'edit')->name('edit');
+        $route->get('show/{id}', 'show')->name('show');
         $route->put('update/{id}', 'update')->name('update');
         $route->delete('destroy/{id}', 'destroy')->name('destroy');
         $route->post('toggle-recommended', 'toggleRecommended')->name('toggleRecommended');
@@ -289,9 +294,20 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
 
 
 
-Route::prefix('freelancer')->middleware('guest:freelancer')->prefix('freelancer')->group(function ($route) {
+Route::prefix('freelancer')->middleware('guest:freelancer')->group(function ($route) {
+    // login
     $route->get('login', [FreelancerAuthController::class, 'showLoginForm'])->name('freelancer.login');
     $route->post('login', [FreelancerAuthController::class, 'login'])->name('freelancer.login.submit');
+
+    // register
+    $route->get('register', [FreelancerAuthController::class, 'showRegisterForm'])->name('freelancer.register');
+    $route->post('register', [FreelancerAuthController::class, 'register'])->name('freelancer.register.submit');
+
+    // phone verification
+    $route->get('verify-phone', [FreelancerAuthController::class, 'showVerifyPhoneForm'])->name('freelancer.verify.phone');
+    $route->post('verify-phone', [FreelancerAuthController::class, 'verifyPhone'])->name('freelancer.verify.phone.submit');
+    $route->post('resend-phone-code', [FreelancerAuthController::class, 'resendPhoneCode'])->name('freelancer.resend.phone.code');
+
 });
 
 Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name('freelancer.')->group(function ($route) {
@@ -328,10 +344,23 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
         $route->get('create', 'create')->name('create');
         $route->post('store', 'store')->name('store');
         $route->get('edit/{id}', 'edit')->name('edit');
+        $route->get('show/{id}', 'show')->name('show');
         $route->put('update/{id}', 'update')->name('update');
         $route->delete('destroy/{id}', 'destroy')->name('destroy');
         $route->post('toggle-recommended', 'toggleRecommended')->name('toggleRecommended');
     });
+
+    $route->controller(ProfileController::class)->name('profile.')->prefix('profile')->group(function ($route) {
+        $route->get('show', 'show')->name('show');
+        $route->get('edit/{id}', 'edit')->name('edit');
+        $route->put('update/{id}', 'update')->name('update');
+        $route->post('change-password', 'updatePassword')->name('updatePassword');
+        $route->post('verify', 'verify')->name('verify');
+        $route->delete('delete/certificate/{id}', 'deleteCertificate')->name('deleteCertificate');
+
+    });
+
+
     $route->controller(FreelancerPortfolioController::class)->name('portfolios.')->prefix('portfolios')->group(function ($route) {
         $route->get('', 'index')->name('index');
         $route->get('create', 'create')->name('create');

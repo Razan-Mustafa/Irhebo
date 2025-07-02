@@ -1,4 +1,18 @@
   <!-- HEADER -->
+
+  @php
+      if (auth()->guard('freelancer')->check()) {
+          $logoutRoute = route('freelancer.logout');
+          $profileRoute = route('freelancer.profile.show');
+      } elseif (auth()->guard('admin')->check()) {
+          $logoutRoute = route('logout');
+          $profileRoute = '#';
+      } else {
+          $logoutRoute = '#';
+      }
+  @endphp
+
+
   <header class="app-header">
       <nav class="main-header !h-[3.75rem]" aria-label="Global">
           <div class="main-header-container ps-[0.725rem] pe-[1rem] ">
@@ -208,24 +222,19 @@
                           <ul class="text-defaulttextcolor font-medium dark:text-[#8c9097] dark:text-white/50">
                               <li>
                                   <a class="w-full ti-dropdown-item !text-[0.8125rem] !gap-x-0  !p-[0.65rem] !inline-flex"
-                                      href="profile.html">
+                                      href="{{ $profileRoute }}">
                                       <i
                                           class="ti ti-user-circle text-[1.125rem] me-2 opacity-[0.7]"></i>{{ __('profile') }}
                                   </a>
                               </li>
                               <li>
-                                  <form id="logout-form"
-                                      @if (auth()->guard('freelancer')->check()) action="{{ route('freelancer.logout') }}"
-                              @elseif(auth()->guard('admin')->check())
-                            action="{{ route('logout') }}"
-                              @else
-                                  Guest @endif
-                                      method="POST" class="w-full">
+                                  <form id="logout-form" action="{{ $logoutRoute }}" method="POST"
+                                      class="w-full">
                                       @csrf
                                       <button type="submit"
                                           class="w-full ti-dropdown-item !text-[0.8125rem] !p-[0.65rem] !gap-x-0 !inline-flex logout-btn">
-                                          <i
-                                              class="ti ti-logout text-[1.125rem] me-2 opacity-[0.7]"></i>{{ __('log_out') }}
+                                          <i class="ti ti-logout text-[1.125rem] me-2 opacity-[0.7]"></i>
+                                          {{ __('log_out') }}
                                       </button>
                                   </form>
                               </li>

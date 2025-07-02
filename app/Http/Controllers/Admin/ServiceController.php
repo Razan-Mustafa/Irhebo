@@ -178,4 +178,20 @@ class ServiceController extends Controller
             'message' => __('service_updated_successfully'),
         ]);
     }
+
+    public function show($id)
+    {
+        $categories = $this->categoryService->index();
+        $service = $this->serviceService->getServiceDetails($id);
+        $tags = $service->tags()->pluck('tags.id')->toArray();
+        $selectedTags = $service->tags()->pluck('tags.id')->toArray();
+
+        $servicePlans = $this->serviceService->getPlansByServiceId($id);
+        $plans = $this->planService->index();
+        $freelancers = $this->freelancerService->index([]);
+        $currencies = Currency::all();
+
+        $plansCount = Plan::count();
+        return view('pages.services.show', compact('selectedTags', 'categories', 'tags', 'plans', 'servicePlans', 'freelancers', 'service', 'plansCount',    'currencies'));
+    }
 }

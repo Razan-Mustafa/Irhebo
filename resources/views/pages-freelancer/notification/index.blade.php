@@ -197,7 +197,7 @@
 
                                                 case 'service':
                                                     $url = $note->type_id
-                                                        ? route('freelancer.services.index', ['id' => $note->type_id])
+                                                        ? route('freelancer.services.show', ['id' => $note->type_id])
                                                         : '#';
                                                     break;
 

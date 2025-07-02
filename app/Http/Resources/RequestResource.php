@@ -53,6 +53,7 @@ class RequestResource extends JsonResource
             'created_since' => Carbon::parse($this->created_at)->diffForHumans(),
             'status_label' => RequestStatusEnum::tryFrom($this->status)?->label(),
             'status_key' => $this->status,
+            'contract_path' => url($this->contract_path),
             'need_action'=>boolval($this->need_action)
         ];
     }

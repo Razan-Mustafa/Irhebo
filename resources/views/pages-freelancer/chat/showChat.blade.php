@@ -19,7 +19,7 @@
             <!-- Page Header -->
             <div class="block justify-between page-header md:flex">
                 <div>
-                    <h3 class="text-[1.125rem] font-semibold">{{ __('chat_with') }} {{ $otherUser->name }}</h3>
+                    {{-- <h3 class="text-[1.125rem] font-semibold">{{ __('chat_with') }} {{ $otherUser->username }}</h3> --}}
                 </div>
                 <ol class="flex items-center whitespace-nowrap">
                     <li class="text-[0.813rem] ps-[0.5rem]">
@@ -38,7 +38,7 @@
                 <div class="col-span-12">
                     <div class="box h-[70vh] flex flex-col">
                         <div class="box-header">
-                            <h5 class="box-title">{{ __('chat_with') }} {{ $otherUser->name }}</h5>
+                            <h5 class="box-title"> {{ $otherUser->username }}</h5>
                         </div>
 
                         <div id="chatBody" class="box-body overflow-y-auto flex-1 p-4 space-y-3 bg-gray-50"
@@ -57,7 +57,7 @@
                         </div>
 
                         <div class="p-4 border-t bg-white">
-                            <form id="sendMessageForm">
+                            {{-- <form id="sendMessageForm">
                                 @csrf
                                 <div class="flex items-center gap-3">
                                     <input type="text" name="message" id="messageInput"
@@ -69,7 +69,29 @@
                                         <i class="las la-paper-plane"></i>
                                     </button>
                                 </div>
+                            </form> --}}
+                            <form id="sendMessageForm" enctype="multipart/form-data">
+                                @csrf
+                                <div class="flex items-center gap-3">
+                                    <input type="text" name="message" id="messageInput"
+                                        placeholder="{{ __('type_message') }}"
+                                        class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary focus:border-primary">
+
+                                    <input type="file" name="attachment" id="attachmentInput" class="hidden"
+                                        accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx">
+
+                                    <button type="button" onclick="document.getElementById('attachmentInput').click()"
+                                        class="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                                        📎
+                                    </button>
+
+                                    <button type="submit"
+                                        class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-700">
+                                        <i class="las la-paper-plane"></i>
+                                    </button>
+                                </div>
                             </form>
+
                         </div>
                     </div>
                 </div>
@@ -139,50 +161,126 @@
             console.log('sendMessageForm:', sendMessageForm);
 
             if (sendMessageForm) {
+
                 sendMessageForm.addEventListener('submit', function(e) {
                     e.preventDefault();
 
                     const messageInput = document.getElementById('messageInput');
-                    const message = messageInput.value.trim();
+                    const attachmentInput = document.getElementById('attachmentInput');
 
-                    if (message === '') {
-                        console.log('Message is empty, aborting');
-                        return;
+                    const formData = new FormData();
+                    formData.append('message', messageInput.value);
+                    if (attachmentInput.files.length > 0) {
+                        formData.append('attachment', attachmentInput.files[0]);
                     }
 
-                    axios.post("{{ route('freelancer.chat.sendMessage', $chat->id) }}", {
-                        message: message
-                    }).then(response => {
-                        console.log('Message sent successfully');
+                    axios.post("{{ route('freelancer.chat.sendMessage', $chat->id) }}", formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        })
+                        .then(response => {
+                            console.log('Message sent successfully');
 
-                        messageInput.value = '';
+                            messageInput.value = '';
+                            attachmentInput.value = '';
 
-                        const chatBody = document.getElementById('chatBody');
-                        if (!chatBody) return;
+                            const chatBody = document.getElementById('chatBody');
+                            if (!chatBody) return;
 
-                        const bubble = document.createElement('div');
-                        bubble.classList.add('flex', 'justify-end');
+                            const bubble = document.createElement('div');
+                            bubble.classList.add('flex', 'justify-end');
 
-                        const content = `
-                    <div class="max-w-xs p-3 rounded-lg bg-primary text-white">
-                        <p class="text-sm">${message}</p>
-                        <span class="block text-xs text-gray-400 mt-1">
-                            ${response.data.message.created_at.substring(11, 16)}
-                        </span>
-                    </div>
-                `;
+                            let content = `
+            <div class="max-w-xs p-3 rounded-lg bg-primary text-white">
+        `;
 
-                        bubble.innerHTML = content;
-                        chatBody.appendChild(bubble);
-                        chatBody.scrollTop = chatBody.scrollHeight;
+                            if (response.data.message.message) {
+                                content += `<p class="text-sm">${response.data.message.message}</p>`;
+                            }
 
-                    }).catch(error => {
-                        console.error('Error sending message:', error);
-                        alert('Failed to send message.');
-                    });
+                            if (response.data.message.attachment_url) {
+                                const fileUrl = response.data.message.attachment_url;
+                                const fileType = response.data.message.attachment_type;
 
+                                if (fileType.startsWith('image/')) {
+                                    content +=
+                                        `<img src="${fileUrl}" class="mt-2 rounded-lg max-w-[150px]">`;
+                                } else if (fileType.startsWith('video/')) {
+                                    content +=
+                                        `<video controls class="mt-2 max-w-[150px]"><source src="${fileUrl}"></video>`;
+                                } else if (fileType.startsWith('audio/')) {
+                                    content +=
+                                        `<audio controls class="mt-2"><source src="${fileUrl}"></audio>`;
+                                } else {
+                                    content +=
+                                        `<a href="${fileUrl}" target="_blank" class="block mt-2 underline">Download file</a>`;
+                                }
+                            }
 
+                            content += `
+            <span class="block text-xs text-gray-300 mt-1">
+                ${response.data.message.created_at.substring(11, 16)}
+            </span>
+        </div>`;
+
+                            bubble.innerHTML = content;
+                            chatBody.appendChild(bubble);
+                            chatBody.scrollTop = chatBody.scrollHeight;
+
+                        })
+                        .catch(error => {
+                            console.error('Error sending message:', error);
+                            alert('Failed to send message.');
+                        });
                 });
+
+
+
+                // sendMessageForm.addEventListener('submit', function(e) {
+                //     e.preventDefault();
+
+                //     const messageInput = document.getElementById('messageInput');
+                //     const message = messageInput.value.trim();
+
+                //     if (message === '') {
+                //         console.log('Message is empty, aborting');
+                //         return;
+                //     }
+
+                //     axios.post("{{ route('freelancer.chat.sendMessage', $chat->id) }}", {
+                //         message: message
+                //     }).then(response => {
+                //         console.log('Message sent successfully');
+
+                //         messageInput.value = '';
+
+                //         const chatBody = document.getElementById('chatBody');
+                //         if (!chatBody) return;
+
+                //         const bubble = document.createElement('div');
+                //         bubble.classList.add('flex', 'justify-end');
+
+                //         const content = `
+            //     <div class="max-w-xs p-3 rounded-lg bg-primary text-white">
+            //         <p class="text-sm">${message}</p>
+            //         <span class="block text-xs text-gray-400 mt-1">
+            //             ${response.data.message.created_at.substring(11, 16)}
+            //         </span>
+            //     </div>
+            // `;
+
+                //         bubble.innerHTML = content;
+                //         chatBody.appendChild(bubble);
+                //         chatBody.scrollTop = chatBody.scrollHeight;
+
+                //     }).catch(error => {
+                //         console.error('Error sending message:', error);
+                //         alert('Failed to send message.');
+                //     });
+
+
+                // });
             }
 
             function scrollToBottom() {

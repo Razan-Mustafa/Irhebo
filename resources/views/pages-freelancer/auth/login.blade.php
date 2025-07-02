@@ -26,9 +26,11 @@
                                     <div class="col-span-12">
                                         <label for="prefixLogin" class="form-label">{{ __('phone') }}</label>
                                         <div class="flex">
-                                            <select id="prefixLogin" name="prefix" class="form-select border-2 rounded-md mr-2">
+                                            <select id="prefixLogin" name="prefix"
+                                                class="form-select border-2 rounded-md mr-2">
                                                 @foreach ($countries as $country)
-                                                    <option value="{{ $country->phone_code }}">{{ $country->phone_code }}</option>
+                                                    <option value="{{ $country->phone_code }}">{{ $country->phone_code }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             <input type="tel" name="phone"
@@ -52,13 +54,13 @@
                                                 <i class="ri-eye-off-line"></i>
                                             </button>
                                         </div>
-                                        <div class="form-check mt-2">
+                                        {{-- <div class="form-check mt-2">
                                             <input type="checkbox" id="remember-password" name="remember"
                                                 class="form-check-input">
                                             <label for="remember-password" class="form-check-label text-gray-500">
                                                 {{ __('remember_password') }}
                                             </label>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                     <!-- Sign In Button -->
                                     <div class="col-span-12">
@@ -67,6 +69,23 @@
                                             {{ __('sign_in') }}
                                         </button>
                                     </div>
+                                    <div class="col-span-12 mt-2">
+                                        <a href="{{ route('auth.google') }}"
+                                            class="ti-btn ti-btn-danger w-full text-white font-medium py-3 flex items-center justify-center gap-2">
+                                            <i class="ri-google-fill text-lg"></i>
+                                            {{ __('sign_in_with_google') }}
+                                        </a>
+                                    </div>
+                                    <div class="col-span-12 text-center mt-4">
+                                        <p class="text-sm text-gray-600">
+                                            {{ __('dont_have_account') }}
+                                            <a href="{{ route('freelancer.register') }}"
+                                                class="text-primary hover:underline font-medium">
+                                                {{ __('sign_up') }}
+                                            </a>
+                                        </p>
+                                    </div>
+
                                 </div>
                             </form>
                         </div>
@@ -78,4 +97,3 @@
         </div>
     </div>
 @endsection
-
