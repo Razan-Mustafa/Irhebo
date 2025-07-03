@@ -67,7 +67,7 @@ class CallController extends Controller
             'receiver_id' => $request->receiver_id,
             'channel_name' => $channelName,
         ]);
-        
+
         $data = [
             'token' => $token,
             'call'  => new CallResource($call),
@@ -169,6 +169,12 @@ class CallController extends Controller
         $callerId = $call->caller_id;
         $receiverId = $call->receiver_id;
 
+        $userAuthId = auth()->user()->id;
+
+        if($userAuthId != $callerId){
+            $userAuthId  = $receiverId ;
+        }
+
         [$userIdOne, $userIdTwo] = [$callerId, $receiverId];
 
         if ($userIdOne > $userIdTwo) {
@@ -195,6 +201,38 @@ class CallController extends Controller
             'attachment_type' => 'call',
             'is_read' => true,
         ]);
+
+
+        $user = User::where('id', $userAuthId)->first();
+        if ($user) {
+            $playerIdRecord = PlayerId::where('user_id', $user->id)
+                ->where('is_notifiable', 1)
+                ->pluck('player_id')->toArray();
+
+
+            if ($playerIdRecord) {
+                $titles = [
+                    'en' => __('messages.end_call_title', [], 'en'),
+                    'ar' => __('messages.end_call_title', [], 'ar'),
+                ];
+
+                $messages = [
+                    'en' => __('messages.end_call_message', [], 'en'),
+                    'ar' => __('messages.end_call_message', [], 'ar'),
+                ];
+
+                $response = app(OneSignalService::class)->sendNotificationToUserCall(
+                    $playerIdRecord,
+                    $titles,
+                    $messages,
+                    'end_call',
+                    $call->id
+                );
+            }
+        }
+        // *********************************************//
+
+
 
 
         return $this->successResponse(

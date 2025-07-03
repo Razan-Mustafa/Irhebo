@@ -43,19 +43,10 @@ class ChatController extends Controller
     public function sendMessage(Request $request, $chatId)
     {
         $request->validate([
-            'message' => 'required|string|max:1000',
+            'message' => 'nullable|string|max:1000',
             'attachment' => 'nullable|file|max:51200', // 50MB max
 
         ]);
-
-        // $chat = Chat::findOrFail($chatId);
-
-        // Create message
-        // $message = $chat->messages()->create([
-        //     'sender_id' => auth()->id(),
-        //     'message' => $request->message,
-        //     'is_read' => 0,
-        // ]);
 
         $message = new ChatMessage();
         $message->chat_id = $chatId;
@@ -66,9 +57,35 @@ class ChatController extends Controller
             $file = $request->file('attachment');
             $path = FileManager::upload('chat_attachments', $file);
 
-            $message->attachment_path = $path;
-            $message->attachment_type = $file->getMimeType();
+            $mimeType = $file->getMimeType();
+            $type = 'file'; // default value
+
+            // detect type
+            if (str_starts_with($mimeType, 'image/')) {
+                $type = 'image';
+            } elseif (str_starts_with($mimeType, 'video/')) {
+                $type = 'video';
+            } elseif (str_starts_with($mimeType, 'audio/')) {
+                $type = 'audio';
+            } // for other call or specific file types, you can expand this
+
+            $message->attachment_url = $path;
+            $message->attachment_type = $type;
+
+            // \Log::info('New message received:', ['type' => $file->getMimeType()]);
         }
+
+        if ($request->hasFile('audio')) {
+            $file = $request->file('audio');
+            $path = FileManager::upload('chat_attachments', $file);
+
+            $message->attachment_url = $path;
+            $message->attachment_type = 'audio';
+        }
+
+
+
+
 
 
         $message->save();
@@ -81,7 +98,7 @@ class ChatController extends Controller
             'message' => [
                 'id' => $message->id,
                 'message' => $message->message,
-                'attachment_url' => $message->attachment_path ? asset($message->attachment_path) : null,
+                'attachment_url' => $message->attachment_url ? asset($message->attachment_url) : null,
                 'attachment_type' => $message->attachment_type,
                 'sender_id' => $message->sender_id,
                 'created_at' => $message->created_at->toDateTimeString()

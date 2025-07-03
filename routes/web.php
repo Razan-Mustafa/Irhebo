@@ -45,6 +45,13 @@ use App\Http\Controllers\Freelancer\TicketController as FreelancerTicketControll
 use App\Models\Currency;
 use Illuminate\Support\Facades\Broadcast;
 
+
+Route::get('/timezone-test', function () {
+    return now()->toDateTimeString();
+});
+
+
+
 Route::get('language/{locale}', [HomeController::class, 'changeLocale'])
     ->name('locale.change')
     ->whereIn('locale', config('app.supported_locales', ['en', 'ar']));

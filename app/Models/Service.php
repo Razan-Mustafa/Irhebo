@@ -80,4 +80,10 @@ class Service extends Model
     // {
     //     return $this->hasOne(ServiceTranslation::class)->where('language', app()->getLocale());
     // }
+
+
+    public function aiConversations()
+    {
+        return $this->belongsToMany(AiConversation::class, 'ai_conversation_service');
+    }
 }

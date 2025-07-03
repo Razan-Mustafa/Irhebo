@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Service;
+use App\Models\SubCategory;
 use App\Repositories\Interfaces\ServiceRepositoryInterface;
 
 class ServiceService
@@ -41,9 +43,9 @@ class ServiceService
     {
         return $this->serviceRepository->getServicesByTag($tag, $perPage);
     }
-    public function getServicesByUserId($userId,$perPage)
+    public function getServicesByUserId($userId, $perPage)
     {
-        return $this->serviceRepository->getServicesByUserId($userId,$perPage);
+        return $this->serviceRepository->getServicesByUserId($userId, $perPage);
     }
     public function getRecommendedServices($perPage = null)
     {
@@ -67,25 +69,61 @@ class ServiceService
     }
     public function search($query, $subCategoryId, $perPage = null)
     {
-        return $this->serviceRepository->search($query,$subCategoryId, $perPage);
+        return $this->serviceRepository->search($query, $subCategoryId, $perPage);
     }
-    public function getResultFilter($filters){
+    public function getResultFilter($filters)
+    {
         return $this->serviceRepository->getResultFilter($filters);
     }
-    public function find($id){
+    public function find($id)
+    {
         return $this->serviceRepository->find($id);
     }
-    public function create($data){
+    public function create($data)
+    {
         return $this->serviceRepository->create($data);
     }
-    public function update($data,$id){
+    public function update($data, $id)
+    {
         $service = $this->find($id);
-        return $this->serviceRepository->update($data,$service);
+        return $this->serviceRepository->update($data, $service);
     }
-    public function delete($id){
+    public function delete($id)
+    {
         return $this->serviceRepository->delete($id);
     }
-    public function deleteMedia($id){
+    public function deleteMedia($id)
+    {
         return $this->serviceRepository->deleteMedia($id);
+    }
+
+
+    public function searchServicesAndSubCategories($search, $perPage)
+    {
+        // Services search
+        $services = Service::with(['translations', 'tags.translations', 'media','user.profession'])
+            ->whereHas('translations', function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                    ->orWhere('description', 'like', "%$search%");
+            })
+            ->orWhereHas('tags.translations', function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%");
+            })
+            ->paginate($perPage);
+
+        // SubCategories search
+        $subCategories = SubCategory::with(['translations', 'tags.translations'])
+            ->whereHas('translations', function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%");
+            })
+            ->orWhereHas('tags.translations', function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%");
+            })
+            ->get();
+
+        return [
+            'services' => $services,
+            'sub_categories' => $subCategories,
+        ];
     }
 }

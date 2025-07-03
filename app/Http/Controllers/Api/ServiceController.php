@@ -16,6 +16,7 @@ use App\Http\Requests\Api\GetServicesBySubCategoryRequest;
 use App\Http\Requests\Api\ServiceRequest;
 use App\Http\Requests\Api\UpdateServiceRequest;
 use App\Http\Resources\PortfolioResource;
+use App\Http\Resources\SubCategoryResource;
 use App\Services\PortfolioService;
 use App\Services\ReviewService;
 use Exception;
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Utilities\CurrencyConverter;
 use App\Models\Currency;
 use App\Models\Service;
+use App\Models\SubCategory;
 
 class ServiceController extends Controller
 {
@@ -307,4 +309,35 @@ class ServiceController extends Controller
             return $this->exceptionResponse($e);
         }
     }
+
+
+    public function searchServicesAndSubCategories(Request $request)
+    {
+        $search = trim($request->query('search', ''));
+        $perPage = $request->query('per_page', 15);
+
+        if (empty($search) || strlen($search) < 2) {
+            return $this->successResponse(__('Please enter at least 2 characters to search'), [
+                'services' => [],
+                'sub_categories' => [],
+            ], 422);
+        }
+
+        $result = $this->serviceService->searchServicesAndSubCategories($search, $perPage);
+
+        return $this->successResponse(__('success'), [
+            'services' => ServiceResource::collection($result['services']->items()),
+            // 'services_meta' => [
+            //     'total' => $result['services']->total(),
+            //     'current_page' => $result['services']->currentPage(),
+            //     'per_page' => $result['services']->perPage(),
+            // ],
+            'sub_categories' => SubCategoryResource::collection($result['sub_categories']),
+        ]);
+    }
+
+
+
+
+
 }

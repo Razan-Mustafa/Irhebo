@@ -31,7 +31,7 @@ class NotificationResource extends JsonResource
             'is_read'           => $this->is_read,
             // 'onesignal_id'      => $this->onesignal_id,
             // 'response_onesignal' => $this->response_onesignal,
-            'created_at'        => $this->created_at->format('Y-m-d H:i:s'),
+            'created_at' => Carbon::parse($this->created_at)->toDayDateTimeString(),
         ];
     }
 }

@@ -1,58 +1,45 @@
 @extends('layouts.master')
-@section('title', 'Chats')
-@push('styles')
-    <style>
-        .list-group-item {
-            border: none;
-            border-bottom: 1px solid #f1f1f1;
-            transition: background-color 0.2s ease;
-        }
+@section('title', __('Chats'))
 
-        .list-group-item:hover {
-            background-color: #f7f7f7;
-        }
-
-        h6 {
-            font-weight: 600;
-        }
-
-        p {
-            font-size: 0.9rem;
-        }
-    </style>
-@endpush
 @section('content')
-    <div class="container">
-        <h3 class="mb-4">Chats</h3>
-        <div class="list-group">
-            @foreach ($chats as $chat)
-                @php
-                    $otherUser = $chat->user_id_one == auth()->id() ? $chat->userTwo : $chat->userOne;
-                    $lastMessage = $chat->lastMessage;
-                @endphp
+<div class="content">
+    <div class="grid grid-cols-12 gap-6">
+        <div class="col-span-12">
+            <div class="box h-[80vh] flex flex-col">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-2xl font-semibold text-gray-800">{{ __('Chats') }}</h3>
+                </div>
 
-                <a href="{{ route('freelancer.chat.show', $chat->id) }}"
-                    class="list-group-item list-group-item-action d-flex align-items-center">
-                    <img src="{{ $otherUser->profile_image ?? asset('default-avatar.png') }}" alt="Avatar"
-                        class="rounded-circle me-3" width="50" height="50">
+                <div class="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-3">
+                    @forelse ($chats as $chat)
+                        @php
+                            $otherUser = $chat->user_id_one == auth()->id() ? $chat->userTwo : $chat->userOne;
+                            $lastMessage = $chat->lastMessage;
+                        @endphp
 
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between">
-                            <h6 class="mb-1">{{ $otherUser->name }}</h6>
-                            @if ($lastMessage)
-                                <small class="text-muted">{{ $lastMessage->created_at->diffForHumans() }}</small>
-                            @endif
-                        </div>
-                        <p class="mb-0 text-muted">
-                            {{ $lastMessage ? \Illuminate\Support\Str::limit($lastMessage->body, 50) : 'No messages yet' }}
-                        </p>
-                    </div>
-                </a>
-            @endforeach
+                        <a href="{{ route('freelancer.chat.show', $chat->id) }}"
+                            class="flex items-center p-4 bg-white rounded-lg shadow hover:bg-gray-100 transition duration-200">
+                            <img src="{{ $otherUser->avatar ? asset($otherUser->avatar) : asset('default-avatar.png') }}"
+                                alt="Avatar" class="w-12 h-12 rounded-full object-cover me-4">
 
-            @if ($chats->isEmpty())
-                <div class="text-center p-5 text-muted">No chats yet.</div>
-            @endif
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center">
+                                    <h6 class="text-lg font-medium text-gray-800">{{ $otherUser->username }}</h6>
+                                    @if ($lastMessage)
+                                        <span class="text-sm text-gray-400">{{ $lastMessage->created_at->diffForHumans() }}</span>
+                                    @endif
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    {{ $lastMessage ? \Illuminate\Support\Str::limit($lastMessage->message, 60) : __('No messages yet') }}
+                                </p>
+                            </div>
+                        </a>
+                    @empty
+                        <p class="text-center text-gray-500">{{ __('No chats found.') }}</p>
+                    @endforelse
+                </div>
+            </div>
         </div>
     </div>
+</div>
 @endsection

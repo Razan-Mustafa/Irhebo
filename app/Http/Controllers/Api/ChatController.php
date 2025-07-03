@@ -77,6 +77,8 @@ class ChatController extends Controller
             'user_two_flag' => 'normal',
         ]);
 
+        $chat->created_at->toDayDateTimeString();
+
         return $this->successResponse(__('messages.chat_started'), $chat);
     }
 
@@ -110,6 +112,7 @@ class ChatController extends Controller
         ]);
 
         $m = new ChatMessageResource($message);
+
         broadcast(new PusherNewMessage($m))->toOthers();
 
         $chat = Chat::where('id', $request->chat_id)->first();

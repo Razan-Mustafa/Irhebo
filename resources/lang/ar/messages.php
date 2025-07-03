@@ -38,4 +38,7 @@ return [
     'call_start_title' => 'مكالمة واردة',
     'call_start_message' => ':caller_name يتصل بك.',
 
+    'end_call_title'   => 'انتهت المكالمة',
+    'end_call_message' => 'تم إنهاء المكالمة بنجاح.',
+
 ];

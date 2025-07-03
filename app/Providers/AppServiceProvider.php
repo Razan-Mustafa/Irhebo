@@ -116,6 +116,7 @@ class AppServiceProvider extends ServiceProvider
         //     // UpdateMessageReadStatus::class,
         // );
 
+
         View::composer('*', function ($view) {
             // Retrieve the whatsapp number value where key='whatsapp'
             $whatsappNumber = General::where('key', 'whatsapp')->value('value');

@@ -39,4 +39,8 @@ return [
     'call_start_title' => 'Incoming Call',
     'call_start_message' => ':caller_name is calling you.',
 
+    'end_call_title'   => 'Call Ended',
+    'end_call_message' => 'The call has been successfully ended.',
+
+
 ];

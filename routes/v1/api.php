@@ -28,6 +28,12 @@ use App\Http\Controllers\Api\{
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 
+Route::get('/test-time', function () {
+    return [
+        'now' => now()->toDateTimeString(),
+        'timezone' => config('app.timezone'),
+    ];
+});
 
 // Auth Routes
 Route::controller(AuthController::class)->group(function ($route) {
@@ -86,6 +92,7 @@ Route::prefix('services')->controller(ServiceController::class)->group(function 
     $route->get('details/{service_id}', 'serviceDetails');
     $route->get('search/{query?}', 'search');
     $route->get('{slug}', 'getServicesByTag');
+    $route->get('search-services-and-sub-categories/search', 'searchServicesAndSubCategories');
 });
 
 Route::prefix('notifications')->controller(NotificationController::class)->group(function ($route) {

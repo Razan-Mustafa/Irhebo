@@ -107,6 +107,7 @@ class AuthRepository implements AuthRepositoryInterface
         $whatsApp = new WhatsAppService();
         $fullPhoneNumber = $user->prefix.$user->phone;
         $response = $whatsApp->sendTemplateMessage($fullPhoneNumber, $code);
+        // dd($response);
         return $user->fresh();
     }
 
