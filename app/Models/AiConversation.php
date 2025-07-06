@@ -16,13 +16,15 @@ class AiConversation extends Model
         'type',
     ];
 
-    public function services()
-    {
-        return $this->belongsToMany(Service::class, 'ai_conversation_service');
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'ai_conversation_services', 'ai_conversation_id', 'service_id');
+    }
+
+
 }

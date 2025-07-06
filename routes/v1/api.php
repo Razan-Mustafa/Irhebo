@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\{
     AuthController,
+    BotController,
     CallController,
     HomeController,
     UserController,
@@ -199,6 +200,14 @@ Route::middleware('auth:api')->group(function () {
         $route->post('answer-call', 'answerCall');
         $route->post('end-call', 'endCall');
     });
+
+    Route::prefix('bot')->controller(BotController::class)->group(function ($route) {
+        $route->get('get-messages', 'getMessages');
+        $route->post('send-message', 'sendMessage');
+        $route->delete('delete-messages', 'deleteMessages');
+    });
+
+
 });
 
 // Route::middleware('auth:api')->post('/broadcasting/auth', function (Request $request) {

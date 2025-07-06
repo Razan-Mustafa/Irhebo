@@ -9,6 +9,7 @@ use App\Models\ChatMessage;
 use App\Models\User;
 use App\Utilities\FileManager;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ChatController extends Controller
 {
@@ -17,9 +18,17 @@ class ChatController extends Controller
     public function index()
     {
         $userId = auth()->id();
-        $chats = Chat::where('user_id_one', $userId)
-            ->orWhere('user_id_two', $userId)
+        $chats = Chat::with(['userOne', 'lastMessage', 'userTwo'])
+            ->where(function ($q) use ($userId) {
+                $q->where('user_id_one', $userId)
+                    ->orWhere('user_id_two', $userId);
+            })
+            ->withCount(['messages as last_message_created_at' => function ($query) {
+                $query->select(DB::raw('MAX(created_at)'));
+            }])
+            ->orderByDesc('last_message_created_at')
             ->get();
+
 
         return view('pages-freelancer.chat.index', compact('chats'));
     }

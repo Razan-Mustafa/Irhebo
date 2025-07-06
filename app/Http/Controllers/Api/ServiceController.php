@@ -316,12 +316,12 @@ class ServiceController extends Controller
         $search = trim($request->query('search', ''));
         $perPage = $request->query('per_page', 15);
 
-        if (empty($search) || strlen($search) < 2) {
-            return $this->successResponse(__('Please enter at least 2 characters to search'), [
-                'services' => [],
-                'sub_categories' => [],
-            ], 422);
-        }
+        // if (empty($search) || strlen($search) < 2) {
+        //     return $this->successResponse(__('Please enter at least 2 characters to search'), [
+        //         'services' => [],
+        //         'sub_categories' => [],
+        //     ], 422);
+        // }
 
         $result = $this->serviceService->searchServicesAndSubCategories($search, $perPage);
 

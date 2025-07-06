@@ -107,7 +107,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Model::preventLazyLoading(!app()->isProduction());
+        // Model::preventLazyLoading(!app()->isProduction());
+
+        Model::preventLazyLoading(false);
+
         Category::observe(CategoryObserver::class);
         User::observe(UserObserver::class);
         Passport::enablePasswordGrant();

@@ -49,7 +49,12 @@ return [
         'token'            => env('WHATSAPP_TOKEN'),
         'phone_number_id'  => env('WHATSAPP_PHONE_NUMBER_ID'),
         'template_name'    => env('WA_TEMPLATE_NAME'),
-
-
     ],
+
+    'external' => [
+        'faq_url'     => env('EXTERNAL_FAQ_URL'),
+        'service_url' => env('EXTERNAL_SERVICE_URL'),
+        'api_token'   => env('EXTERNAL_API_TOKEN'),
+    ],
+
 ];

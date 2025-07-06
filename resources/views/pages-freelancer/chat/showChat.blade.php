@@ -11,7 +11,7 @@
         #chatBody {
     overflow-y: auto;
     overflow-x: hidden;
-    
+
     word-wrap: break-word;
         }
 
@@ -60,6 +60,8 @@
                     <div class="box h-[70vh] flex flex-col">
                         <div class="box-header">
                             <h5 class="box-title"> {{ $otherUser->username }}</h5>
+                            <a href="{{ route('freelancer.call.start', $otherUser->id) }}" class="btn btn-success">📞 Call {{ $otherUser->username }}</a>
+
                         </div>
 
                         <div id="chatBody" class="box-body overflow-y-auto flex-1 p-4 space-y-3 bg-gray-50"

@@ -11,6 +11,7 @@ use App\Models\Notification;
 use App\Models\PlayerId;
 use App\Models\User;
 use App\Services\OneSignalService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use TaylanUnutmaz\AgoraTokenBuilder\RtcTokenBuilder;
 use Illuminate\Support\Str;
@@ -20,7 +21,7 @@ class CallController extends Controller
     private const ROLE_PUBLISHER = 1;
     private const ROLE_SUBSCRIBER = 2;
 
-    private function generateAgoraToken($channelName, $uid, $role = 'publisher', $expireTimeInSeconds = 3600)
+    private function generateAgoraToken($channelName, $uid, $role = 'publisher', $expireTimeInSeconds = 86400)
     {
         $appId = config('agora.app_id');
         $appCertificate = config('agora.app_certificate');
@@ -33,10 +34,11 @@ class CallController extends Controller
             ? self::ROLE_PUBLISHER
             : self::ROLE_SUBSCRIBER;
 
-        $currentTimestamp = now()->timestamp;
+        $currentTimestamp = Carbon::now('UTC')->addHours(-3)->timestamp;;
+
 
         $privilegeExpireTs = $currentTimestamp + $expireTimeInSeconds;
-        // dd(date("Y-m-d H:i:s" ,now()->timestamp ) , $privilegeExpireTs);
+        // dd(date("Y-m-d H:i:s", now()->timestamp), date("Y-m-d H:i:s", $privilegeExpireTs), date("Y-m-d H:i:s", $expireTimestamp)) ;
 
         return RtcTokenBuilder::buildTokenWithUid(
             $appId,
@@ -171,8 +173,8 @@ class CallController extends Controller
 
         $userAuthId = auth()->user()->id;
 
-        if($userAuthId != $callerId){
-            $userAuthId  = $receiverId ;
+        if ($userAuthId != $callerId) {
+            $userAuthId  = $receiverId;
         }
 
         [$userIdOne, $userIdTwo] = [$callerId, $receiverId];
@@ -183,8 +185,8 @@ class CallController extends Controller
 
         // Retrieve the chat
         $chat = Chat::where('user_id_one', $userIdOne)
-                    ->where('user_id_two', $userIdTwo)
-                    ->first();
+            ->where('user_id_two', $userIdTwo)
+            ->first();
 
         if (!$chat) {
             return $this->errorResponse('No chat found between users.', 404);
@@ -240,5 +242,4 @@ class CallController extends Controller
             ['call' => $call, 'message' => $message]
         );
     }
-
 }

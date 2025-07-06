@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\RequestController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Api\ChatController as ApiChatController;
 use App\Http\Controllers\Freelancer\AuthController as FreelancerAuthController;
+use App\Http\Controllers\Freelancer\CallController;
 use App\Http\Controllers\Freelancer\ChatController;
 use App\Http\Controllers\Freelancer\FaqController as FreelancerFaqController;
 use App\Http\Controllers\Freelancer\FinanceController as FreelancerFinanceController;
@@ -328,6 +329,11 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
         $route->get('', 'index')->name('index');
         $route->get('show-chat/{chatId}', 'showChat')->name('show');
         $route->post('send-message/{chatId}', 'sendMessage')->name('sendMessage');
+    });
+    $route->controller(CallController::class)->name('call.')->prefix('call')->group(function ($route) {
+        $route->get('start-call/{receiverId}', 'startCall')->name('start');
+        $route->get('answer-call/{callId}', 'answerCall')->name('answer');
+        $route->get('end-call/{callId}', 'endCall')->name('end');
     });
     $route->controller(FreelancerNotificationController::class)->name('notification.')->prefix('notification')->group(function ($route) {
         $route->get('', 'index')->name('index');
