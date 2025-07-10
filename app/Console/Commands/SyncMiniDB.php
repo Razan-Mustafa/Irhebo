@@ -48,15 +48,28 @@ class SyncMiniDB extends Command
         foreach ($tablesToSync as $table) {
             $this->info("Syncing table: $table");
 
-            // read from default (main)
-            $rows = DB::table($table)->get();
+            try {
+                $lastSync = now()->subDay();
+                $rows = DB::table($table)
+                    ->where('updated_at', '>=', $lastSync)
+                    ->orWhere('created_at', '>=', $lastSync)
+                    ->get();
+            } catch (\Exception $e) {
+                $this->error("❌ Error reading table {$table}: {$e->getMessage()}");
+                continue;
+            }
 
             foreach ($rows as $row) {
-                // write to mini_db
-                DB::connection('mini_db')->table($table)->updateOrInsert(
-                    ['id' => $row->id],
-                    (array) $row
-                );
+                try {
+                    // write to mini_db
+                    DB::connection('mini_db')->table($table)->updateOrInsert(
+                        ['id' => $row->id],
+                        (array) $row
+                    );
+                } catch (\Exception $e) {
+                    $this->error("❌ Error syncing row ID {$row->id} in table {$table}: {$e->getMessage()}");
+                    continue;
+                }
             }
         }
         $this->info('✅ Sync completed.');
