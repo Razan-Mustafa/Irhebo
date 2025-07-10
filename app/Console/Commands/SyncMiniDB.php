@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class SyncMiniDB extends Command
 {
-    protected $signature = 'sync:mini-db';
-    protected $description = 'Sync selected tables from Mini DB to Main DB';
+    protected $signature = 'sync:to-mini-db';
+    protected $description = 'Sync selected tables from Main DB to Mini DB';
 
     public function handle()
     {
@@ -48,17 +48,17 @@ class SyncMiniDB extends Command
         foreach ($tablesToSync as $table) {
             $this->info("Syncing table: $table");
 
-            $rows = DB::connection('mini_db')->table($table)->get();
+            // read from default (main)
+            $rows = DB::table($table)->get();
 
             foreach ($rows as $row) {
-                // You may use updateOrInsert based on 'id' or another unique key
-                DB::table($table)->updateOrInsert(
+                // write to mini_db
+                DB::connection('mini_db')->table($table)->updateOrInsert(
                     ['id' => $row->id],
                     (array) $row
                 );
             }
         }
-
         $this->info('✅ Sync completed.');
     }
 }
