@@ -39,7 +39,6 @@ class SyncMiniDB extends Command
             'profession_translations',
             'languages',
             'countries',
-            'currencies',
             'faqs',
             'faq_translations',
             'generals',
