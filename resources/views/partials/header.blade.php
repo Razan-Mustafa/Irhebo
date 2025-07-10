@@ -262,7 +262,7 @@
 
   {{-- Ai --}}
   {{-- AI Button --}}
-  <a href="#"
+  <a href="{{ route('freelancer.ai.index') }}"
       style="
      position: fixed;
      bottom: 1rem;

@@ -34,10 +34,12 @@
                                     class="flex items-center gap-2 px-4 py-2 text-white bg-success hover:bg-blue-600 rounded-lg shadow">
                                     <i class="las la-archive"></i> {{ __('archived_clients') }}
                                 </a>
-                                <a href="{{ route('clients.create') }}"
-                                    class="flex items-center gap-2 px-4 py-2 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                                    <i class="las la-plus-circle text-lg"></i>{{ __('create_clients') }}
-                                </a>
+                                @can('create_clients')
+                                    <a href="{{ route('clients.create') }}"
+                                        class="flex items-center gap-2 px-4 py-2 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                        <i class="las la-plus-circle text-lg"></i>{{ __('create_clients') }}
+                                    </a>
+                                @endcan
                                 <a href="javascript:void(0)" id="filter-btn"
                                     class="flex items-center gap-2 px-4 py-2 text-white bg-secondary hover:bg-blue-600 rounded-lg shadow">
                                     <i class="las la-filter"></i> {{ __('filter') }}
@@ -122,7 +124,8 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>
                                                 @if ($client->avatar)
-                                                    <img class="rounded-full w-16 h-16" src="{{ asset($client->avatar) }}" alt="">
+                                                    <img class="rounded-full w-16 h-16" src="{{ asset($client->avatar) }}"
+                                                        alt="">
                                                 @endif
                                             </td>
                                             <td>{{ $client->username }}</td>
@@ -131,31 +134,43 @@
                                             <td>{{ $client->profession->translation->title }}</td>
                                             <td>{{ $client->country->title }}</td>
                                             <td>
-                                                <div class="flex items-center justify-center">
-                                                    <input type="checkbox" id="hs-small-switch-{{ $client->id }}"
-                                                        class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
-                                                        data-item-id="{{ $client->id }}"
-                                                        data-route="{{ route('clients.updateActivation') }}"
-                                                        {{ $client->is_active ? 'checked' : '' }}>
-                                                </div>
+                                                @can('delete_clients')
+                                                    <div class="flex items-center justify-center">
+                                                        <input type="checkbox" id="hs-small-switch-{{ $client->id }}"
+                                                            class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                            data-item-id="{{ $client->id }}"
+                                                            data-route="{{ route('clients.updateActivation') }}"
+                                                            {{ $client->is_active ? 'checked' : '' }}>
+                                                    </div>
+                                                @else
+                                                    <div class="flex items-center justify-center">
+                                                        <input disabled type="checkbox"
+                                                            id="hs-small-switch-{{ $client->id }}"
+                                                            class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                            data-item-id="{{ $client->id }}"
+                                                            data-route="{{ route('clients.updateActivation') }}"
+                                                            {{ $client->is_active ? 'checked' : '' }}>
+                                                    </div>
+                                                @endcan
                                             </td>
                                             <td>
                                                 <a aria-label="anchor" href="{{ route('clients.show', $client->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-info mx-1 rounded-pill">
                                                     <i class="las la-eye"></i>
                                                 </a>
-
-                                                <a aria-label="anchor" href="javascript:void(0);"
-                                                    onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $client->id }})"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
-                                                    <i class="las la-trash"></i>
-                                                </a>
-                                                <form id="delete-form-{{ $client->id }}"
-                                                    action="{{ route('clients.destroy', $client->id) }}" method="POST"
-                                                    class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
+                                                @can('delete_clients')
+                                                    <a aria-label="anchor" href="javascript:void(0);"
+                                                        onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $client->id }})"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
+                                                        <i class="las la-trash"></i>
+                                                    </a>
+                                                    <form id="delete-form-{{ $client->id }}"
+                                                        action="{{ route('clients.destroy', $client->id) }}" method="POST"
+                                                        class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

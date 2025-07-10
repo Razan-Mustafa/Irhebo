@@ -41,8 +41,7 @@
                         <div class="border-b pb-4 mb-4">
                             <h5 class="text-lg font-semibold">{{ __('terms') }}</h5>
                         </div>
-                        <form action="{{ route('general.updateTerms') }}" method="POST"
-                            enctype="multipart/form-data">
+                        <form action="{{ route('general.updateTerms') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
@@ -59,10 +58,12 @@
                             </div>
 
                             <div class="mt-4 text-center">
-                                <button type="submit"
-                                    class="px-6 py-2 text-white bg-primary hover:bg-primary-700 rounded-md shadow-sm">
-                                    <i class="las la-save"></i> {{ __('save') }}
-                                </button>
+                                @can('edit_terms')
+                                    <button type="submit"
+                                        class="px-6 py-2 text-white bg-primary hover:bg-primary-700 rounded-md shadow-sm">
+                                        <i class="las la-save"></i> {{ __('save') }}
+                                    </button>
+                                @endcan
                             </div>
                         </form>
                     </div>

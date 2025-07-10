@@ -35,7 +35,7 @@
 
                             <div>
                                 <strong>{{ __('description') }}:</strong>
-                                <p>{!! nl2br(e($portfolio->description)) !!}</p>
+                                <p>{!! $portfolio->description !!}</p>
                             </div>
 
                             <div>
@@ -55,7 +55,7 @@
                             <div>
                                 <strong>{{ __('cover') }}:</strong><br>
                                     <img src="{{ asset($portfolio->media->where('is_cover',true)->first()->media_path) }}" alt="Cover" class="mt-2 h-48 rounded">
-                           
+
                             </div>
 
                             <div>
@@ -67,7 +67,7 @@
                                 @endforelse
                             </div>
 
-                          
+
                         </div>
                     </div>
                 </div>

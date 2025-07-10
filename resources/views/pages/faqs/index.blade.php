@@ -41,10 +41,12 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <a href="{{ route('faqs.create') }}"
-                                    class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                                    <i class="las la-plus-circle text-lg"></i> {{ __('add_faq') }}
-                                </a>
+                                @can('create_faqs')
+                                    <a href="{{ route('faqs.create') }}"
+                                        class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                        <i class="las la-plus-circle text-lg"></i> {{ __('add_faq') }}
+                                    </a>
+                                @endcan
                             </div>
                         </div>
                         <div class="box-body">
@@ -94,21 +96,25 @@
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill">
                                                     <i class="las la-eye"></i>
                                                 </a>
-                                                <a href="{{ route('faqs.edit', $faq->id) }}"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
-                                                    <i class="las la-edit"></i>
-                                                </a>
-                                                <a href="javascript:void(0);"
-                                                    onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $faq->id }})"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
-                                                    <i class="las la-trash"></i>
-                                                </a>
-                                                <form id="delete-form-{{ $faq->id }}"
-                                                    action="{{ route('faqs.destroy', $faq->id) }}" method="POST"
-                                                    class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
+                                                @can('edit_faqs')
+                                                    <a href="{{ route('faqs.edit', $faq->id) }}"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
+                                                        <i class="las la-edit"></i>
+                                                    </a>
+                                                @endcan
+                                                @can('delete_faqs')
+                                                    <a href="javascript:void(0);"
+                                                        onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $faq->id }})"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
+                                                        <i class="las la-trash"></i>
+                                                    </a>
+                                                    <form id="delete-form-{{ $faq->id }}"
+                                                        action="{{ route('faqs.destroy', $faq->id) }}" method="POST"
+                                                        class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

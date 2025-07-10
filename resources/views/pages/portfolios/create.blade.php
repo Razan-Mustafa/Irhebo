@@ -2,6 +2,7 @@
 @section('title', __('add_portfolio'))
 @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 @endpush
 @section('content')
     <div class="content">
@@ -51,15 +52,18 @@
                                         <label
                                             class="block text-sm font-medium text-gray-700">{{ __('description') }}</label>
                                         <textarea name="description" id="description" cols="30" rows="5"
-                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">{{ old('description') }}</textarea>
+                                            class="summernote mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">{{ old('description') }}</textarea>
                                     </div>
                                     <div class="col-span-12 md:col-span-12">
                                         <label class="block text-sm font-medium text-gray-700">{{ __('cover') }}</label>
-                                        <input type="file" name="cover" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
+                                        <input type="file" name="cover"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
                                     </div>
                                     <div class="col-span-12 md:col-span-12">
                                         <label class="block text-sm font-medium text-gray-700">{{ __('media') }}</label>
-                                        <input type="file" name="media[]" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary" multiple>
+                                        <input type="file" name="media[]"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                                            multiple>
                                     </div>
                                     <div class="col-span-12 md:col-span-6">
                                         <label for="freelancer_id"
@@ -115,7 +119,7 @@
             initializeSelect2();
 
             $('#freelancer_id').on('change', function() {
-                            console.log(oldSelectedServices);
+                console.log(oldSelectedServices);
 
                 let freelancerId = $(this).val();
                 if (!freelancerId) return;
@@ -130,8 +134,10 @@
                         if (response.status) {
                             let options = '';
                             response.data.services.forEach(service => {
-                                let selected = oldSelectedServices.includes(service.id.toString()) ? 'selected' : '';
-                                options += `<option value="${service.id}" ${selected}>${service.title}</option>`;
+                                let selected = oldSelectedServices.includes(service.id
+                                    .toString()) ? 'selected' : '';
+                                options +=
+                                    `<option value="${service.id}" ${selected}>${service.title}</option>`;
                             });
                             $('#service_ids').html(options).trigger('change');
                         }
@@ -139,9 +145,69 @@
                 });
             });
 
-            @if(old('freelancer_id'))
+            @if (old('freelancer_id'))
                 $('#freelancer_id').val('{{ old('freelancer_id') }}').trigger('change');
             @endif
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.summernote').summernote({
+                height: 200,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+                callbacks: {
+                    onChange: function(contents, $editable) {
+                        let textareaId = $(this).attr('id');
+                        $('#' + textareaId).val(contents);
+                        $('form').validate().element('#' + textareaId);
+                    }
+                }
+            });
+
+            // add validation method
+            $.validator.addMethod("summernoteRequired", function(value, element) {
+                let content = $(element).summernote('code');
+                content = content.replace(/<br\/?>/gi, '')
+                    .replace(/&nbsp;/gi, '')
+                    .replace(/\s+/g, '')
+                    .trim();
+                return content.length > 0;
+            }, "{{ __('validation.description.required') }}");
+
+            // initialize validation
+            $('form').validate({
+                ignore: ':hidden:not(.summernote)',
+                rules: {
+                    'description': {
+                        summernoteRequired: true
+                    }
+                },
+                errorElement: 'p',
+                errorClass: 'text-red-600 mt-1 text-sm',
+                errorPlacement: function(error, element) {
+                    if (element.hasClass('summernote')) {
+                        error.insertAfter(element.next('.note-editor'));
+                    } else {
+                        error.insertAfter(element);
+                    }
+                }
+            });
+
+            // on submit, update hidden textarea value with summernote content
+            $('form').on('submit', function() {
+                $('#description').val($('#description').summernote('code'));
+                return true;
+            });
         });
     </script>
 @endpush

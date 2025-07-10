@@ -188,7 +188,6 @@
             let audioChunks = [];
             let recordingStartTime;
             let recordingInterval;
-            let isSending = false;
 
             const startRecordingBtn = document.getElementById('startRecordingBtn');
             const audioPreview = document.getElementById('audioPreview');
@@ -377,9 +376,6 @@
 
                 sendMessageForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    if (isSending) return; // ✅ ما تكمل لو فيه إرسال جاري
-
-                    isSending = true; // ✅ قفّل الزر
 
                     const messageInput = document.getElementById('messageInput');
                     const attachmentInput = document.getElementById('attachmentInput');
@@ -387,7 +383,6 @@
                     if (audioBlobToSend && attachmentInput.files.length > 0) {
                         console.log('condition matched');
                         alert(messages[currentLang].fileWithAudio);
-                        isSending = false;
                         return;
                     }
                     if (
@@ -398,7 +393,6 @@
                         alert(currentLang === 'ar' ?
                             'يجب إدخال رسالة نصية أو مرفق أو تسجيل صوتي' :
                             'Please enter a message, attachment, or voice recording');
-                        isSending = false;
                         return;
                     }
 
@@ -487,9 +481,6 @@
                         .catch(error => {
                             console.error('Error sending message:', error);
                             alert('Failed to send message.');
-                        })
-                        .finally(() => {
-                            isSending = false; // ✅ فك القفل بعد التنفيذ
                         });
                 });
             }

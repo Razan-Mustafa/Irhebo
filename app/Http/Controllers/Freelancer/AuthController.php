@@ -10,6 +10,7 @@ use App\Models\Country;
 use App\Models\FreelancerCateogry;
 use App\Models\General;
 use App\Models\Language;
+use App\Models\PlayerId;
 use App\Models\Profession;
 use App\Models\User;
 use App\Models\UserLanguage;
@@ -54,9 +55,6 @@ class AuthController extends Controller
                 ->with('error', __('credentials_not_match'));
         }
         if (is_null($freelancer->verified_at)) {
-
-
-
             // $code = GenerateCode::generate();
             $code = '123456';
             $key = 'otp_' . $request->prefix . $request->phone;
@@ -76,6 +74,22 @@ class AuthController extends Controller
             $prefix = $request->prefix;
             $phone = $request->phone;
 
+            if ($request->input('player_id')) {
+                $exists = PlayerId::where('user_id', $freelancer->id)
+                    ->where('player_id', $request->player_id)
+                    ->where('platform', $request->platform)
+                    ->exists();
+
+                if (!$exists) {
+                    PlayerId::create([
+                        'user_id'   => $freelancer->id,
+                        'player_id' => $request->player_id,
+                        'platform'  => $request->platform,
+                    ]);
+                }
+            }
+
+
             return redirect()->route('freelancer.verify.phone', compact('phone', 'prefix'))->with('info', __('please_verify_phone'));
         }
 
@@ -83,6 +97,24 @@ class AuthController extends Controller
         Auth::guard('freelancer')->login($freelancer, $remember);
 
         $request->session()->regenerate();
+
+        // dd($request->input('player_id') , $request->player_id);
+        if ($request->input('player_id')) {
+            $exists = PlayerId::where('user_id', $freelancer->id)
+                ->where('player_id', $request->player_id)
+                ->where('platform', $request->platform)
+                ->exists();
+
+            if (!$exists) {
+                PlayerId::create([
+                    'user_id'   => $freelancer->id,
+                    'player_id' => $request->player_id,
+                    'platform'  => $request->platform,
+                ]);
+            }
+        }
+
+
 
         return redirect()
             ->intended(route('freelancer.home.index'))
@@ -174,7 +206,7 @@ class AuthController extends Controller
         $user->gender = $validated['gender'];
         $user->profession_id = $validated['profession_id'];
         $user->country_id = $validated['country_id'];
-        $user->google_id = $validated['google_id'] ?? null ;
+        $user->google_id = $validated['google_id'] ?? null;
         $user->password = bcrypt($validated['password']);
         $user->save();
 

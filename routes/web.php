@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\RequestController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Api\ChatController as ApiChatController;
 use App\Http\Controllers\Freelancer\AuthController as FreelancerAuthController;
+use App\Http\Controllers\Freelancer\BotController;
 use App\Http\Controllers\Freelancer\CallController;
 use App\Http\Controllers\Freelancer\ChatController;
 use App\Http\Controllers\Freelancer\FaqController as FreelancerFaqController;
@@ -80,6 +81,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
 
 
     $route->controller(NotificationController::class)->name('notifications.')->prefix('notifications')->group(function ($route) {
+        $route->get('', 'index')->name('index');
         $route->get('create', 'create')->name('create');
         $route->post('send', 'send')->name('send');
     });
@@ -245,6 +247,8 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
         $route->get('', 'index')->name('index');
         $route->get('show/{id}', 'show')->name('show');
         $route->post('reply/{id}', 'reply')->name('reply');
+                $route->put('{ticket}/change-status', 'changeStatus')->name('changeStatus');
+
     });
     $route->controller(FilterController::class)->name('filters.')->prefix('filters')->group(function ($route) {
         $route->get('', 'index')->name('index');
@@ -409,6 +413,11 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
     $route->controller(FreelancerFinanceController::class)->name('finances.')->prefix('finances')->group(function ($route) {
         $route->get('', 'index')->name('index');
         $route->post('bulk-update', 'bulkUpdate')->name('bulkUpdate');
+    });
+    $route->controller(BotController::class)->name('ai.')->prefix('ai')->group(function ($route) {
+        $route->get('', 'index')->name('index');
+        $route->post('send', 'sendMessage')->name('send');
+        $route->post('delete', 'deleteMessages')->name('delete');
     });
     $route->controller(FreelancerReviewController::class)->name('reviews.')->prefix('reviews')->group(function ($route) {
         $route->get('', 'index')->name('index');

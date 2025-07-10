@@ -26,10 +26,12 @@
                     <div class="box">
                         <div class="box-header">
                             <h5 class="box-title">{{ __('roles') }}</h5>
-                            <a href="{{ route('roles.create') }}"
-                                class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                                <i class="las la-plus-circle text-lg"></i>{{ __('create_role') }}
-                            </a>
+                            @can('create_roles')
+                                <a href="{{ route('roles.create') }}"
+                                    class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                    <i class="las la-plus-circle text-lg"></i>{{ __('create_role') }}
+                                </a>
+                            @endcan
                         </div>
                         <div class="box-body">
                             <table class="table table-bordered table-striped">
@@ -51,28 +53,32 @@
                                                     @foreach ($role->permissions as $permission)
                                                         <span
                                                             class="px-2 py-1 bg-gray-300 text-gray-700 rounded-full text-xs">
-                                                            {{ __($permission->name) }}
+                                                            {{ app()->getLocale() == 'ar' ? $permission->description_ar : $permission->description_en }}
                                                         </span>
                                                     @endforeach
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="{{ route('roles.edit', $role->id) }}"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
-                                                    <i class="las la-edit"></i>
-                                                </a>
                                                 @if ($role->name !== 'super_admin')
-                                                    <a href="javascript:void(0);"
-                                                        onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $role->id }})"
-                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
-                                                        <i class="las la-trash"></i>
-                                                    </a>
-                                                    <form id="delete-form-{{ $role->id }}"
-                                                        action="{{ route('roles.destroy', $role->id) }}" method="POST"
-                                                        class="hidden">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    </form>
+                                                    @can('edit_roles')
+                                                        <a href="{{ route('roles.edit', $role->id) }}"
+                                                            class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
+                                                            <i class="las la-edit"></i>
+                                                        </a>
+                                                    @endcan
+                                                    @can('delete_roles')
+                                                        <a href="javascript:void(0);"
+                                                            onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $role->id }})"
+                                                            class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
+                                                            <i class="las la-trash"></i>
+                                                        </a>
+                                                        <form id="delete-form-{{ $role->id }}"
+                                                            action="{{ route('roles.destroy', $role->id) }}" method="POST"
+                                                            class="hidden">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
+                                                    @endcan
                                                 @endif
                                             </td>
                                         </tr>

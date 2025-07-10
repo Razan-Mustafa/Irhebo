@@ -29,10 +29,12 @@
                         <div class="box-header flex justify-between align-center">
                             <h5 class="box-title">{{ __('currencies') }}</h5>
                             <div class="actions flex items-center gap-4">
-                                <a href="{{ route('currencies.create') }}"
-                                    class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                                    <i class="las la-plus-circle text-lg"></i> {{ __('add_currency') }}
-                                </a>
+                                @can('create_currencies')
+                                    <a href="{{ route('currencies.create') }}"
+                                        class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                        <i class="las la-plus-circle text-lg"></i> {{ __('add_currency') }}
+                                    </a>
+                                @endcan
                             </div>
                         </div>
                         <div class="box-body">
@@ -51,28 +53,32 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $currency->code }}</td>
-                                            <td>{{ $currency->symbol}}</td>
+                                            <td>{{ $currency->symbol }}</td>
                                             <td>{{ $currency->exchange_rate }} </td>
                                             <td>
                                                 {{-- <a href="{{ route('currencies.show', $currency->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill">
                                                     <i class="las la-eye"></i>
                                                 </a> --}}
-                                                <a href="{{ route('currencies.edit', $currency->id) }}"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
-                                                    <i class="las la-edit"></i>
-                                                </a>
-                                                <a href="javascript:void(0);"
-                                                    onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $currency->id }})"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
-                                                    <i class="las la-trash"></i>
-                                                </a>
-                                                <form id="delete-form-{{ $currency->id }}"
-                                                    action="{{ route('currencies.destroy', $currency->id) }}"
-                                                    method="POST" class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
+                                                @can('edit_currencies')
+                                                    <a href="{{ route('currencies.edit', $currency->id) }}"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
+                                                        <i class="las la-edit"></i>
+                                                    </a>
+                                                @endcan
+                                                @can('delete_currencies')
+                                                    <a href="javascript:void(0);"
+                                                        onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $currency->id }})"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
+                                                        <i class="las la-trash"></i>
+                                                    </a>
+                                                    <form id="delete-form-{{ $currency->id }}"
+                                                        action="{{ route('currencies.destroy', $currency->id) }}"
+                                                        method="POST" class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

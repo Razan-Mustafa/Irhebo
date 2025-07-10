@@ -24,7 +24,7 @@
                     </li>
                 </ol>
             </div>
-              @if ($errors->any())
+            @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul>
                         @foreach ($errors->all() as $error)
@@ -49,26 +49,36 @@
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
                                             value="{{ old('name') }}" required>
                                     </div>
-
                                     <div class="col-span-12">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">
                                             {{ __('permissions') }}
                                         </label>
-                                        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                            @foreach ($permissions as $permission)
-                                                <div class="flex items-center">
-                                                    <input type="checkbox" name="permissions[]"
-                                                        id="permission_{{ $permission->id }}"
-                                                        value="{{ $permission->name }}"
-                                                        class="rounded border-gray-300 text-primary shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
-                                                    <label for="permission_{{ $permission->id }}"
-                                                        class="mx-2 text-sm text-gray-700">
-                                                        {{ __($permission->name) }}
-                                                    </label>
+
+                                        @foreach ($permissions as $section => $sectionPermissions)
+                                            <div class="mb-4 border-b pb-2">
+                                                <h3 class="text-base font-semibold text-gray-800 mb-3">{{ __($section) }}
+                                                </h3>
+
+                                                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                                    @foreach ($sectionPermissions as $permission)
+                                                        <div class="flex items-center">
+                                                            <input type="checkbox" name="permissions[]"
+                                                                id="permission_{{ $permission->id }}"
+                                                                value="{{ $permission->name }}"
+                                                                class="rounded border-gray-300 text-primary shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 permission-checkbox permission-{{ implode('_', array_slice(explode('_', $permission->name), 1)) }}"
+                                                                data-permission="{{ $permission->name }}">
+                                                            <label for="permission_{{ $permission->id }}"
+                                                                class="mx-2 text-sm text-gray-700">
+                                                                {{ app()->getLocale() == 'ar' ? $permission->description_ar : $permission->description_en }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+
                                                 </div>
-                                            @endforeach
-                                        </div>
+                                            </div>
+                                        @endforeach
                                     </div>
+
                                 </div>
 
                                 <div class="mt-6 flex justify-center">
@@ -88,4 +98,36 @@
 
 @push('scripts')
     {!! JsValidator::formRequest('App\Http\Requests\Admin\RoleRequest') !!}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.permission-checkbox');
+
+            // لما يصير تغيير على أي checkbox
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const permissionName = this.dataset.permission;
+                    const parts = permissionName.split('_');
+                    const action = parts[0]; // view, create, edit...
+                    const category = parts.slice(1).join('_'); // categories, services, ...
+
+                    if (action === 'view') {
+                        // كل checkboxes لها نفس الـ category
+                        const relatedCheckboxes = document.querySelectorAll(
+                            `.permission-${category}`);
+                        relatedCheckboxes.forEach(cb => {
+                            if (cb.dataset.permission !== permissionName) {
+                                cb.disabled = !this.checked;
+                                if (!this.checked) {
+                                    cb.checked = false;
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            // trigger مرة واحدة عند التحميل حتى يضبط الحالة الافتراضية
+            checkboxes.forEach(cb => cb.dispatchEvent(new Event('change')));
+        });
+    </script>
 @endpush

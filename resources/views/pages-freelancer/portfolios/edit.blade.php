@@ -2,6 +2,7 @@
 @section('title', __('edit_portfolio'))
 @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 @endpush
 
 @section('content')
@@ -57,8 +58,8 @@
                                     <div class="col-span-12">
                                         <label
                                             class="block text-sm font-medium text-gray-700">{{ __('description') }}</label>
-                                        <textarea name="description" rows="5"
-                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">{{ old('description', $portfolio->description) }}</textarea>
+                                        <textarea name="description" id="description" rows="5"
+                                            class="summernote mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">{{ old('description', $portfolio->description) }}</textarea>
                                     </div>
 
                                     <div class="col-span-12">
@@ -181,6 +182,66 @@
                 } else {
                     $('#service_ids').html('').trigger('change');
                 }
+            });
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.summernote').summernote({
+                height: 200,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+                callbacks: {
+                    onChange: function(contents, $editable) {
+                        let textareaId = $(this).attr('id');
+                        $('#' + textareaId).val(contents);
+                        $('form').validate().element('#' + textareaId);
+                    }
+                }
+            });
+
+            // add validation method
+            $.validator.addMethod("summernoteRequired", function(value, element) {
+                let content = $(element).summernote('code');
+                content = content.replace(/<br\/?>/gi, '')
+                    .replace(/&nbsp;/gi, '')
+                    .replace(/\s+/g, '')
+                    .trim();
+                return content.length > 0;
+            }, "{{ __('validation.description.required') }}");
+
+            // initialize validation
+            $('form').validate({
+                ignore: ':hidden:not(.summernote)',
+                rules: {
+                    'description': {
+                        summernoteRequired: true
+                    }
+                },
+                errorElement: 'p',
+                errorClass: 'text-red-600 mt-1 text-sm',
+                errorPlacement: function(error, element) {
+                    if (element.hasClass('summernote')) {
+                        error.insertAfter(element.next('.note-editor'));
+                    } else {
+                        error.insertAfter(element);
+                    }
+                }
+            });
+
+            // on submit, update hidden textarea value with summernote content
+            $('form').on('submit', function() {
+                $('#description').val($('#description').summernote('code'));
+                return true;
             });
         });
     </script>

@@ -28,10 +28,12 @@
                     <div class="box">
                         <div class="box-header">
                             <h5 class="box-title">{{ __('web_sliders') }}</h5>
-                            <a href="{{ route('sliders.createWebSliders') }}"
-                                class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                                <i class="las la-plus-circle text-lg"></i>{{ __('add_slider') }}
-                            </a>
+                            @can('create_sliders')
+                                <a href="{{ route('sliders.createWebSliders') }}"
+                                    class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                    <i class="las la-plus-circle text-lg"></i>{{ __('add_slider') }}
+                                </a>
+                            @endcan
                         </div>
                         <div class="box-body">
                             <!-- Tab Content -->
@@ -67,22 +69,26 @@
                                                             class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill">
                                                             <i class="las la-eye"></i>
                                                         </a>
-                                                        <a aria-label="anchor"
-                                                            href="{{ route('sliders.editWebSliders', $slider->id) }}"
-                                                            class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
-                                                            <i class="las la-edit"></i>
-                                                        </a>
-                                                        <a aria-label="anchor" href="javascript:void(0);"
-                                                            onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $slider->id }})"
-                                                            class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
-                                                            <i class="las la-trash"></i>
-                                                        </a>
-                                                        <form id="delete-form-{{ $slider->id }}"
-                                                            action="{{ route('sliders.destroy', $slider->id) }}"
-                                                            method="POST" class="hidden">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                        </form>
+                                                        @can('edit_sliders')
+                                                            <a aria-label="anchor"
+                                                                href="{{ route('sliders.editWebSliders', $slider->id) }}"
+                                                                class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
+                                                                <i class="las la-edit"></i>
+                                                            </a>
+                                                        @endcan
+                                                        @can('delete_sliders')
+                                                            <a aria-label="anchor" href="javascript:void(0);"
+                                                                onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $slider->id }})"
+                                                                class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
+                                                                <i class="las la-trash"></i>
+                                                            </a>
+                                                            <form id="delete-form-{{ $slider->id }}"
+                                                                action="{{ route('sliders.destroy', $slider->id) }}"
+                                                                method="POST" class="hidden">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                            </form>
+                                                        @endcan
                                                     </td>
                                                 </tr>
                                             @endforeach

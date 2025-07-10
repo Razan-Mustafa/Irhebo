@@ -48,7 +48,9 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $portfolio->title }}</td>
-                                            <td>{{ $portfolio->description }}</td>
+                                            <td>{{ \Illuminate\Support\Str::limit(strip_tags($portfolio->description), 100, '...') }}
+                                            </td>
+                                            
                                             <td>
 
                                                 <a aria-label="anchor"
@@ -56,7 +58,7 @@
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill">
                                                     <i class="las la-eye"></i>
                                                 </a>
-                                                  <a aria-label="anchor"
+                                                <a aria-label="anchor"
                                                     href="{{ route('freelancer.portfolios.edit', $portfolio->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
                                                     <i class="las la-edit"></i>

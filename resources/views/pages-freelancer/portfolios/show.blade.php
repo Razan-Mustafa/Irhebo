@@ -35,7 +35,7 @@
 
                             <div>
                                 <strong>{{ __('description') }}:</strong>
-                                <p>{!! nl2br(e($portfolio->description)) !!}</p>
+                                <p>{!! $portfolio->description !!}</p>
                             </div>
 
                             {{-- <div>

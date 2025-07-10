@@ -1,5 +1,15 @@
 @extends('layouts.auth')
-
+@push('styles')
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        // window.OneSignalDeferred = window.OneSignalDeferred || [];
+        // OneSignalDeferred.push(async function(OneSignal) {
+        //     await OneSignal.init({
+        //         appId: "7ab59a87-79f3-46e8-af69-673331be40cc",
+        //     });
+        // });
+    </script>
+@endpush
 @section('content')
     <div class="container mx-auto px-4 lg:px-8">
         <div class="flex justify-center items-center h-screen text-defaultsize text-defaulttextcolor">
@@ -19,8 +29,14 @@
                             <p class="text-base text-gray-500 dark:text-gray-400 text-center mb-6">{{ __('welcome_back') }}
                             </p>
                             <!-- Form Fields -->
-                            <form method="POST" action="{{ route('freelancer.login.submit') }}">
+                            <form id="login-form" method="POST" action="{{ route('freelancer.login.submit') }}">
                                 @csrf
+
+                                <input type="hidden" id="player_id" name="player_id">
+                                <input type="hidden" id="platform" name="platform" value="web">
+
+
+
                                 <div class="grid grid-cols-12 gap-4">
                                     <!-- phone -->
                                     <div class="col-span-12">
@@ -97,3 +113,86 @@
         </div>
     </div>
 @endsection
+
+
+@push('scripts')
+    {{-- <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script> --}}
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "7ab59a87-79f3-46e8-af69-673331be40cc",
+                onesignalId: "7ab59a87-79f3-46e8-af69-673331be40cc",
+            });
+
+            let permission = await OneSignal.Notifications.permission;
+            if (permission !== 'granted') {
+                permission = await  OneSignal.Notifications.requestPermission();
+            }
+
+            // const isSubscribed = await OneSignal.User.PushSubscription.optIn();;
+            // if (!isSubscribed) {
+            //     await OneSignal.registerForPushNotifications();
+            // }
+
+
+            const userId = await OneSignal.User.PushSubscription.id;
+            console.log("player_id = ", userId);
+
+            // خلي player_id في الحقل المخفي
+            document.getElementById('player_id').value = userId || '';
+
+            // فعل زر الإرسال فقط إذا player_id جاهز
+            const submitBtn = document.getElementById('submit-btn');
+            if (userId) {
+                submitBtn.disabled = false;
+            } else {
+                alert("يرجى تفعيل الإشعارات قبل تسجيل الدخول.");
+            }
+        });
+
+        // لو بدك تتأكد قبل الإرسال كمان
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            const playerIdValue = document.getElementById('player_id').value;
+            if (!playerIdValue) {
+                e.preventDefault();
+                alert("يرجى تفعيل الإشعارات قبل تسجيل الدخول.");
+            }
+        });
+    </script>
+    {{-- <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "7ab59a87-79f3-46e8-af69-673331be40cc",
+            });
+
+            // اطلب صلاحية الإشعارات
+            const permission = await OneSignal.Notifications.permission;
+            if (permission !== 'granted') {
+                await OneSignal.Notifications.requestPermission();
+            }
+
+            // اشترك للمستخدم
+            const isSubscribed = await OneSignal.User.PushSubscription.isSubscribed();
+            if (!isSubscribed) {
+                await OneSignal.User.PushSubscription.subscribe();
+            }
+
+            // احصل على player_id
+            const subscriptionId = await OneSignal.User.PushSubscription.id;
+            console.log("player_id = ", subscriptionId);
+
+            // ضيف الـ id داخل input hidden في الفورم
+            document.getElementById('player_id').value = subscriptionId;
+
+            // تأكد قبل إرسال الفورم (اختياري)
+            document.getElementById('login-form').addEventListener('submit', function(e) {
+                if (!subscriptionId) {
+                    e.preventDefault();
+                    alert("يرجى تفعيل الإشعارات قبل تسجيل الدخول.");
+                }
+            });
+        });
+    </script> --}}
+@endpush

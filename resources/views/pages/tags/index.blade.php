@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="container">
-              @if (session('error_message'))
+            @if (session('error_message'))
                 @php
                     $errorMessage = session('error_message');
                     $messageParts = explode('|', $errorMessage);
@@ -33,7 +33,7 @@
 
                 <div class="alert alert-danger flex justify-between items-center">
                     <span>{{ $message }}</span>
-                 
+
                 </div>
             @endif
             <div class="grid grid-cols-12 gap-6">
@@ -41,10 +41,12 @@
                     <div class="box">
                         <div class="box-header flex justify-between items-center">
                             <h5 class="box-title">{{ __('tags') }}</h5>
-                            <a href="{{ route('tags.create') }}" style="white-space: nowrap;"
-                                class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                                <i class="las la-plus-circle text-lg"></i> {{ __('add_tag') }}
-                            </a>
+                            @can('create_tags')
+                                <a href="{{ route('tags.create') }}" style="white-space: nowrap;"
+                                    class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                    <i class="las la-plus-circle text-lg"></i> {{ __('add_tag') }}
+                                </a>
+                            @endcan
                             <a href="javascript:void(0);" style="white-space: nowrap;" id="filter-btn"
                                 class="flex items-center gap-2 px-4 py-3 text-white bg-success hover:bg-blue-600 rounded-lg shadow mx-2">
                                 <i class="las la-filter text-lg"></i> {{ __('filter') }}
@@ -91,21 +93,25 @@
                                             </td>
                                             <td>{{ $tag->slug }}</td>
                                             <td>
-                                                <a href="{{ route('tags.edit', $tag->id) }}"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
-                                                    <i class="las la-edit"></i>
-                                                </a>
-                                                <a href="javascript:void(0);"
-                                                    onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $tag->id }})"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
-                                                    <i class="las la-trash"></i>
-                                                </a>
-                                                <form id="delete-form-{{ $tag->id }}"
-                                                    action="{{ route('tags.destroy', $tag->id) }}" method="POST"
-                                                    class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
+                                                @can('edit_tags')
+                                                    <a href="{{ route('tags.edit', $tag->id) }}"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
+                                                        <i class="las la-edit"></i>
+                                                    </a>
+                                                @endcan
+                                                @can('delete_tags')
+                                                    <a href="javascript:void(0);"
+                                                        onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $tag->id }})"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
+                                                        <i class="las la-trash"></i>
+                                                    </a>
+                                                    <form id="delete-form-{{ $tag->id }}"
+                                                        action="{{ route('tags.destroy', $tag->id) }}" method="POST"
+                                                        class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

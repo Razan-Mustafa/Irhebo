@@ -47,10 +47,12 @@
                     <div class="box">
                         <div class="box-header">
                             <h5 class="box-title">{{ __('categories') }}</h5>
-                            <a href="{{ route('categories.create') }}"
-                                class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                                <i class="las la-plus-circle text-lg"></i>{{ __('add_category') }}
-                            </a>
+                            @can('create_categories')
+                                <a href="{{ route('categories.create') }}"
+                                    class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                    <i class="las la-plus-circle text-lg"></i>{{ __('add_category') }}
+                                </a>
+                            @endcan
                         </div>
                         <div class="box-body">
                             <table id="basic-table" class="table">
@@ -74,49 +76,77 @@
                                             </td>
                                             <td>{{ $category->translation->title }}</td>
                                             <td>
-                                                <div class="flex items-center justify-center">
-                                                    <input type="checkbox" id="hs-small-switch-{{ $category->id }}"
-                                                        class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
-                                                        data-item-id="{{ $category->id }}"
-                                                        data-route="{{ route('categories.updateActivation') }}"
-                                                        {{ $category->is_active ? 'checked' : '' }}>
-                                                </div>
+                                                @can('edit_categories')
+                                                    <div class="flex items-center justify-center">
+                                                        <input type="checkbox" id="hs-small-switch-{{ $category->id }}"
+                                                            class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                            data-item-id="{{ $category->id }}"
+                                                            data-route="{{ route('categories.updateActivation') }}"
+                                                            {{ $category->is_active ? 'checked' : '' }}>
+                                                    </div>
+                                                @else
+                                                    <div class="flex items-center justify-center">
+                                                        <input disabled type="checkbox"
+                                                            id="hs-small-switch-{{ $category->id }}"
+                                                            class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                            data-item-id="{{ $category->id }}"
+                                                            data-route="{{ route('categories.updateActivation') }}"
+                                                            {{ $category->is_active ? 'checked' : '' }}>
+                                                    </div>
+                                                @endcan
                                             </td>
                                             <td>
-                                                <div class="flex items-center justify-center">
-                                                    <input type="checkbox" id="popular-switch-{{ $category->id }}"
-                                                        class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
-                                                        data-item-id="{{ $category->id }}"
-                                                        data-route="{{ route('categories.updatePopularStatus') }}"
-                                                        {{ $category->is_popular ? 'checked' : '' }}>
-                                                </div>
+
+                                                @can('edit_categories')
+                                                    <div class="flex items-center justify-center">
+                                                        <input type="checkbox" id="popular-switch-{{ $category->id }}"
+                                                            class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                            data-item-id="{{ $category->id }}"
+                                                            data-route="{{ route('categories.updatePopularStatus') }}"
+                                                            {{ $category->is_popular ? 'checked' : '' }}>
+                                                    </div>
+                                                @else
+                                                    <div class="flex items-center justify-center">
+                                                        <input disabled type="checkbox" id="popular-switch-{{ $category->id }}"
+                                                            class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                            data-item-id="{{ $category->id }}"
+                                                            data-route="{{ route('categories.updatePopularStatus') }}"
+                                                            {{ $category->is_popular ? 'checked' : '' }}>
+                                                    </div>
+                                                @endcan
                                             </td>
 
                                             <td>
-                                                <a aria-label="anchor"
-                                                    href="{{ route('subCategories.index', ['category_id' => $category->id]) }}"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-secondary mx-1 rounded-pill">
-                                                    <i class="las la-layer-group"></i>
-                                                </a>
+                                                @can('view_sub_categories')
+                                                    <a aria-label="anchor"
+                                                        href="{{ route('subCategories.index', ['category_id' => $category->id]) }}"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-secondary mx-1 rounded-pill">
+                                                        <i class="las la-layer-group"></i>
+                                                    </a>
+                                                @endcan
                                                 <a aria-label="anchor" href="{{ route('categories.show', $category->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill">
                                                     <i class="las la-eye"></i>
                                                 </a>
-                                                <a aria-label="anchor" href="{{ route('categories.edit', $category->id) }}"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
-                                                    <i class="las la-edit"></i>
-                                                </a>
-                                                <a aria-label="anchor" href="javascript:void(0);"
-                                                    onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $category->id }})"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
-                                                    <i class="las la-trash"></i>
-                                                </a>
-                                                <form id="delete-form-{{ $category->id }}"
-                                                    action="{{ route('categories.destroy', $category->id) }}"
-                                                    method="POST" class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
+                                                @can('edit_categories')
+                                                    <a aria-label="anchor" href="{{ route('categories.edit', $category->id) }}"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
+                                                        <i class="las la-edit"></i>
+                                                    </a>
+                                                @endcan
+                                                @can('delete_categories')
+                                                    <a aria-label="anchor" href="javascript:void(0);"
+                                                        onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $category->id }})"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
+                                                        <i class="las la-trash"></i>
+                                                    </a>
+                                                    <form id="delete-form-{{ $category->id }}"
+                                                        action="{{ route('categories.destroy', $category->id) }}"
+                                                        method="POST" class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

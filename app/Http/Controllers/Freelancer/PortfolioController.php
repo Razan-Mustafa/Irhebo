@@ -54,6 +54,7 @@ class PortfolioController extends Controller
     }
     public function update(UpdatePortfolioRequest $request, $id)
     {
+        // dd($request);
         try {
             $this->portfolioService->update($request->validated(), $id);
             return redirect()->route('freelancer.portfolios.index')

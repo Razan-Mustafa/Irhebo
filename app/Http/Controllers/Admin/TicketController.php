@@ -8,6 +8,8 @@ use App\Models\PlayerId;
 use App\Services\OneSignalService;
 use App\Services\TicketService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Models\Ticket;
 
 class TicketController extends Controller
 {
@@ -90,5 +92,18 @@ class TicketController extends Controller
 
         return redirect()->route('tickets.show', $ticket->id)
             ->with('success', __('Reply Sent Successfully'));
+    }
+
+    public function changeStatus(Request $request, Ticket $ticket)
+    {
+        $request->validate([
+            'status' => ['required', Rule::in(['open', 'closed'])],
+        ]);
+
+        $ticket->update([
+            'status' => $request->status,
+        ]);
+
+        return redirect()->back()->with('success', 'Ticket status updated successfully.');
     }
 }

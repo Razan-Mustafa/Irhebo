@@ -96,7 +96,7 @@ class PortfolioRepository implements PortfolioRepositoryInterface
     public function update($data, $portfolio)
     {
         try {
-
+            // dd($data);
             $portfolio->update([
                 'title' => $data['title'],
                 'description' => $data['description'],

@@ -32,7 +32,8 @@
                     <div class="box">
                         <div class="box-header flex justify-between align-center">
                             <h5 class="box-title">{{ __('finances') }}</h5>
-                            <button id="mark-paid-btn" type="submit" form="bulk-update-form" class="hidden flex items-center gap-2 px-4 py-2 text-white bg-success hover:bg-blue-600 rounded-lg shadow mt-3">
+                            <button id="mark-paid-btn" type="submit" form="bulk-update-form"
+                                class="hidden flex items-center gap-2 px-4 py-2 text-white bg-success hover:bg-blue-600 rounded-lg shadow mt-3">
                                 {{ __('mark_selected_as_paid') }}
                             </button>
                         </div>
@@ -44,7 +45,10 @@
                                 <table id="basic-table" class="table text-center">
                                     <thead>
                                         <tr>
-                                            <th><input type="checkbox" id="select-all" class="rounded-sm border-gray-800 text-primary focus:ring-primary"></th>
+                                            @can('pay_function')
+                                                <th><input type="checkbox" id="select-all"
+                                                        class="rounded-sm border-gray-800 text-primary focus:ring-primary"></th>
+                                            @endcan
                                             <th>#</th>
                                             <th>{{ __('request_id') }}</th>
                                             <th>{{ __('client') }}</th>
@@ -57,14 +61,19 @@
                                     <tbody>
                                         @foreach ($finances as $finance)
                                             <tr>
-                                                <td>
-                                                    @if ($finance->payment_status !== \App\Enums\PaymentStatusEnum::PAID->value)
-                                                        <input type="checkbox" name="finance_ids[]" value="{{ $finance->id }}" class="rounded-sm border-gray-800 text-primary focus:ring-primary single-checkbox">
-                                                    @endif
-                                                </td>
+                                                @can('pay_function')
+                                                    <td>
+                                                        @if ($finance->payment_status !== \App\Enums\PaymentStatusEnum::PAID->value)
+                                                            <input type="checkbox" name="finance_ids[]"
+                                                                value="{{ $finance->id }}"
+                                                                class="rounded-sm border-gray-800 text-primary focus:ring-primary single-checkbox">
+                                                        @endif
+                                                    </td>
+                                                @endcan
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>
-                                                    <a class="text-primary underline" href="{{ route('requests.show', $finance->request->id) }}">
+                                                    <a class="text-primary underline"
+                                                        href="{{ route('requests.show', $finance->request->id) }}">
                                                         {{ $finance->request->order_number }}
                                                     </a>
                                                 </td>
@@ -72,7 +81,7 @@
                                                 <td>{{ $finance->request->service->user->username }}</td>
                                                 <td>{{ number_format($finance->total, 2) }}</td>
                                                 <td>{!! \App\Enums\PaymentStatusEnum::tryFrom($finance->payment_status)?->badge() !!}</td>
-                                                <td>{{ $finance->paid_at ?? '-'}}</td>
+                                                <td>{{ $finance->paid_at ?? '-' }}</td>
 
                                             </tr>
                                         @endforeach
@@ -98,7 +107,9 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
+            var lastColumnIndex = {{ auth()->user()->can('pay_function') ? 7 : 6 }};
+
             const $markBtn = $('#mark-paid-btn');
 
             function toggleButtonVisibility() {
@@ -110,18 +121,19 @@
             }
 
             $('#basic-table').DataTable({
-                columnDefs: [
-                    { orderable: false, targets: [0, 7] }
-                ]
+                columnDefs: [{
+                    orderable: false,
+                    targets: [0, lastColumnIndex]
+                }]
             });
 
-            $('#select-all').on('change', function () {
+            $('#select-all').on('change', function() {
                 const checked = this.checked;
                 $('.single-checkbox').prop('checked', checked);
                 toggleButtonVisibility();
             });
 
-            $(document).on('change', '.single-checkbox', function () {
+            $(document).on('change', '.single-checkbox', function() {
                 const all = $('.single-checkbox').length;
                 const checkedCount = $('.single-checkbox:checked').length;
 

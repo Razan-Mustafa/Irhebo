@@ -9,9 +9,22 @@ use App\Models\PlayerId;
 use App\Models\User;
 use App\Services\OneSignalService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class NotificationController extends Controller
 {
+
+    public function index()
+    {
+
+        $notifications = Notification::where('type', 'admin')
+            ->select('title', 'body', DB::raw('count(*) as total'))
+            ->groupBy('title', 'body')
+            ->orderBy('created_at','desc')
+            ->get();
+
+        return view('pages.notifications.index', compact('notifications'));
+    }
 
     public function create()
     {

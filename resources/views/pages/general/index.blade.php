@@ -91,10 +91,12 @@
 
 
                             <div class="mt-4 flex justify-center">
-                                <button type="submit"
-                                    class="px-6 py-2 text-white bg-primary hover:bg-primary-700 rounded-md shadow-sm">
-                                    <i class="las la-save"></i> {{ __('save') }}
-                                </button>
+                                @can('edit_info')
+                                    <button type="submit"
+                                        class="px-6 py-2 text-white bg-primary hover:bg-primary-700 rounded-md shadow-sm">
+                                        <i class="las la-save"></i> {{ __('save') }}
+                                    </button>
+                                @endcan
                             </div>
                         </form>
                     </div>

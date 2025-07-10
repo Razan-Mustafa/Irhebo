@@ -30,10 +30,12 @@
                         <div class="box-header flex justify-between align-center">
                             <h5 class="box-title">{{ __('services') }}</h5>
                             <div class="ms-auto flex items-center gap-2">
-                                <a href="{{ route('services.create') }}"
-                                    class="flex items-center gap-2 px-4 py-2 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                                    <i class="las la-plus-circle text-lg"></i>{{ __('create_service') }}
-                                </a>
+                                @can('create_services')
+                                    <a href="{{ route('services.create') }}"
+                                        class="flex items-center gap-2 px-4 py-2 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                        <i class="las la-plus-circle text-lg"></i>{{ __('create_service') }}
+                                    </a>
+                                @endcan
                                 <a href="javascript:void(0)" id="filter-btn"
                                     class="flex items-center gap-2 px-4 py-2 text-white bg-secondary hover:bg-blue-600 rounded-lg shadow">
                                     <i class="las la-filter"></i> {{ __('filter') }}
@@ -112,27 +114,29 @@
                                             </td>
 
                                             <td>
-
-                                                <a aria-label="anchor" href="{{ route('services.edit', $service->id) }}"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
-                                                    <i class="las la-edit"></i>
-                                                </a>
-                                                <a aria-label="anchor"
-                                                     href="{{ route('services.show', $service->id) }}"
+                                                <a aria-label="anchor" href="{{ route('services.show', $service->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill">
                                                     <i class="las la-eye"></i>
                                                 </a>
-                                                <a aria-label="anchor" href="javascript:void(0);"
-                                                    onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $service->id }})"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
-                                                    <i class="las la-trash"></i>
-                                                </a>
-                                                <form id="delete-form-{{ $service->id }}"
-                                                    action="{{ route('services.destroy', $service->id) }}" method="POST"
-                                                    class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
+                                                @can('edit_services')
+                                                    <a aria-label="anchor" href="{{ route('services.edit', $service->id) }}"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
+                                                        <i class="las la-edit"></i>
+                                                    </a>
+                                                @endcan
+                                                @can('delete_services')
+                                                    <a aria-label="anchor" href="javascript:void(0);"
+                                                        onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $service->id }})"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
+                                                        <i class="las la-trash"></i>
+                                                    </a>
+                                                    <form id="delete-form-{{ $service->id }}"
+                                                        action="{{ route('services.destroy', $service->id) }}" method="POST"
+                                                        class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

@@ -28,10 +28,12 @@
                     <div class="box">
                         <div class="box-header">
                             <h5 class="box-title">{{ __('plans') }}</h5>
-                            <a href="{{ route('plans.create') }}"
-                                class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                                <i class="las la-plus-circle text-lg"></i>{{ __('add_plan') }}
-                            </a>
+                            @can('create_plans')
+                                <a href="{{ route('plans.create') }}"
+                                    class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                    <i class="las la-plus-circle text-lg"></i>{{ __('add_plan') }}
+                                </a>
+                            @endcan
                         </div>
                         <div class="box-body">
                             <table id="basic-table" class="table">
@@ -47,27 +49,31 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $plan->translation?->title }}</td>
-                                          
+
                                             <td>
-                                                <a aria-label="anchor" href="{{ route('plans.features',$plan->id) }}"
+                                                <a aria-label="anchor" href="{{ route('plans.features', $plan->id) }}"
                                                     class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-primary mx-1 rounded-pill">
                                                     <i class="las la-list"></i>
                                                 </a>
-                                                 <a aria-label="anchor" href="{{ route('plans.edit', $plan->id) }}"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
-                                                    <i class="las la-edit"></i>
-                                                </a>
-                                                <a aria-label="anchor" href="javascript:void(0);"
-                                                    onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $plan->id }})"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
-                                                    <i class="las la-trash"></i>
-                                                </a>
-                                                <form id="delete-form-{{ $plan->id }}"
-                                                    action="{{ route('plans.destroy', $plan->id) }}" method="POST"
-                                                    class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
+                                                @can('edit_plans')
+                                                    <a aria-label="anchor" href="{{ route('plans.edit', $plan->id) }}"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
+                                                        <i class="las la-edit"></i>
+                                                    </a>
+                                                @endcan
+                                                @can('delete_plans')
+                                                    <a aria-label="anchor" href="javascript:void(0);"
+                                                        onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $plan->id }})"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
+                                                        <i class="las la-trash"></i>
+                                                    </a>
+                                                    <form id="delete-form-{{ $plan->id }}"
+                                                        action="{{ route('plans.destroy', $plan->id) }}" method="POST"
+                                                        class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

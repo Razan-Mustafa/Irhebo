@@ -25,7 +25,8 @@ class RoleController extends Controller
 
     public function create()
     {
-        $permissions = Permission::all();
+        $permissions = Permission::orderBy('section')->get()->groupBy('section');
+
         return view('pages.roles.create', compact('permissions'));
     }
 
@@ -45,8 +46,10 @@ class RoleController extends Controller
     public function edit($id)
     {
         $role = $this->roleService->find($id);
-        $permissions = Permission::all();
-        return view('pages.roles.edit', compact('role', 'permissions'));
+        $permissions = Permission::orderBy('section')->get()->groupBy('section');
+        $rolePermissions = $role->permissions()->pluck('id')->toArray();
+
+        return view('pages.roles.edit', compact('role', 'permissions', 'rolePermissions'));
     }
 
     public function update(RoleRequest $request, $id)
@@ -73,4 +76,4 @@ class RoleController extends Controller
                 ->with('error', $e->getMessage());
         }
     }
-} 
+}

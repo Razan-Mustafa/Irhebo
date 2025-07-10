@@ -61,7 +61,19 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-
+        'mini_db' => [ // Mini DB (source)
+            'driver' => 'mysql',
+            'host' => env('MINI_DB_HOST', '192.168.1.10'),
+            'database' => env('MINI_DB_DATABASE', 'mini_db'),
+            'username' => env('MINI_DB_USERNAME', 'mini_user'),
+            'password' => env('MINI_DB_PASSWORD', ''),
+            'port' => env('MINI_DB_PORT', '3306'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
         'mariadb' => [
             'driver' => 'mariadb',
             'url' => env('DB_URL'),
@@ -147,7 +159,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [

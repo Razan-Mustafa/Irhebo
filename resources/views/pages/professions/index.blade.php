@@ -28,10 +28,12 @@
                     <div class="box">
                         <div class="box-header">
                             <h5 class="box-title">{{ __('professions') }}</h5>
-                            <a href="{{ route('professions.create') }}"
-                                class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
-                                <i class="las la-plus-circle text-lg"></i>{{ __('add_profession') }}
-                            </a>
+                            @can('create_professions')
+                                <a href="{{ route('professions.create') }}"
+                                    class="flex items-center gap-2 px-4 py-3 text-white bg-primary hover:bg-blue-600 rounded-lg shadow">
+                                    <i class="las la-plus-circle text-lg"></i>{{ __('add_profession') }}
+                                </a>
+                            @endcan
                         </div>
                         <div class="box-body">
                             <table id="basic-table" class="table">
@@ -50,31 +52,46 @@
                                             <td>{{ $profession->translation->title }}
                                             </td>
                                             <td>
-                                                <div class="flex items-center justify-center">
-                                                    <input type="checkbox" id="hs-small-switch-{{ $profession->id }}"
-                                                        class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
-                                                        data-item-id="{{ $profession->id }}"
-                                                        data-route="{{ route('professions.updateActivation') }}"
-                                                        {{ $profession->is_active ? 'checked' : '' }}>
-                                                </div>
+                                                @can('edit_professions')
+                                                    <div class="flex items-center justify-center">
+                                                        <input type="checkbox" id="hs-small-switch-{{ $profession->id }}"
+                                                            class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                            data-item-id="{{ $profession->id }}"
+                                                            data-route="{{ route('professions.updateActivation') }}"
+                                                            {{ $profession->is_active ? 'checked' : '' }}>
+                                                    </div>
+                                                @else
+                                                    <div class="flex items-center justify-center">
+                                                        <input disabled type="checkbox"
+                                                            id="hs-small-switch-{{ $profession->id }}"
+                                                            class="ti-switch shrink-0 !w-11 !h-6 before:size-5"
+                                                            data-item-id="{{ $profession->id }}"
+                                                            data-route="{{ route('professions.updateActivation') }}"
+                                                            {{ $profession->is_active ? 'checked' : '' }}>
+                                                    </div>
+                                                @endcan
                                             </td>
                                             <td>
-                                                <a aria-label="anchor"
-                                                    href="{{ route('professions.edit', $profession->id) }}"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
-                                                    <i class="las la-edit"></i>
-                                                </a>
-                                                <a aria-label="anchor" href="javascript:void(0);"
-                                                    onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $profession->id }})"
-                                                    class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
-                                                    <i class="las la-trash"></i>
-                                                </a>
-                                                <form id="delete-form-{{ $profession->id }}"
-                                                    action="{{ route('professions.destroy', $profession->id) }}"
-                                                    method="POST" class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
+                                                @can('edit_professions')
+                                                    <a aria-label="anchor"
+                                                        href="{{ route('professions.edit', $profession->id) }}"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-success mx-1 rounded-pill">
+                                                        <i class="las la-edit"></i>
+                                                    </a>
+                                                @endcan
+                                                @can('delete_professions')
+                                                    <a aria-label="anchor" href="javascript:void(0);"
+                                                        onclick="showDeleteConfirmation('{{ __('are_you_sure') }}', {{ $profession->id }})"
+                                                        class="ti-btn btn-wave ti-btn-icon ti-btn-sm ti-btn-danger mx-1 rounded-pill">
+                                                        <i class="las la-trash"></i>
+                                                    </a>
+                                                    <form id="delete-form-{{ $profession->id }}"
+                                                        action="{{ route('professions.destroy', $profession->id) }}"
+                                                        method="POST" class="hidden">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    </form>
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach
