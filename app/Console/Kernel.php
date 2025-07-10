@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('sync:mini-db')->dailyAt('00:00');
+        $schedule->command('sync:to-mini-db')->dailyAt('00:00');
     }
 
     /**
