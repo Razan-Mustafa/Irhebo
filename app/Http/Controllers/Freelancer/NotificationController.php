@@ -12,7 +12,6 @@ class NotificationController extends Controller
     {
         $userId = auth()->id();
         $notification = Notification::where('user_id', $userId)->orderBy('created_at', 'desc')->get();
-        // dd($notification);
         return view('pages-freelancer.notification.index', compact('notification'));
     }
 

@@ -247,8 +247,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function ($route) {
         $route->get('', 'index')->name('index');
         $route->get('show/{id}', 'show')->name('show');
         $route->post('reply/{id}', 'reply')->name('reply');
-                $route->put('{ticket}/change-status', 'changeStatus')->name('changeStatus');
-
+        $route->put('{ticket}/change-status', 'changeStatus')->name('changeStatus');
     });
     $route->controller(FilterController::class)->name('filters.')->prefix('filters')->group(function ($route) {
         $route->get('', 'index')->name('index');
@@ -310,6 +309,7 @@ Route::prefix('freelancer')->middleware('guest:freelancer')->group(function ($ro
     // login
     $route->get('login', [FreelancerAuthController::class, 'showLoginForm'])->name('freelancer.login');
     $route->post('login', [FreelancerAuthController::class, 'login'])->name('freelancer.login.submit');
+    $route->post('websiteLogin', [FreelancerAuthController::class, 'websiteLogin'])->name('freelancer.weblogin');
 
     // register
     $route->get('register', [FreelancerAuthController::class, 'showRegisterForm'])->name('freelancer.register');
@@ -319,10 +319,15 @@ Route::prefix('freelancer')->middleware('guest:freelancer')->group(function ($ro
     $route->get('verify-phone', [FreelancerAuthController::class, 'showVerifyPhoneForm'])->name('freelancer.verify.phone');
     $route->post('verify-phone', [FreelancerAuthController::class, 'verifyPhone'])->name('freelancer.verify.phone.submit');
     $route->post('resend-phone-code', [FreelancerAuthController::class, 'resendPhoneCode'])->name('freelancer.resend.phone.code');
-
 });
 
+
+
+
+
 Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name('freelancer.')->group(function ($route) {
+    Route::post('save-player-id', [SocialLoginController::class, 'savePlayerId'])->name('savePlayerId');
+
     $route->post('logout', [FreelancerAuthController::class, 'logout'])->name('logout');
     $route->get('home', [FreelancerHomeController::class, 'index'])->name('home.index');
     $route->controller(FreelancerHomeController::class)->name('home.')->group(function ($route) {
@@ -338,6 +343,8 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
         $route->get('start-call/{receiverId}', 'startCall')->name('start');
         $route->get('answer-call/{callId}', 'answerCall')->name('answer');
         $route->get('end-call/{callId}', 'endCall')->name('end');
+        $route->get('status/{callId}','status')->name('status');
+
     });
     $route->controller(FreelancerNotificationController::class)->name('notification.')->prefix('notification')->group(function ($route) {
         $route->get('', 'index')->name('index');
@@ -374,7 +381,6 @@ Route::middleware(['auth:freelancer', 'freelancer'])->prefix('freelancer')->name
         $route->post('change-password', 'updatePassword')->name('updatePassword');
         $route->post('verify', 'verify')->name('verify');
         $route->delete('delete/certificate/{id}', 'deleteCertificate')->name('deleteCertificate');
-
     });
 
 

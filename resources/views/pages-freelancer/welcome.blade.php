@@ -1,5 +1,7 @@
 @extends('layouts.master')
-
+@push('styles')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endpush
 @section('content')
     <div class="content">
         <div class="main-content">
@@ -332,3 +334,78 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <!-- Load the OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            // Initialize OneSignal
+            // await OneSignal.init({
+            //     appId: "7ab59a87-79f3-46e8-af69-673331be40cc",
+            //     onesignalId: "7ab59a87-79f3-46e8-af69-673331be40cc",
+            //     // Optional: allow localhost for testing
+            //     allowLocalhostAsSecureOrigin: true,
+            // });
+            // var notificationUrl = "{{ url('/freelancer/notification') }}";
+            // OneSignal.Notifications.setDefaultUrl(notificationUrl);
+
+
+            OneSignal.Notifications.setDefaultTitle("IRHEBO");
+            console.log("Notification permission status:", Notification.permission);
+
+            // Request push permission if not already granted
+            if (Notification.permission !== 'granted') {
+                await OneSignal.Notifications.requestPermission();
+            }
+
+
+            function savePlayerIdToBackend(playerId) {
+                console.log("welcome");
+                fetch("/freelancer/save-player-id", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            player_id: playerId,
+                            platform: "web"
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Player ID Saved:", data);
+                    })
+                    .catch(error => {
+                        console.error("Error saving player ID:", error);
+                    });
+            }
+
+            // Main logic
+            let playerId = await OneSignal.User.PushSubscription.id;
+
+            if (playerId) {
+                console.log("User is subscribed, player ID:", playerId);
+                document.getElementById("player_id").value = playerId;
+                savePlayerIdToBackend(playerId);
+            } else {
+                console.log("Notifications permission not granted or no player ID yet.");
+
+                OneSignal.User.addEventListener('subscriptionChange', async (event) => {
+                    const newPlayerId = await OneSignal.User.PushSubscription.id;
+                    console.log("Subscription changed — new Player ID:", newPlayerId);
+
+                    if (newPlayerId) {
+                        document.getElementById("player_id").value = newPlayerId;
+                        savePlayerIdToBackend(newPlayerId);
+                    }
+                });
+            }
+
+            console.log("User's OneSignal Player ID:", playerId);
+        });
+    </script>
+@endpush

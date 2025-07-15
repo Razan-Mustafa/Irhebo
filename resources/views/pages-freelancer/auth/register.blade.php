@@ -12,6 +12,8 @@
 
                 <form action="{{ route('freelancer.register.submit') }}" method="POST" enctype="multipart/form-data">
                     @csrf
+
+                    
                     <!-- avatar -->
                     <div class="mb-4 text-center">
                         <label class="font-semibold block mb-2">{{ __('avatar') }}</label>

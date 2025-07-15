@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use TaylanUnutmaz\AgoraTokenBuilder\RtcTokenBuilder;
+use Illuminate\Support\Facades\Log;
 
 class CallController extends Controller
 {
@@ -111,6 +112,7 @@ class CallController extends Controller
         return view('pages-freelancer.call.caller', [
             'call' => $call,
             'receiver' => $receiver,
+            'caller' => $call->caller,
             'channelName' => $channelName,
             'token' => $token,
             'appId' => config('agora.app_id'),
@@ -123,13 +125,19 @@ class CallController extends Controller
         $call = Call::findOrFail($callId);
         $call->update(['started_at' => now()]);
 
+
+
         $channelName = $call->channel_name;
         $token = $this->generateAgoraToken($channelName, auth()->user()->id);
 
+        if ($call->ended_at) {
+            return redirect()->back()->with('error', __('This call has already ended.'));
+        }
         // dd($call ,$token ,$channelName);
         return view('pages-freelancer.call.receiver', [
             'call' => $call,
             'receiver' => $call->receiver,
+            'caller' => $call->caller,
             'token' => $token,
             'channelName' => $channelName,
             'appId' => config('agora.app_id'),
@@ -207,13 +215,13 @@ class CallController extends Controller
                     'ar' => __('messages.end_call_message', [], 'ar'),
                 ];
 
-                $response = app(OneSignalService::class)->sendNotificationToUserCall(
-                    $playerIdRecord,
-                    $titles,
-                    $messages,
-                    'end_call',
-                    $call->id
-                );
+                // $response = app(OneSignalService::class)->sendNotificationToUserCall(
+                //     $playerIdRecord,
+                //     $titles,
+                //     $messages,
+                //     'end_call',
+                //     $call->id
+                // );
             }
         }
         // *********************************************//
@@ -221,5 +229,26 @@ class CallController extends Controller
 
 
         return redirect()->route('freelancer.home.index')->with('success', 'Call ended.');
+    }
+
+
+
+
+    public function status($callId)
+    {
+        Log::info("Checking call status for Call ID: $callId");
+
+        $call = Call::find($callId);
+
+        if (!$call) {
+            Log::info("Call ID: $callId not found. Assuming ended.");
+            return response()->json(['ended' => true]);
+        }
+
+        $ended = $call->ended_at !== null;
+
+        Log::info("Call ID: $callId ended status: " . ($ended ? 'true' : 'false'));
+
+        return response()->json(['ended' => $ended]);
     }
 }

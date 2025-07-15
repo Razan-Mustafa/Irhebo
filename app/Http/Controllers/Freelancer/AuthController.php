@@ -20,7 +20,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
+use Laravel\Passport\Token;
 
 class AuthController extends Controller
 {
@@ -39,7 +41,6 @@ class AuthController extends Controller
     {
         $remember = $request->filled('remember');
 
-        // البحث عن freelancer يطابق prefix و phone
         $freelancer = \App\Models\User::where('prefix', $request->prefix)
             ->where('phone', $request->phone)
             ->first();
@@ -49,7 +50,6 @@ class AuthController extends Controller
                 ->with('error', __('credentials_not_match'));
         }
 
-        // تحقق من كلمة السر يدوياً
         if (!\Hash::check($request->password, $freelancer->password)) {
             return back()->withInput($request->only('prefix', 'phone', 'remember'))
                 ->with('error', __('credentials_not_match'));
@@ -125,9 +125,16 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+
+        if ($request->filled('player_id')) {
+            PlayerId::where('user_id', auth()->user()->id)
+                ->where('player_id', $request->player_id)
+                ->delete();
+        }
         Auth::guard('freelancer')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
 
         return redirect()
             ->route('freelancer.login')
@@ -319,11 +326,29 @@ class AuthController extends Controller
             return back()->with('error', __('user_not_found'));
         }
 
+
+        // dd($request->input('player_id'));
         if ($user->code == $request->code) {
             $user->verified_at = Carbon::now();
             $user->code = null;
             $user->save();
             Cache::forget($key);
+
+            if ($request->input('player_id')) {
+                $exists = PlayerId::where('user_id', $user->id)
+                    ->where('player_id', $request->player_id)
+                    ->where('platform', $request->platform)
+                    ->exists();
+
+                if (!$exists) {
+                    PlayerId::create([
+                        'user_id'   => $user->id,
+                        'player_id' => $request->player_id,
+                        'platform'  => $request->platform,
+                    ]);
+                }
+            }
+
 
             Auth::guard('freelancer')->login($user);
 
@@ -363,4 +388,63 @@ class AuthController extends Controller
 
         return back()->with('success', __('verification_code_sent_again'));
     }
+
+
+
+
+
+
+    private function getTokenIdFromJWT($jwt)
+    {
+        // decode the token payload (you can use a package like firebase/php-jwt if needed)
+        $parts = explode('.', $jwt);
+
+        if (count($parts) !== 3) {
+            return null;
+        }
+
+        $payload = json_decode(base64_decode($parts[1]), true);
+
+        return $payload['jti'] ?? null;
+    }
+
+
+    public function websiteLogin(Request $request)
+    {
+        Log::info('Request received for websiteLogin');
+
+        $tokenParam = $request->token;
+        Log::info(['tokenParam' => $tokenParam]);
+
+        $tokenString = Token::where('id', $this->getTokenIdFromJWT($tokenParam))
+            ->where('revoked', false)
+            ->first();
+
+        Log::info('Extracted token', ['token' => $tokenString]);
+        Log::info('User', ['user' => $tokenString->user_id]);
+
+        if (!$tokenString) {
+            Log::warning('No token found in request');
+            return response()->json(['status' => 'error', 'message' => 'Token is required'], 400);
+        }
+
+        $freelancer = User::find($tokenString->user_id);
+        Log::info('User lookup result', ['freelancer' => $freelancer]);
+
+        if (!$freelancer) {
+            Log::warning('User not found for token', ['user_id' => $tokenString->user_id]);
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 403);
+        }
+
+        Auth::guard('freelancer')->login($freelancer);
+        Log::info('User logged in successfully under freelancer guard', ['user_id' => $freelancer->id]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Login successful',
+            'user' => $freelancer,
+            'redirect_url' => route('freelancer.home.index')
+        ]);
+    }
+
 }

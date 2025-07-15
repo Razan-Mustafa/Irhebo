@@ -157,7 +157,7 @@
             if (curState === 'CONNECTED') {
                 document.getElementById('status').innerText = translations.call_connected;
             } else if (curState === 'DISCONNECTED') {
-                document.getElementById('status').innerText = translations.call_disconnected ;
+                document.getElementById('status').innerText = translations.call_disconnected;
             }
         });
 
@@ -172,16 +172,6 @@
             }
         };
 
-        // Toggle video
-        // document.getElementById("toggle-video").onclick = () => {
-        //     if (localTracks.videoTrack.muted) {
-        //         localTracks.videoTrack.setMuted(false);
-        //         document.getElementById("video-icon").className = "fa fa-video";
-        //     } else {
-        //         localTracks.videoTrack.setMuted(true);
-        //         document.getElementById("video-icon").className = "fa fa-video-slash";
-        //     }
-        // };
 
         document.getElementById("toggle-video").onclick = async () => {
             if (localTracks.videoTrack.muted) {
@@ -197,5 +187,38 @@
                 document.getElementById('local-player').style.display = 'none';
             }
         };
+
+
+        const callId = "{{ $call->id }}";
+
+        function leaveCall() {
+            localTracks.audioTrack && localTracks.audioTrack.close();
+            localTracks.videoTrack && localTracks.videoTrack.close();
+
+            client && client.leave();
+
+            // أخفاء الفيديو
+            document.getElementById('local-player').style.display = 'none';
+            document.getElementById('remote-playerlist').style.display = 'none';
+
+            // إعادة التوجيه
+            window.location.href = "{{ route('freelancer.home.index') }}";
+        }
+
+        function checkCallEnded() {
+            fetch(`/freelancer/call/status/${callId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.ended) {
+                        // alert("تم إنهاء المكالمة من الطرف الآخر.");
+                        alert("The call has been ended.");
+                        leaveCall();
+                    }
+                })
+                .catch(console.error);
+        }
+
+        // نبدأ polling كل 3 ثواني
+        setInterval(checkCallEnded, 3000);
     </script>
 @endsection

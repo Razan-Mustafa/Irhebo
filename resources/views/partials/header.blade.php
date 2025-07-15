@@ -231,6 +231,9 @@
                                   <form id="logout-form" action="{{ $logoutRoute }}" method="POST"
                                       class="w-full">
                                       @csrf
+                                      <input type="hidden" name="player_id" id="player_id">
+                                      <input type="hidden" id="platform" name="platform" value="web">
+
                                       <button type="submit"
                                           class="w-full ti-dropdown-item !text-[0.8125rem] !p-[0.65rem] !gap-x-0 !inline-flex logout-btn">
                                           <i class="ti ti-logout text-[1.125rem] me-2 opacity-[0.7]"></i>

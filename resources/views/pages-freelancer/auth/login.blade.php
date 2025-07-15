@@ -1,14 +1,7 @@
 @extends('layouts.auth')
 @push('styles')
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-        // window.OneSignalDeferred = window.OneSignalDeferred || [];
-        // OneSignalDeferred.push(async function(OneSignal) {
-        //     await OneSignal.init({
-        //         appId: "7ab59a87-79f3-46e8-af69-673331be40cc",
-        //     });
-        // });
-    </script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 @endpush
 @section('content')
     <div class="container mx-auto px-4 lg:px-8">
@@ -116,83 +109,91 @@
 
 
 @push('scripts')
-    {{-- <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script> --}}
+    <!-- Load the OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
     <script>
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         OneSignalDeferred.push(async function(OneSignal) {
+            // Initialize OneSignal
             await OneSignal.init({
                 appId: "7ab59a87-79f3-46e8-af69-673331be40cc",
                 onesignalId: "7ab59a87-79f3-46e8-af69-673331be40cc",
+                // Optional: allow localhost for testing
+                allowLocalhostAsSecureOrigin: true,
+                serviceWorkerPath: '/OneSignalSDKWorker.js' // ⬅ هون أهم سطر
+
             });
-
-            let permission = await OneSignal.Notifications.permission;
-            if (permission !== 'granted') {
-                permission = await  OneSignal.Notifications.requestPermission();
-            }
-
-            // const isSubscribed = await OneSignal.User.PushSubscription.optIn();;
-            // if (!isSubscribed) {
-            //     await OneSignal.registerForPushNotifications();
-            // }
+            // var notificationUrl = "{{ url('/freelancer/notification') }}";
+            // OneSignal.Notifications.setDefaultUrl(notificationUrl);
 
 
-            const userId = await OneSignal.User.PushSubscription.id;
-            console.log("player_id = ", userId);
+            OneSignal.Notifications.setDefaultTitle("IRHEBO");
+            console.log("Notification permission status:", Notification.permission);
 
-            // خلي player_id في الحقل المخفي
-            document.getElementById('player_id').value = userId || '';
-
-            // فعل زر الإرسال فقط إذا player_id جاهز
-            const submitBtn = document.getElementById('submit-btn');
-            if (userId) {
-                submitBtn.disabled = false;
-            } else {
-                alert("يرجى تفعيل الإشعارات قبل تسجيل الدخول.");
-            }
-        });
-
-        // لو بدك تتأكد قبل الإرسال كمان
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            const playerIdValue = document.getElementById('player_id').value;
-            if (!playerIdValue) {
-                e.preventDefault();
-                alert("يرجى تفعيل الإشعارات قبل تسجيل الدخول.");
-            }
-        });
-    </script>
-    {{-- <script>
-        window.OneSignalDeferred = window.OneSignalDeferred || [];
-        OneSignalDeferred.push(async function(OneSignal) {
-            await OneSignal.init({
-                appId: "7ab59a87-79f3-46e8-af69-673331be40cc",
-            });
-
-            // اطلب صلاحية الإشعارات
-            const permission = await OneSignal.Notifications.permission;
-            if (permission !== 'granted') {
+            // Request push permission if not already granted
+            if (Notification.permission !== 'granted') {
                 await OneSignal.Notifications.requestPermission();
             }
 
-            // اشترك للمستخدم
-            const isSubscribed = await OneSignal.User.PushSubscription.isSubscribed();
-            if (!isSubscribed) {
-                await OneSignal.User.PushSubscription.subscribe();
+
+            let playerId = await OneSignal.User.PushSubscription.id;
+            if (playerId) {
+                console.log("User is subscribed, player ID:", playerId);
+                document.getElementById("player_id").value = playerId;
+
+            } else {
+                console.log("Notifications permission not granted or no player ID yet.");
+
+                OneSignal.User.addEventListener('subscriptionChange', async (event) => {
+                    const newPlayerId = await OneSignal.User.PushSubscription.id;
+                    console.log("Subscription changed — new Player ID:", newPlayerId);
+
+                    if (newPlayerId) {
+                        document.getElementById("player_id").value = newPlayerId;
+                    }
+                });
+
             }
-
-            // احصل على player_id
-            const subscriptionId = await OneSignal.User.PushSubscription.id;
-            console.log("player_id = ", subscriptionId);
-
-            // ضيف الـ id داخل input hidden في الفورم
-            document.getElementById('player_id').value = subscriptionId;
-
-            // تأكد قبل إرسال الفورم (اختياري)
-            document.getElementById('login-form').addEventListener('submit', function(e) {
-                if (!subscriptionId) {
-                    e.preventDefault();
-                    alert("يرجى تفعيل الإشعارات قبل تسجيل الدخول.");
-                }
-            });
+            console.log("User's OneSignal Player ID:", playerId);
         });
-    </script> --}}
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (token) {
+                console.log("Token from URL:", token);
+
+                // Send AJAX POST request to /weblogin
+                fetch("{{ route('freelancer.weblogin') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                "content")
+                        },
+                        body: JSON.stringify({
+                            token: token
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Response from weblogin:", data);
+
+                        if (data.status === 'success') {
+                            // Example: redirect to dashboard if login success
+                            window.location.href = data.redirect_url;
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error in weblogin request:", error);
+                    });
+            }
+        });
+    </script>
 @endpush

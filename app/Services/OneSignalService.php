@@ -70,6 +70,18 @@ class OneSignalService
                     'icon'  => 'ic_menu_close_clear_cancel'
                 ],
             ],
+            // 'web_buttons' => [ // ⬅️ استخدم web_buttons بدل buttons
+            //     [
+            //         'id'    => 'accept_button',
+            //         'text'  => 'Accept',
+            //         'icon'  => 'ic_menu_check'
+            //     ],
+            //     [
+            //         'id'    => 'decline_button',
+            //         'text'  => 'Decline',
+            //         'icon'  => 'ic_menu_close_clear_cancel'
+            //     ],
+            // ],
         ]);
 
         $body = $response->getBody()->getContents();
