@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AiConversation;
 use App\Http\Resources\AiConversationResource;
+use App\Models\Service;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Collection;
 
@@ -118,10 +119,13 @@ class BotController extends Controller
                     'type'    => $request->type,
                 ]);
 
-                // if (!empty($lastBotMessage['service_ids']) && is_array($lastBotMessage['service_ids'])) {
-                //     $conversation->services()->sync($lastBotMessage['service_ids']);
-                // }
+                if (!empty($lastBotMessage['service_ids']) && is_array($lastBotMessage['service_ids'])) {
 
+                    $validServiceIds = Service::whereIn('id', $lastBotMessage['service_ids'])->pluck('id')->toArray();
+                    if (!empty($validServiceIds)) {
+                        $conversation->services()->sync($validServiceIds);
+                    }
+                }
             }
 
             $lastMessage = AiConversation::with(['services'])

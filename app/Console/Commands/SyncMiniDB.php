@@ -49,6 +49,16 @@ class SyncMiniDB extends Command
             $this->info("Syncing table: $table");
 
             try {
+                $mainIds = DB::table($table)->pluck('id')->toArray();
+                $miniIds = DB::connection('mini_db')->table($table)->pluck('id')->toArray();
+
+                $idsToDelete = array_diff($miniIds, $mainIds);
+
+                if (!empty($idsToDelete)) {
+                    DB::connection('mini_db')->table($table)->whereIn('id', $idsToDelete)->delete();
+                    $this->info("🗑️ Deleted " . count($idsToDelete) . " obsolete rows from {$table}");
+                }
+
                 $lastSync = now()->subDay();
                 $rows = DB::table($table)
                     ->where('updated_at', '>=', $lastSync)
@@ -72,6 +82,7 @@ class SyncMiniDB extends Command
                 }
             }
         }
+
         $this->info('✅ Sync completed.');
     }
 }
